@@ -1,0 +1,5 @@
+.env
+*/node_modules/
+rebuild/isomer-sites.json
+rebuild-sites/
+setup-hosting/

@@ -1,0 +1,12 @@
+[
+  "travis-test",
+  "isomer-slackbot",
+  "generate-site",
+  "isomer-redirection",
+  "travisci-scripts",
+  "recommender-train",
+  "editor",
+  "ci-test",
+  "infra",
+  "markdown-helper"
+]
