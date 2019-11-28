@@ -8,5 +8,7 @@
   "editor",
   "ci-test",
   "infra",
-  "markdown-helper"
+  "markdown-helper",
+  "isomercms-frontend",
+  "isomercms-backend"
 ]
