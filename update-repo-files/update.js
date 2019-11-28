@@ -103,12 +103,12 @@ updateRepos = async () => {
         if (!REPOS_TO_IGNORE.includes(reponame)) {
           console.log(`Updating repo ${reponame}`)
 
-          let updateFilePromises = Bluebird.map(fileContentsObject, async ({filename, content}) => {
+          let updateFilePromises = Bluebird.mapSeries(fileContentsObject, async ({filename, content}) => {
             console.log(`Updating file ${filename} in ${reponame}`)
             return updateFile(reponame, filename, content)
           })
 
-          let deleteFilePromises = Bluebird.map(ISOMER_DELETED_FILES, async (filename) => {
+          let deleteFilePromises = Bluebird.mapSeries(ISOMER_DELETED_FILES, async (filename) => {
             console.log(`Deleting file ${filename} in ${reponame}`)
             return deleteFile(reponame, filename)
           })
