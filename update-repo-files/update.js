@@ -15,6 +15,12 @@ const ISOMER_STANDARD_FILES = [
   ".ruby-version"
 ]
 
+// Files that we want to delete across all Isomer repos
+const ISOMER_DELETED_FILES = [
+  "travis.yml",
+  "travis-script.js"
+]
+
 // validateStatus allows axios to handle a 404 HTTP status without rejecting the promise.
 // This is necessary because GitHub returns a 404 status when the file does not exist.
 const validateStatus = (status) => {
@@ -91,6 +97,41 @@ hasStaging = async (stagingBranchEndpoint) => {
   })
 
   return resp.status === 200
+}
+
+deleteFile = async(reponame, filename) => {
+  try {
+    const FILE_PATH_IN_REPO = `https://api.github.com/repos/isomerpages/${reponame}/contents/${filename}?ref=staging`
+
+    let { status, data } = await axios.get(FILE_PATH_IN_REPO, {
+      validateStatus: validateStatus,
+      headers: {
+        Authorization: `Bearer ${GITHUB_TOKEN_REPO_ACCESS}`,
+        "Content-Type": "application/json"
+      }
+    })
+
+    // File does not exist already, return immediately
+    if (status === 404) return
+
+    const sha = data.sha
+
+    const params = {
+      "message": `Update ${filename} dependencies`,
+      "sha": sha,
+      "branch": "staging"
+    }
+
+    await axios.delete(FILE_PATH_IN_REPO, params, {
+      headers: {
+        Authorization: `Bearer ${GITHUB_TOKEN_REPO_ACCESS}`,
+        "Content-Type": "application/json"
+      }
+    })
+
+  } catch (err) {
+    console.log(err)
+  }
 }
 
 // Creates/updates file `filename` with the base64 encoded content `content` onto the GitHub repo `reponame`.
