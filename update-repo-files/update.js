@@ -149,6 +149,7 @@ hasStaging = async (stagingBranchEndpoint) => {
 
 deleteFile = async(reponame, filename) => {
   try {
+    console.log(`Checking for file ${filename} in ${reponame}`)
     const FILE_PATH_IN_REPO = `https://api.github.com/repos/isomerpages/${reponame}/contents/${filename}?ref=staging`
 
     let { status, data } = await axios.get(FILE_PATH_IN_REPO, {
@@ -161,7 +162,7 @@ deleteFile = async(reponame, filename) => {
 
     // File does not exist already, return immediately
     if (status === 404) {
-      console.log(`File ${filename} in ${reponame} does not exist`)
+      console.log(`   File ${filename} in ${reponame} does not exist`)
       return
     }
 
@@ -173,7 +174,7 @@ deleteFile = async(reponame, filename) => {
       "branch": "staging"
     }
 
-    console.log(`Deleting file ${filename} in ${reponame}`)
+    console.log(`   Deleting file ${filename} in ${reponame}`)
 
     await axios.delete(FILE_PATH_IN_REPO, {
       params,
@@ -210,7 +211,7 @@ updateFile = async(reponame, filename, newFileContent) => {
 
     // The file does not exist
     if (status === 404) {
-      console.log(`Creating file ${filename} in ${reponame}`)
+      console.log(`   Creating file ${filename} in ${reponame}`)
       await axios.put(FILE_PATH_IN_REPO, params, {
         headers: {
           Authorization: `Bearer ${GITHUB_TOKEN_REPO_ACCESS}`,
@@ -225,7 +226,7 @@ updateFile = async(reponame, filename, newFileContent) => {
 
       // The file exists but is outdated
       if (currentFileContent !== newFileContent) {
-        console.log(`Replacing file ${filename} in ${reponame}`)
+        console.log(`   Replacing file ${filename} in ${reponame}`)
         params.sha = data.sha
         await axios.put(FILE_PATH_IN_REPO, params, {
           headers: {
@@ -233,6 +234,8 @@ updateFile = async(reponame, filename, newFileContent) => {
             "Content-Type": "application/json"
           }
         })
+      } else {
+        console.log(`   File ${filename} in ${reponame} exists... ignoring`)
       }
     }
   } catch (err) {
