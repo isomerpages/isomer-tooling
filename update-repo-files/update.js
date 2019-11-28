@@ -82,7 +82,7 @@ updateRepos = async () => {
 
       resp.data.forEach(dataObject => {
         const fullname = dataObject.full_name
-        if (isIsomerSite(fullname)) {
+        if (isIsomerSite(fullname) && !dataObject.archived) {
           repos.push(dataObject)
         }
       })
