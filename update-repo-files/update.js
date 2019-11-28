@@ -8,6 +8,11 @@ const ISOMER_ORG_NAME = "isomerpages"
 // This token only has write access to the GitHub repo
 const GITHUB_TOKEN_REPO_ACCESS = process.env.GITHUB_TOKEN_REPO_ACCESS 
 
+// Sleep function
+const sleep = (milliseconds) => {
+  return new Promise(resolve => setTimeout(resolve, milliseconds))
+}
+
 // Files that we want to keep consistent across all Isomer repos
 const ISOMER_STANDARD_FILES = [
   "Gemfile.lock",
@@ -88,8 +93,8 @@ updateRepos = async () => {
 
     let nestedPromises = repos.forEach(async(repo) => {
       // Prevent hitting API rate limit
-      sleep(1000)
-      
+      await sleep(1000)
+
       let reponame = repo.name
       // Check if repo contains a staging branch - if it does, we want to update that repo
       if (await hasStaging(`https://api.github.com/repos/isomerpages/${reponame}/branches/staging`)) {
