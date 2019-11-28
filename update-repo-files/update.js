@@ -3,6 +3,7 @@ const fs = require('fs')
 const Bluebird = require('bluebird')
 const _ = require('lodash')
 const REPOS_TO_IGNORE = require('./repo-ignore.json')
+const ISOMER_ORG_NAME = "isomerpages"
 
 // This token only has write access to the GitHub repo
 const GITHUB_TOKEN_REPO_ACCESS = process.env.GITHUB_TOKEN_REPO_ACCESS 
@@ -20,6 +21,11 @@ const ISOMER_DELETED_FILES = [
   ".travis.yml",
   "travis-script.js"
 ]
+
+// Returns true if site is an isomer site
+const isIsomerSite = fullname => {
+  return fullname.split('/')[0] === ISOMER_ORG_NAME
+}
 
 // validateStatus allows axios to handle a 404 HTTP status without rejecting the promise.
 // This is necessary because GitHub returns a 404 status when the file does not exist.
@@ -54,15 +60,36 @@ updateRepos = async () => {
   try {
     let fileContentsObject = await readFileContents(ISOMER_STANDARD_FILES)
 
-    // Get list of all repos
-    let repos = (await axios.get('https://api.github.com/orgs/isomerpages/repos', {
-      headers: {
-        Authorization: `Bearer ${GITHUB_TOKEN_REPO_ACCESS}`,
-        "Content-Type": "application/json"
-      }
-    })).data
+    // Loop through all user repos
+    let repos = []
+    let pageCount = 1
+    let hasNextPage = true;
+    const filePath = `https://api.github.com/user/repos?per_page=100&page=`;
 
-    let nestedPromises = repos.map(async(repo) => {
+    while (hasNextPage) {
+      // Get list of all repos within current page
+      const resp = await axios.get(filePath + pageCount, {
+        headers: {
+          Authorization: `Bearer ${GITHUB_TOKEN_REPO_ACCESS}`,
+          "Content-Type": "application/json"
+        }
+      })
+
+      resp.data.forEach(dataObject => {
+        const fullname = dataObject.full_name
+        if (isIsomerSite(fullname)) {
+          repos.push(dataObject)
+        }
+      })
+
+      hasNextPage = resp.headers.link.includes('next')
+      ++pageCount
+    }
+
+    let nestedPromises = repos.forEach(async(repo) => {
+      // Prevent hitting API rate limit
+      sleep(1000)
+      
       let reponame = repo.name
       // Check if repo contains a staging branch - if it does, we want to update that repo
       if (await hasStaging(`https://api.github.com/repos/isomerpages/${reponame}/branches/staging`)) {
@@ -80,7 +107,8 @@ updateRepos = async () => {
             console.log(`Deleting file ${filename} in ${reponame}`)
             return deleteFile(reponame, filename)
           })
-          
+
+
           return Promise.all(updateFilePromises, deleteFilePromises)
         } else {
           console.log(`Ignoring repo ${reponame}`)
@@ -165,7 +193,7 @@ updateFile = async(reponame, filename, newFileContent) => {
 
     // The file does not exist
     if (status === 404) {
-      return axios.put(FILE_PATH_IN_REPO, params, {
+      await axios.put(FILE_PATH_IN_REPO, params, {
         headers: {
           Authorization: `Bearer ${GITHUB_TOKEN_REPO_ACCESS}`,
           "Content-Type": "application/json"
@@ -180,7 +208,7 @@ updateFile = async(reponame, filename, newFileContent) => {
       // The file exists but is outdated
       if (currentFileContent !== newFileContent) {
         params.sha = data.sha
-        return axios.put(FILE_PATH_IN_REPO, params, {
+        await axios.put(FILE_PATH_IN_REPO, params, {
           headers: {
             Authorization: `Bearer ${GITHUB_TOKEN_REPO_ACCESS}`,
             "Content-Type": "application/json"
