@@ -91,7 +91,7 @@ updateRepos = async () => {
       ++pageCount
     }
 
-    let nestedPromises = repos.forEach(async(repo) => {
+    let nestedPromises = Bluebird.mapSeries(repos, async(repo) => {
       // Prevent hitting API rate limit
       await sleep(1000)
 
@@ -104,17 +104,23 @@ updateRepos = async () => {
           console.log(`Updating repo ${reponame}`)
 
           let updateFilePromises = Bluebird.mapSeries(fileContentsObject, async ({filename, content}) => {
-            console.log(`Updating file ${filename} in ${reponame}`)
-            return updateFile(reponame, filename, content)
+            try {
+              return updateFile(reponame, filename, content)
+            } catch (err) {
+              console.log(err)
+            }
           })
 
           let deleteFilePromises = Bluebird.mapSeries(ISOMER_DELETED_FILES, async (filename) => {
-            console.log(`Deleting file ${filename} in ${reponame}`)
-            return deleteFile(reponame, filename)
+            try {
+              return deleteFile(reponame, filename)
+            } catch (err) {
+              console.log(err)
+            }
           })
 
 
-          return Promise.all(updateFilePromises, deleteFilePromises)
+          return Promise.all([updateFilePromises, deleteFilePromises])
         } else {
           console.log(`Ignoring repo ${reponame}`)
         }
@@ -154,7 +160,10 @@ deleteFile = async(reponame, filename) => {
     })
 
     // File does not exist already, return immediately
-    if (status === 404) return
+    if (status === 404) {
+      console.log(`File ${filename} in ${reponame} does not exist`)
+      return
+    }
 
     const sha = data.sha
 
@@ -163,6 +172,8 @@ deleteFile = async(reponame, filename) => {
       "sha": sha,
       "branch": "staging"
     }
+
+    console.log(`Deleting file ${filename} in ${reponame}`)
 
     await axios.delete(FILE_PATH_IN_REPO, {
       params,
@@ -180,6 +191,7 @@ deleteFile = async(reponame, filename) => {
 // Creates/updates file `filename` with the base64 encoded content `content` onto the GitHub repo `reponame`.
 updateFile = async(reponame, filename, newFileContent) => {
   try {
+    console.log(`Checking if file ${filename} in ${reponame} exists`)
     let params = {
       "message": `Update ${filename} dependencies`,
       "content": newFileContent,
@@ -198,6 +210,7 @@ updateFile = async(reponame, filename, newFileContent) => {
 
     // The file does not exist
     if (status === 404) {
+      console.log(`Creating file ${filename} in ${reponame}`)
       await axios.put(FILE_PATH_IN_REPO, params, {
         headers: {
           Authorization: `Bearer ${GITHUB_TOKEN_REPO_ACCESS}`,
@@ -212,6 +225,7 @@ updateFile = async(reponame, filename, newFileContent) => {
 
       // The file exists but is outdated
       if (currentFileContent !== newFileContent) {
+        console.log(`Replacing file ${filename} in ${reponame}`)
         params.sha = data.sha
         await axios.put(FILE_PATH_IN_REPO, params, {
           headers: {
