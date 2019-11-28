@@ -17,7 +17,7 @@ const ISOMER_STANDARD_FILES = [
 
 // Files that we want to delete across all Isomer repos
 const ISOMER_DELETED_FILES = [
-  "travis.yml",
+  ".travis.yml",
   "travis-script.js"
 ]
 
@@ -70,9 +70,18 @@ updateRepos = async () => {
         // Check if repo is in ignore-list
         if (!REPOS_TO_IGNORE.includes(reponame)) {
           console.log(`Updating repo ${reponame}`)
-          return Bluebird.map(fileContentsObject, async ({filename, content}) => {
+
+          let updateFilePromises = Bluebird.map(fileContentsObject, async ({filename, content}) => {
+            console.log(`Updating file ${filename} in ${reponame}`)
             return updateFile(reponame, filename, content)
           })
+
+          let deleteFilePromises = Bluebird.map(ISOMER_DELETED_FILES, async (filename) => {
+            console.log(`Deleting file ${filename} in ${reponame}`)
+            return deleteFile(reponame, filename)
+          })
+          
+          return Promise.all(updateFilePromises, deleteFilePromises)
         } else {
           console.log(`Ignoring repo ${reponame}`)
         }
@@ -117,12 +126,13 @@ deleteFile = async(reponame, filename) => {
     const sha = data.sha
 
     const params = {
-      "message": `Update ${filename} dependencies`,
+      "message": `Delete ${filename}`,
       "sha": sha,
       "branch": "staging"
     }
 
-    await axios.delete(FILE_PATH_IN_REPO, params, {
+    await axios.delete(FILE_PATH_IN_REPO, {
+      params,
       headers: {
         Authorization: `Bearer ${GITHUB_TOKEN_REPO_ACCESS}`,
         "Content-Type": "application/json"
