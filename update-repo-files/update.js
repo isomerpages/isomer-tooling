@@ -23,10 +23,7 @@ const ISOMER_STANDARD_FILES = [
 ]
 
 // Files that we want to delete across all Isomer repos
-const ISOMER_DELETED_FILES = [
-  ".travis.yml",
-  "travis-script.js"
-]
+const ISOMER_DELETED_FILES = []
 
 // Returns true if site is an isomer site
 const isIsomerSite = fullname => {
