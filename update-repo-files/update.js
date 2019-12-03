@@ -18,7 +18,8 @@ const ISOMER_STANDARD_FILES = [
   "Gemfile.lock",
   "Gemfile",
   ".gitignore",
-  ".ruby-version"
+  ".ruby-version",
+  "netlify.toml"
 ]
 
 // Files that we want to delete across all Isomer repos
