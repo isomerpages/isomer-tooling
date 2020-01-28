@@ -1,0 +1,83 @@
+{
+  "sites": [{
+    "description": "www.isomer.gov.sg",
+    "netlify_site_id": "a4718477-9583-4889-8e37-5446ae57f5e2",
+    "keycdn_zone_id": "135907"
+  }, {
+    "description": "acd.mlaw.gov.sg",
+    "netlify_site_id": "27bbd7f8-974c-4916-947e-c6f52d3c1491",
+    "keycdn_zone_id": "126861"
+  }, {
+    "description": "www.bioethics-singapore.org",
+    "netlify_site_id": "909a9424-e88a-4521-980c-f50972e4acee",
+    "keycdn_zone_id": "116685"
+  }, {
+    "description": "www.boa.gov.sg",
+    "netlify_site_id": "6343dc26-8871-43b8-bcec-84c52a71ee0f",
+    "keycdn_zone_id": "116678"
+  }, {
+    "description": "www.csf.gov.sg",
+    "netlify_site_id": "54ea054e-a65a-46d8-babe-b8c5b40bcff1",
+    "keycdn_zone_id": "124993"
+  }, {
+    "description": "www.futureeconomy.sg",
+    "netlify_site_id": "29ea689a-dcb2-4fb7-b826-cde281916500",
+    "keycdn_zone_id": "119150"
+  }, {
+    "description": "www.tech.gov.sg",
+    "netlify_site_id": "c3526028-0445-45c6-a597-cd6fdaaf7e9b",
+    "keycdn_zone_id": "112849"
+  }, {
+    "description": "www.govtechstack.sg",
+    "netlify_site_id": "e0987470-43ae-4ad5-b741-27c146404b08",
+    "keycdn_zone_id": "129748"
+  }, {
+    "description": "www.hlb.gov.sg",
+    "netlify_site_id": "7bd13ec5-2f9d-49f6-8fda-5355818c75ee",
+    "keycdn_zone_id": "115625"
+  }, {
+    "description": "www.ioha2020.sg",
+    "netlify_site_id": "b4a0be18-726a-484e-a74e-076b9ce1c9ad",
+    "keycdn_zone_id": "135056"
+  }, {
+    "description": "www.m3.sg",
+    "netlify_site_id": "f35a4a58-1be0-4e3a-a69a-9ead4ecd59e2",
+    "keycdn_zone_id": "133928"
+  }, {
+    "description": "www.harmonyindiversitygallery.sg",
+    "netlify_site_id": "7f8718f3-5a2e-4c08-8840-dc78bf162870",
+    "keycdn_zone_id": "127248"
+  }, {
+    "description": "www.pae.gov.sg",
+    "netlify_site_id": "f1e4246b-04f6-48f0-9c70-fe4c1dc79710",
+    "keycdn_zone_id": "123806"
+  }, {
+    "description": "www.preusem.edu.sg",
+    "netlify_site_id": "12e9cd6e-7eb1-425f-9c59-508d39c72e3b",
+    "keycdn_zone_id": "127245"
+  }, {
+    "description": "www.publicserviceweek.gov.sg",
+    "netlify_site_id": "84059583-6738-451d-89d5-3e86480ad0a9",
+    "keycdn_zone_id": "132210"
+  }, {
+    "description": "www.sentosa.gov.sg",
+    "netlify_site_id": "d5b5a15c-408c-4c39-bfbf-3efeb0162d02",
+    "keycdn_zone_id": "136282"
+  },{
+    "description": "sportcares.sportsingapore.gov.sg",
+    "netlify_site_id": "f7d817bb-e0f0-416e-881b-c2fde8eb01b1",
+    "keycdn_zone_id": "123214"
+  },{
+    "description": "www.strategygroup.gov.sg",
+    "netlify_site_id": "bf8d54b4-b34e-4b58-aac6-e943ef591410",
+    "keycdn_zone_id": "119328"
+  },{
+    "description": "www.taxacademy.sg",
+    "netlify_site_id": "212613b9-f34c-450e-bbce-b760db21a3dd",
+    "keycdn_zone_id": "127261"
+  },{
+    "description": "www.towardszerowaste.sg",
+    "netlify_site_id": "7927f8c1-c4fc-4266-a409-9b28b4e27eee",
+    "keycdn_zone_id": "118644"
+  }]
+}
