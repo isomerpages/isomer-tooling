@@ -6,6 +6,8 @@
   "travisci-scripts",
   "recommender-train",
   "editor",
+  "ema-main",
+  "isomer-tooling",
   "ci-test",
   "infra",
   "markdown-helper",
