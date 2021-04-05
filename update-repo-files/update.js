@@ -15,11 +15,8 @@ const sleep = (milliseconds) => {
 
 // Files that we want to keep consistent across all Isomer repos
 const ISOMER_STANDARD_FILES = [
-  "Gemfile.lock",
   "Gemfile",
   ".gitignore",
-  ".ruby-version",
-  "netlify.toml"
 ]
 
 // Files that we want to delete across all Isomer repos
