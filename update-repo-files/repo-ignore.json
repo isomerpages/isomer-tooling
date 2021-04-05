@@ -12,5 +12,7 @@
   "infra",
   "markdown-helper",
   "isomercms-frontend",
-  "isomercms-backend"
+  "isomercms-backend",
+  "a-test-v4",
+  "isomer-conversion-scripts"
 ]
