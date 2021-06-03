@@ -1,6 +1,6 @@
 ## Update Repo Files
 
-The `update-repo-files` tool ensures that all Isomer repos have a consistent standard set of files (e.g. `.ruby-version`, `.gitignore`, `Gemfile`, `Gemfile.lock`). This tool helps the Isomer admins push the standard version of files out to all repos.
+The `update-repo-files` tool ensures that all Isomer repos **that are not using the new isomer-build build process** (i.e. non-CMS repos) have a consistent standard set of files (e.g. `.ruby-version`, `.gitignore`, `Gemfile`, `Gemfile.lock`). This tool helps the Isomer admins push the standard version of files out to all repos.
 
 ### How it works
 

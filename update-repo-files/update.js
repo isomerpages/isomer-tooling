@@ -1,9 +1,9 @@
 const axios = require('axios')
 const fs = require('fs')
 const Bluebird = require('bluebird')
-const _ = require('lodash')
-const REPOS_TO_IGNORE = require('./repo-ignore.json')
+const yaml = require('js-yaml')
 const ISOMER_ORG_NAME = "isomerpages"
+const REMOTE_THEME_STRING_FOR_PREV_GEN_ISOMER_SITES = 'isomerpages/isomerpages-template'
 
 // This token only has write access to the GitHub repo
 const GITHUB_TOKEN_REPO_ACCESS = process.env.GITHUB_TOKEN_REPO_ACCESS 
@@ -97,8 +97,8 @@ updateRepos = async () => {
       // Check if repo contains a staging branch - if it does, we want to update that repo
       if (await hasStaging(`https://api.github.com/repos/isomerpages/${reponame}/branches/staging`)) {
 
-        // Check if repo is in ignore-list
-        if (!REPOS_TO_IGNORE.includes(reponame)) {
+        // Check if repo is indeed a non-CMS repo by checking that `remote-theme` is `isomerpages-template`
+        if (await isIsomerSiteUsingOldTemplate(reponame)) {
           console.log(`Updating repo ${reponame}`)
 
           let updateFilePromises = Bluebird.mapSeries(fileContentsObject, async ({filename, content}) => {
@@ -143,6 +143,31 @@ hasStaging = async (stagingBranchEndpoint) => {
   })
 
   return resp.status === 200
+}
+
+isIsomerSiteUsingOldTemplate = async (reponame) => {
+  const configFileEndpoint = `https://api.github.com/repos/isomerpages/${reponame}/contents/_config.yml?ref=staging`
+  let resp = await axios.get(configFileEndpoint, {
+    validateStatus: validateStatus,
+    headers: {
+      Authorization: `Bearer ${GITHUB_TOKEN_REPO_ACCESS}`,
+      "Content-Type": "application/json"
+    }
+  })
+
+  if (resp.status === 200) {
+    const content = resp.data.content
+    const decodedContent = Buffer.from(content, 'base64')
+    let yamlContent
+    try {
+      yamlContent = yaml.load(decodedContent)
+      if (yamlContent.remote_theme === REMOTE_THEME_STRING_FOR_PREV_GEN_ISOMER_SITES) return true
+    } catch (err) {
+      console.log(`   error in ${reponame} yaml: ${err}`)
+    }
+  }
+  
+  return false
 }
 
 deleteFile = async(reponame, filename) => {
