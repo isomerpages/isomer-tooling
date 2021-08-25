@@ -1,0 +1,22 @@
+{
+  "name": "describe-all-config",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@octokit/rest": "^18.9.1",
+    "axios": "^0.21.1",
+    "bluebird": "^3.7.2",
+    "csv-writer": "^1.6.0",
+    "js-base64": "^3.6.1",
+    "js-yaml": "^4.1.0",
+    "lodash": "^4.17.21",
+    "netlify": "^8.0.0"
+  }
+}
