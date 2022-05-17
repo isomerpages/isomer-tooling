@@ -1,102 +1,36 @@
 #!/usr/bin/env node
 
-import winston from 'winston'
-import yargs from 'yargs'
+import { logger, configureCliLogger } from './logger'
+import yargs from 'yargs/yargs'
+import { createSite } from './services/create-site'
 
-import generateSite from './services/create-site/site-generator'
+configureCliLogger()
 
-const logger = winston.createLogger({
-  format: winston.format.combine(
-    winston.format.timestamp(),
-    winston.format.printf(
-      (info) => `${info.timestamp} ${info.level}: ${info.message}`
-    )
-  ),
-  transports: [new winston.transports.Console()],
-})
+// To add a command, see https://github.com/yargs/yargs/blob/main/docs/advanced.md
 
-function flattenArguments(rawArgument?: (string | number)[]): string[] {
-  const argumentParts = (rawArgument || []).map((v) => v.toString().split(','))
-  return ([] as string[]).concat(...argumentParts)
-}
-
-const reservedArgumentKeys = [
-  '_',
-  '$0',
-  'pages',
-  'resourceRoomName',
-  'resource-room-name',
-  'resourceRoomCategories',
-  'resource-room-categories',
-  'repoName',
-  'repo-name',
-]
-
-const { argv } = yargs(process.argv.slice(2))
+const argv = yargs(process.argv.slice(2))
   .parserConfiguration({
     'camel-case-expansion': false,
   })
-  .usage(
-    '\nUsage:\n\n' +
-      '  $0 --repoName <name>\n' +
-      '    [--pages <page1-name>,<page2-name>...]\n' +
-      '    [--resourceRoomName <name>] [--resourceRoomCategories <name>,<name>...]\n' +
-      '    [--<category1-name> <category-page>,<category-page>...]\n' +
-      '    [--<category2-name> <category-page>,<category-page>...]...'
-  )
+  .usage('\nUsage:\n\n' + '  $0 --repoName <name>')
   .options({
-    repoName: {
+    r: {
+      alias: 'repoName',
       type: 'string',
       describe: 'the name of the Isomer repository',
       demandOption: true,
     },
-    pages: {
-      type: 'array',
-      describe: 'a comma-separated list of simple pages',
-    },
-    resourceRoomName: {
+    e: {
+      alias: 'requestorEmail',
       type: 'string',
-      describe: 'the name of the resource room',
-    },
-    resourceRoomCategories: {
-      type: 'array',
-      describe: 'a comma-separated list of resource room categories',
+      describe: 'email of the person requesting the repository',
+      demandOption: true,
+      default: 'support@isomer.gov.sg',
     },
   })
+  .parseSync()
 
-const { repoName } = argv
+const { e: requestorEmail, r: repoName } = argv
 
-const pages = flattenArguments(argv.pages)
-const resourceRoomCategories = flattenArguments(argv.resourceRoomCategories)
-
-const resourceRoom = {
-  name: argv.resourceRoomName,
-  categories: resourceRoomCategories,
-}
-
-const rawCollectionEntries = Object.entries(argv).filter(
-  ([k]) => !reservedArgumentKeys.includes(k)
-)
-
-const collections: {
-  [page: string]: {
-    [subPage: string]: string[]
-  }
-} = {}
-
-for (const [collectionName, collectionPageArguments] of rawCollectionEntries) {
-  const collectionPages = ([] as string[]).concat(
-    collectionPageArguments as string[] | string
-  )
-  const collectionPageAsKeys: {
-    [subPage: string]: string[]
-  } = {}
-  for (const collectionPage of flattenArguments(collectionPages)) {
-    collectionPageAsKeys[collectionPage] = []
-  }
-  collections[collectionName] = collectionPageAsKeys
-}
-
-generateSite({ repoName, pages, collections, resourceRoom })
-
-logger.info(`Site created at /tmp/${repoName}`)
+logger.info(`Generate ${repoName}`)
+createSite('cli-submission', repoName, requestorEmail)

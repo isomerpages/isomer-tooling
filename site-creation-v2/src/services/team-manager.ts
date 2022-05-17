@@ -1,7 +1,20 @@
 import { Octokit } from '@octokit/rest'
-import { UserInstructions } from './formsg-user-instructions'
 
-export default ({ octokit }: { octokit: Octokit }) => async (
+import config from '../config'
+
+const githubAccessToken = config.get('githubAccessToken')
+const octokit = new Octokit({ auth: githubAccessToken })
+
+export type UserInstructions = {
+  requesterEmail: string
+  teamName: string
+  users: {
+    add: string[]
+    remove: string[]
+  }
+}
+
+export const manageTeam = async (
   userInstructions: UserInstructions
 ): Promise<string[]> => {
   const notFound = []
@@ -18,7 +31,7 @@ export default ({ octokit }: { octokit: Octokit }) => async (
           username,
         })
       } catch (error) {
-        if (error.message === 'Not Found') {
+        if (error instanceof Error && error.message === 'Not Found') {
           notFound.push(username)
         } else {
           throw error
@@ -33,7 +46,7 @@ export default ({ octokit }: { octokit: Octokit }) => async (
           username,
         })
       } catch (error) {
-        if (error.message === 'Not Found') {
+        if (error instanceof Error && error.message === 'Not Found') {
           notFound.push(username)
         } else {
           throw error

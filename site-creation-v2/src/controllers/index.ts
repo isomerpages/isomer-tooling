@@ -1,8 +1,8 @@
-import formsg from './formsg'
-import createSite from './create-site'
+import createSite from './sites'
 import manageUsers from './manage-users'
 import liveSite from './live-site'
+import formsgInput from './formsg-input'
 
-export { formsg, createSite, manageUsers, liveSite }
+export { createSite, manageUsers, liveSite, formsgInput }
 
-export default { formsg, createSite, manageUsers, liveSite }
+export default { createSite, manageUsers, liveSite, formsgInput }

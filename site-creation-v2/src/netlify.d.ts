@@ -38,9 +38,9 @@ interface CreateSiteRequest extends Partial<NetlifySite> {
 
 declare module 'netlify' {
   export default class NetlifyAPI {
-    constructor(token: string)
+    constructor(_token: string)
     createDeployKey: () => Promise<{ id: string; public_key: string }>
-    createSiteInTeam: (site: {
+    createSiteInTeam: (_site: {
       account_slug: string
       body: CreateSiteRequest
     }) => Promise<CreateSiteResponse>

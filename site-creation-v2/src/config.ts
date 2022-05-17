@@ -18,7 +18,7 @@ convict.addFormats({
         throw new Error('Required value cannot be empty')
       }
     },
-    coerce: <T extends unknown>(val: T): T | undefined => {
+    coerce: <T>(val: T): T | undefined => {
       if (val === null) {
         return undefined
       }

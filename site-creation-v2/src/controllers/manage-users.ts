@@ -1,9 +1,59 @@
 import { Request, Response } from 'express'
-import winston from 'winston'
+import { logger } from '../logger'
 
-import { DecryptedContent } from '@opengovsg/formsg-sdk/dist/types'
-import { UserInstructions } from '../services/manage-users/formsg-user-instructions'
-import makeUserInstructions from '../services/manage-users/formsg-user-instructions'
+import { DecryptedContent, FormField } from '@opengovsg/formsg-sdk/dist/types'
+
+import { manageTeam, UserInstructions } from '../services/team-manager'
+import { mailOutcome } from '../services/outcome-mailer'
+
+const makeUserInstructions = function ({
+  responses,
+}: {
+  responses: FormField[]
+}): UserInstructions {
+  const userInstructions: UserInstructions = {
+    requesterEmail: '',
+    teamName: '',
+    users: {
+      add: [],
+      remove: [],
+    },
+  }
+
+  const requesterEmailResponse = responses.find(
+    ({ question }) => question === 'Your Government E-mail'
+  )
+  if (requesterEmailResponse && requesterEmailResponse.answer) {
+    userInstructions.requesterEmail = requesterEmailResponse.answer
+  }
+
+  const teamNameResponse = responses.find(
+    ({ question }) => question === 'Team Name'
+  )
+  if (teamNameResponse && teamNameResponse.answer) {
+    userInstructions.teamName = teamNameResponse.answer
+  }
+
+  const addUsersResponse = responses.find(
+    ({ question }) => question === 'GitHub users to be added (Username)'
+  )
+  if (addUsersResponse && addUsersResponse.answerArray) {
+    userInstructions.users.add = userInstructions.users.add
+      .concat(...addUsersResponse.answerArray)
+      .filter((s) => s !== '')
+  }
+
+  const removeUsersResponse = responses.find(
+    ({ question }) => question === 'GitHub users to be removed (Username)'
+  )
+  if (removeUsersResponse && removeUsersResponse.answerArray) {
+    userInstructions.users.remove = userInstructions.users.remove
+      .concat(...removeUsersResponse.answerArray)
+      .filter((s) => s !== '')
+  }
+
+  return userInstructions
+}
 
 type UserManagementResults = {
   add: string[]
@@ -31,22 +81,7 @@ ${users.notFound.join('\n')}
 
 const action = 'managing users for'
 
-export default ({
-  manageTeam,
-  mailOutcome,
-  logger,
-}: {
-  manageTeam: (userInstructions: UserInstructions) => Promise<string[]>
-  mailOutcome: (options: {
-    to: string | string[]
-    submissionId: string
-    repoName: string
-    action: string
-    error?: Error
-    successText?: (supportEmail: string) => string
-  }) => Promise<void>
-  logger?: winston.Logger
-}) => async (req: Request, res: Response): Promise<void> => {
+export default async (req: Request, res: Response): Promise<void> => {
   const { submissionId } = req.body.data
 
   logger?.info(`[${submissionId}] Handling manage-users submission`)

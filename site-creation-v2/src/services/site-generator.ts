@@ -182,7 +182,7 @@ export async function generateFromBaseRepo(repoName: string): Promise<void> {
   fs.writeFileSync(configPath, configFile)
 }
 
-export default ({
+export const generateSite = ({
   repoName,
   pages,
   collections,

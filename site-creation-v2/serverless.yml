@@ -9,7 +9,6 @@ provider:
   region: ap-southeast-1
   environment:
     GITHUB_ACCESS_TOKEN: ${env:GITHUB_ACCESS_TOKEN}
-    SUPPORT_EMAIL: ${env:SUPPORT_EMAIL}
     NODE_ENV: ${env:NODE_ENV}
   iam:
     role:

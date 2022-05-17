@@ -1,9 +1,15 @@
 import { Request, Response } from 'express'
-import winston from 'winston'
 
-import { DecryptedContent } from '@opengovsg/formsg-sdk/dist/types'
+import { logger } from '../logger'
+import config from '../config'
 
-import getLiveSiteDetails from '../services/live-site/formsg-site-details'
+import { DecryptedContent, FormField } from '@opengovsg/formsg-sdk/dist/types'
+
+import { mailOutcome } from '../services/outcome-mailer'
+import { createDomainRedirect } from '../services/create-domain-redirect'
+import makeZoneCreator from '../services/create-keycdn-zone'
+import makeZoneAliaser from '../services/add-zone-alias'
+import verifyDns from '../services/verify-dns'
 
 const onSuccess = ({
   repoName,
@@ -27,31 +33,55 @@ to redirect your root domain to your www domain.
 
 const action = 'creating'
 
-export default (options: {
-  createKeyCDNZone: (
-    repoName: string
-  ) => Promise<{ zoneName: string; zoneId: number }>
-  verifyDns: (repoName: string, zoneName: string) => Promise<void>
-  addZoneAlias: (domainName: string, zoneId: number) => Promise<void>
-  createDomainRedirect: (domainName: string) => Promise<void>
-  mailOutcome: (options: {
-    to: string | string[]
-    submissionId: string
-    repoName: string
-    action: string
-    error?: Error
-    successText?: (supportEmail: string) => string
-  }) => Promise<void>
-  logger?: winston.Logger
-}) => async (req: Request, res: Response): Promise<void> => {
-  const {
-    createKeyCDNZone,
-    verifyDns,
-    addZoneAlias,
-    createDomainRedirect,
-    mailOutcome,
-    logger,
-  } = options
+const keyCDNAccessToken = config.get('keyCDNAccessToken')
+const createKeyCDNZone = makeZoneCreator({ keyCDNAccessToken })
+const addZoneAlias = makeZoneAliaser({ keyCDNAccessToken })
+
+type SiteDetails = {
+  repoName: string
+  requesterEmail: string
+  domainName: string
+}
+
+const getLiveSiteDetails = function ({
+  responses,
+}: {
+  responses: FormField[]
+}): SiteDetails {
+  const siteDetails: SiteDetails = {
+    repoName: '',
+    requesterEmail: '',
+    domainName: '',
+  }
+
+  const requestorEmailResponse = responses.find(
+    ({ question }) => question === 'Government E-mail'
+  )
+  if (requestorEmailResponse && requestorEmailResponse.answer) {
+    siteDetails.requesterEmail = requestorEmailResponse.answer
+  }
+
+  const repoNameResponse = responses.find(
+    ({ question }) => question === 'Repository Name'
+  )
+  if (repoNameResponse && repoNameResponse.answer) {
+    siteDetails.repoName = repoNameResponse.answer
+  }
+
+  const domainNameResponse = responses.find(
+    ({ question }) => question === 'Domain Name'
+  )
+  if (domainNameResponse && domainNameResponse.answer) {
+    siteDetails.domainName = domainNameResponse.answer
+  }
+  siteDetails.domainName = siteDetails.domainName.replace(/^\w+:\/\//, '')
+  if (siteDetails.domainName.split('.').length === 3) {
+    siteDetails.domainName = 'www.' + siteDetails.domainName
+  }
+
+  return siteDetails
+}
+export default async (req: Request, res: Response): Promise<void> => {
   const { submissionId } = req.body.data
 
   logger?.info(`[${submissionId}] Handling live-site submission`)

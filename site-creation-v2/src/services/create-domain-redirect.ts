@@ -1,4 +1,8 @@
 import { Octokit } from '@octokit/rest'
+import config from '../config'
+
+const githubAccessToken = config.get('githubAccessToken')
+const octokit = new Octokit({ auth: githubAccessToken })
 
 const createNginxConf = (
   rootDomain: string,
@@ -12,8 +16,7 @@ const createNginxConf = (
   return          301 https://${domainName}$request_uri;
 }
 `
-
-export default ({ octokit }: { octokit: Octokit }) => async (
+export const createDomainRedirect = async (
   domainName: string
 ): Promise<void> => {
   const rootDomain = domainName.replace('www.', '')

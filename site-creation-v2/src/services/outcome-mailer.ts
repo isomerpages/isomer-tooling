@@ -1,11 +1,15 @@
-import { SendMailOptions, SentMessageInfo } from 'nodemailer'
-import winston from 'winston'
+import nodemailer, { SendMailOptions } from 'nodemailer'
+
+import { logger } from '../logger'
+
+import config from '../config'
+import { SES } from '@aws-sdk/client-ses'
 
 const errorText = (
   repoName: string,
   supportEmail: string,
   submissionId: string,
-  error?: Error
+  error: unknown
 ) => `
 We were unable to perform the operation for ${repoName}.
 
@@ -15,17 +19,23 @@ quoting the submission id [${submissionId}] and the following error:
 ${error}
 `
 
-export default ({
-  transport,
-  supportEmail,
-  logger,
-}: {
-  transport: {
-    sendMail: (options: SendMailOptions) => Promise<SentMessageInfo>
-  }
-  supportEmail: string
-  logger?: winston.Logger
-}) => async ({
+const makeTransport = (nodeEnv: string) =>
+  nodeEnv === 'production'
+    ? nodemailer.createTransport({
+        SES: new SES({ region: config.get('awsRegion') }),
+      })
+    : {
+        sendMail: async (options: SendMailOptions) =>
+          logger.info(
+            `In a production evironment the following mail would be sent - ${JSON.stringify(
+              options,
+              null,
+              2
+            )}`
+          ),
+      }
+
+export const mailOutcome = async ({
   to,
   submissionId,
   repoName,
@@ -37,9 +47,11 @@ export default ({
   submissionId: string
   repoName: string
   action: string
-  error?: Error
-  successText?: (supportEmail: string) => string
+  error?: unknown
+  successText?: (_supportEmail: string) => string
 }): Promise<void> => {
+  const supportEmail = config.get('supportEmail')
+  const transport = makeTransport(config.get('nodeEnv'))
   const subject = error
     ? `[Isomer] Error ${action} ${repoName}`
     : `[Isomer] Success in ${action} ${repoName}`
@@ -55,6 +67,6 @@ export default ({
       text,
     })
   } catch (err) {
-    logger?.error(err)
+    logger.error(err)
   }
 }

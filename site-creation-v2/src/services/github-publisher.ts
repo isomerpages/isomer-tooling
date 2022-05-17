@@ -3,14 +3,12 @@ import fs from 'fs'
 import { Octokit } from '@octokit/rest'
 import git from 'isomorphic-git'
 import http from 'isomorphic-git/http/node'
+import config from '../config'
 
-export default ({
-  octokit,
-  githubAccessToken,
-}: {
-  octokit: Octokit
-  githubAccessToken: string
-}) => async (repoName: string): Promise<number> => {
+const githubAccessToken = config.get('githubAccessToken')
+const octokit = new Octokit({ auth: githubAccessToken })
+
+export const publishToGitHub = async (repoName: string): Promise<number> => {
   const [
     {
       data: { id: repoId },
