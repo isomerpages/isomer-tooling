@@ -1,0 +1,31 @@
+service: site-creation-v2
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  deploymentMethod: direct
+  runtime: nodejs14.x
+  stage: staging
+  region: ap-southeast-1
+  environment:
+    GITHUB_ACCESS_TOKEN: ${env:GITHUB_ACCESS_TOKEN}
+    NODE_ENV: ${env:NODE_ENV}
+  iam:
+    role:
+      statements:
+        - Effect: 'Allow'
+          Action:
+            - 'ses:SendRawEmail'
+          Resource:
+            '*'
+
+functions:
+  sites:
+    handler: dist/serverless.handler
+    url:
+      cors: true
+    timeout: 30
+    environment:
+      FORM_CREATE_KEY: ${env:FORM_CREATE_KEY}
+
+useDotenv: true
