@@ -17,7 +17,7 @@ export const publishToGitHub = async (repoName: string): Promise<number> => {
     octokit.repos.createInOrg({
       org: 'isomerpages',
       name: repoName,
-      description: `Staging: https://${repoName}-staging.netlify.app | Production: https://${repoName}-prod.netlify.app`,
+      // description: `Staging: https://${repoName}-staging.netlify.app | Production: https://${repoName}-prod.netlify.app`,
       private: false,
     }),
     octokit.teams.create({
@@ -49,6 +49,57 @@ export const publishToGitHub = async (repoName: string): Promise<number> => {
     remote: 'origin',
     url: `https://github.com/isomerpages/${repoName}`,
   })
+  await git.push({
+    fs,
+    http,
+    dir,
+    remote,
+    remoteRef: 'staging',
+    corsProxy: 'https://cors.isomorphic-git.org',
+    onAuth: () => ({ username: 'user', password: githubAccessToken }),
+  })
+  await git.push({
+    fs,
+    http,
+    dir,
+    remote,
+    remoteRef: 'master',
+    corsProxy: 'https://cors.isomorphic-git.org',
+    onAuth: () => ({ username: 'user', password: githubAccessToken }),
+  })
+
+  return repoId
+}
+
+// function sleep(ms: number) {
+//   return new Promise((resolve) => {
+//     setTimeout(resolve, ms)
+//   })
+// }
+
+export const modifyUrls = async (repoName: string, domain: string) => {
+  // Wait for Amplify to get ready
+  //await sleep(10000)
+
+  await octokit.repos.update({
+    owner: 'isomerpages',
+    repo: repoName,
+    description: `Staging: https://staging.${domain} | Production: https://master.${domain}`,
+  })
+
+  const dir = `/tmp/${repoName}`
+  const remote = 'origin'
+  await git.add({ fs, dir, filepath: '.' })
+  await git.commit({
+    fs,
+    dir,
+    message: 'Set URLs',
+    author: {
+      name: 'isomeradmin',
+      email: 'isomeradmin@users.noreply.github.com',
+    },
+  })
+
   await git.push({
     fs,
     http,
@@ -100,6 +151,4 @@ export const publishToGitHub = async (repoName: string): Promise<number> => {
       permission: 'push',
     }),
   ])
-
-  return repoId
 }

@@ -18,6 +18,11 @@ provider:
             - 'ses:SendRawEmail'
           Resource:
             '*'
+        - Effect: 'Allow'
+          Action:
+            - 'amplify:CreateApp'
+            - 'amplify:CreateBranch'
+          Resource: arn:aws:amplify:${aws:region}:${aws:accountId}:apps/*
 
 functions:
   sites:

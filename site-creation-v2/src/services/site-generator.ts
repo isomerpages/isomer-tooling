@@ -159,7 +159,7 @@ function createResourceRoom(resourceRoom: {
 export async function generateFromBaseRepo(repoName: string): Promise<void> {
   // Clone base repo to /tmp
   const destination = `/tmp/${repoName}`
-  const configPath = `${destination}/_config.yml`
+  // const configPath = `${destination}/_config.yml`
   const githubBaseRepoURL = 'https://github.com/isomerpages/site-creation-base'
 
   await git.clone({
@@ -175,11 +175,20 @@ export async function generateFromBaseRepo(repoName: string): Promise<void> {
   fs.removeSync(`${destination}/.git`)
 
   // Edit config yml netlify links
+  // const configFile = fs.readFileSync(configPath, 'utf-8')
+  // const lines = configFile.split('\n').slice(0, -2)
+  // lines.push(`staging: https://${repoName}-staging.netlify.app`)
+  // lines.push(`prod: https://${repoName}-prod.netlify.app`)
+  // fs.writeFileSync(configPath, configFile)
+}
+
+export function editConfigYml(repoName: string, domain: string) {
+  const configPath = `/tmp/${repoName}/_config.yml`
   const configFile = fs.readFileSync(configPath, 'utf-8')
   const lines = configFile.split('\n').slice(0, -2)
-  lines.push(`staging: https://${repoName}-staging.netlify.app`)
-  lines.push(`prod: https://${repoName}-prod.netlify.app`)
-  fs.writeFileSync(configPath, configFile)
+  lines.push(`staging: https://staging.${domain}`)
+  lines.push(`prod: https://master.${domain}`)
+  fs.writeFileSync(configPath, lines.join('\n'))
 }
 
 export const generateSite = ({

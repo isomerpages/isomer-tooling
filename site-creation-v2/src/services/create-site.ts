@@ -1,7 +1,8 @@
 import { ResultAsync } from 'neverthrow'
-import { generateFromBaseRepo } from './site-generator'
+import { generateFromBaseRepo, editConfigYml } from './site-generator'
+import { publishToAmplify } from './amplify-publisher'
 import { logger } from '../logger'
-import { publishToGitHub } from './github-publisher'
+import { publishToGitHub, modifyUrls } from './github-publisher'
 import { mailOutcome } from './outcome-mailer'
 
 const onSuccess = (repoName: string) => (supportEmail: string) => `
@@ -27,13 +28,26 @@ export const createSite = (
 ) => {
   return ResultAsync.fromPromise(
     generateFromBaseRepo(repoName),
-    () => new Error('Could not generate site from base repo.')
+    (e) => new Error(`Could not generate site from base repo: ${e}`)
   )
     .andThen(() => {
-      logger.info(`[${submissionId}] Publishing to GitHub`)
+      logger.info(`[${submissionId}] Publishing to '${repoName}' GitHub`)
       return ResultAsync.fromPromise(
         publishToGitHub(repoName),
-        () => new Error('Could not publish to GitHub.')
+        (e) => new Error(`Could not publish to GitHub: ${e}`)
+      )
+    })
+    .andThen((repoId) => {
+      logger.info(`[${submissionId}] Publishing to Amplify`)
+      return publishToAmplify(repoName, repoId)
+    })
+    .andThen((createResult) => {
+      // This second push serves a dual purpose. It sets the site URLs in _config.yml (which may not be important)
+      // and it kicks off the initial Amplify build for each branch (which is very important).
+      editConfigYml(createResult.name, createResult.defaultDomain)
+      return ResultAsync.fromPromise(
+        modifyUrls(createResult.name, createResult.defaultDomain),
+        (e) => new Error(`Could not modify URLs in GitHub: ${e}`)
       )
     })
     .andThen(() => {
@@ -47,7 +61,7 @@ export const createSite = (
           action,
           successText,
         }),
-        () => new Error('Could not mail success outcome.')
+        (e) => new Error(`Could not mail success outcome: ${e}`)
       )
     })
     .mapErr(async (error) => {

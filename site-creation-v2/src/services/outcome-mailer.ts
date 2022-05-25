@@ -3,7 +3,8 @@ import nodemailer, { SendMailOptions } from 'nodemailer'
 import { logger } from '../logger'
 
 import config from '../config'
-import { SES } from '@aws-sdk/client-ses'
+import * as aws from '@aws-sdk/client-ses'
+import { defaultProvider } from '@aws-sdk/credential-provider-node'
 
 const errorText = (
   repoName: string,
@@ -22,7 +23,14 @@ ${error}
 const makeTransport = (nodeEnv: string) =>
   nodeEnv === 'production'
     ? nodemailer.createTransport({
-        SES: new SES({ region: config.get('awsRegion') }),
+        SES: {
+          ses: new aws.SES({
+            apiVersion: '2010-12-01',
+            region: config.get('awsRegion'),
+            credentialDefaultProvider: defaultProvider,
+          }),
+          aws,
+        },
       })
     : {
         sendMail: async (options: SendMailOptions) =>
