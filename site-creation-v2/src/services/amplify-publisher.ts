@@ -62,12 +62,15 @@ frontend:
 
 export const publishToAmplify = (repoName: string, repoId: number) => {
   // const repository = `https://github.com/isomerpages/${repoName}/tree/master`
-  const repository = `https://github.com/isomerpages/${repoName}.git`
+  const repository = `https://github.com/isomerpages/${repoName}`
   const options: CreateAppCommandInput = {
     name: repoName,
     accessToken: config.get('githubAccessToken'),
     repository,
     buildSpec,
+    environmentVariables: {
+      JEKYLL_ENV: 'development',
+    },
   }
 
   logger.info(`PublishToAmplify ${repository} (ID: ${repoId})`)
@@ -105,6 +108,9 @@ export const publishToAmplify = (repoName: string, repoId: number) => {
           framework: 'Jekyll',
           branchName: 'master',
           stage: Stage.PRODUCTION,
+          environmentVariables: {
+            JEKYLL_ENV: 'production',
+          },
         }
         return ResultAsync.fromPromise(
           client.send(new CreateBranchCommand(options)),
@@ -134,6 +140,9 @@ export const publishToAmplify = (repoName: string, repoId: number) => {
           framework: 'Jekyll',
           branchName: 'staging',
           stage: Stage.DEVELOPMENT,
+          environmentVariables: {
+            JEKYLL_ENV: 'staging',
+          },
         }
         return ResultAsync.fromPromise(
           client.send(new CreateBranchCommand(options)),
