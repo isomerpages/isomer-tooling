@@ -5,7 +5,8 @@ import { logger } from '../logger'
 import { publishToGitHub, modifyUrls } from './github-publisher'
 import { mailOutcome } from './outcome-mailer'
 
-const onSuccess = (repoName: string) => (supportEmail: string) => `
+const onSuccess = (repoName: string) => (supportEmail: string) =>
+  `
 The Isomer site for ${repoName} has been created successfully! 
 Please follow up by doing the following:
 
@@ -21,11 +22,26 @@ The Isomer guide is available at https://v2.isomer.gov.sg.
 
 const action = 'creating'
 
-export const createSite = (
-  submissionId: string,
-  repoName: string,
+export interface CreateSiteProps {
+  submissionId: string
+  agencyName: string
+  repoName: string
   requestorEmail: string
-) => {
+  siteName?: string
+  contact: string
+}
+
+export const createSite = ({
+  submissionId,
+  agencyName,
+  repoName,
+  requestorEmail,
+  siteName,
+  contact,
+}: CreateSiteProps) => {
+  logger.debug(
+    `[${submissionId}] ${requestorEmail} asked to create site '${repoName}' (${siteName}) for agency '${agencyName}' with contact '${contact}'`
+  )
   return ResultAsync.fromPromise(
     generateFromBaseRepo(repoName),
     (e) => new Error(`Could not generate site from base repo: ${e}`)

@@ -27,10 +27,25 @@ const argv = yargs(process.argv.slice(2))
       demandOption: true,
       default: 'support@isomer.gov.sg',
     },
+    a: {
+      alias: 'agencyName',
+      type: 'string',
+      describe: 'short name of the agency',
+      demandOption: true,
+      default: 'Agency',
+    },
+    c: {
+      alias: 'contact',
+      type: 'string',
+      describe: 'email of the primary point of contact for the site',
+      demandOption: true,
+      default: 'person@agency.gov.sg',
+    },
   })
   .parseSync()
 
-const { e: requestorEmail, r: repoName } = argv
+const { e: requestorEmail, r: repoName, a: agencyName, c: contact } = argv
 
 logger.info(`Generate ${repoName}`)
-createSite('cli-submission', repoName, requestorEmail)
+const submissionId = 'cli-submission'
+createSite({ submissionId, repoName, requestorEmail, agencyName, contact })

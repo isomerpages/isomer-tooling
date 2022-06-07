@@ -3,34 +3,66 @@ import { DecryptedContent, FormField } from '@opengovsg/formsg-sdk/dist/types'
 
 import { logger } from '../logger'
 
-import { createSite } from '../services/create-site'
+import { createSite, CreateSiteProps } from '../services/create-site'
 
-interface Submission {
+// interface Submission {
+//   responses: FormField[]
+// }
+//
+// const repoNameFromResponses = function ({ responses }: Submission): string {
+//   const repoNameResponse = responses.find(
+//     ({ question }) => question === 'Repository Name'
+//   )
+//   if (repoNameResponse && repoNameResponse.answer) {
+//     return repoNameResponse.answer
+//   }
+//
+//   return ''
+// }
+//
+// const requestorEmailFromResponses = function ({
+//   responses,
+// }: Submission): string {
+//   const requestorEmailResponse = responses.find(
+//     ({ question }) => question === 'Government E-mail'
+//   )
+//   if (requestorEmailResponse && requestorEmailResponse.answer) {
+//     return requestorEmailResponse.answer
+//   }
+//   return ''
+// }
+
+const getProp = function (
+  responses: FormField[],
+  name: string
+): string | undefined {
+  const response = responses.find(({ question }) => question === name)
+
+  return response?.answer
+}
+
+const getSiteProps = function (
+  submissionId: string,
   responses: FormField[]
-}
+): CreateSiteProps {
+  const requestorEmail = getProp(responses, 'Government E-mail')
+  const agencyName = getProp(responses, 'Agency')
+  const repoName = getProp(responses, 'Repository Name')
+  const siteName = getProp(responses, 'Site Name')
+  const contact = getProp(responses, 'Point of Contact')
 
-const repoNameFromResponses = function ({ responses }: Submission): string {
-  const repoNameResponse = responses.find(
-    ({ question }) => question === 'Repository Name'
-  )
-  if (repoNameResponse && repoNameResponse.answer) {
-    return repoNameResponse.answer
+  if (!requestorEmail || !agencyName || !repoName || !contact) {
+    throw new Error('Required inputs not found')
   }
 
-  return ''
-}
-
-const requestorEmailFromResponses = function ({
-  responses,
-}: Submission): string {
-  const requestorEmailResponse = responses.find(
-    ({ question }) => question === 'Government E-mail'
-  )
-  if (requestorEmailResponse && requestorEmailResponse.answer) {
-    return requestorEmailResponse.answer
+  return {
+    submissionId,
+    agencyName,
+    repoName,
+    requestorEmail,
+    siteName,
+    contact,
   }
-
-  return ''
 }
 
 export default async (req: Request, res: Response) => {
@@ -39,16 +71,17 @@ export default async (req: Request, res: Response) => {
   logger.info(`[${submissionId}] Handling create-site submission`)
 
   const { responses } = res.locals.submission as DecryptedContent
-  const repoName = repoNameFromResponses({ responses })
-  const requestorEmail = requestorEmailFromResponses({ responses })
+  const siteProps = getSiteProps(submissionId, responses)
 
-  return createSite(submissionId, repoName, requestorEmail)
+  return createSite(siteProps)
     .map(() => {
       // Return success
       return res.status(201).json({ message: 'Request processed' })
     })
-    .mapErr(() => {
+    .mapErr((err) => {
       // Return failure
-      return res.status(400).json({ message: 'Request processed with errors' })
+      return res
+        .status(400)
+        .json({ message: `Request processed with errors: ${err}` })
     })
 }
