@@ -11,3 +11,6 @@
 //   requestorEmail: string
 // ) => {
 //   return ResultAsync.fromPromise(
+
+// This file contains initial steps toward a service that sends
+// system site requests to isomer-cmsbackend.
