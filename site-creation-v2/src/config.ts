@@ -88,8 +88,7 @@ const config = convict({
     sensitive: true,
   },
   netlifyAppId: {
-    doc:
-      'The id number of the Netlify App installed on the GitHub organisation',
+    doc: 'The id number of the Netlify App installed on the GitHub organisation',
     env: 'NETLIFY_APP_ID',
     format: 'int',
     default: 0,
@@ -98,6 +97,19 @@ const config = convict({
     doc: 'The key given by KeyCDN for Zone creation and aliasing',
     env: 'KEYCDN_ACCESS_TOKEN',
     format: '*',
+    default: '',
+    sensitive: true,
+  },
+  cmsUrl: {
+    doc: 'The URL for the Isomer CMS backend',
+    env: 'CMS_URL',
+    format: 'required-string',
+    default: '',
+  },
+  cmsSystemSecret: {
+    doc: 'The secret key used by the Isomer CMS backend System API calls',
+    env: 'CMS_SYSTEM_SECRET',
+    format: 'required-string',
     default: '',
     sensitive: true,
   },

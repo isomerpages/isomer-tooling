@@ -1,5 +1,5 @@
 {
-  "name": "@isomerpages/isomer-tooling/site-creation-v2",
+  "name": "@isomerpages/site-creation-v2",
   "version": "1.0.0",
   "description": "Creates Isomer sites from FormSG site creation requests",
   "main": "build/index.js",

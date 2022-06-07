@@ -71,6 +71,7 @@ export const publishToAmplify = (repoName: string, repoId: number) => {
     environmentVariables: {
       JEKYLL_ENV: 'development',
     },
+    customRules: [{ source: '/<*>', target: '/404.html', status: '404-200' }],
   }
 
   logger.info(`PublishToAmplify ${repository} (ID: ${repoId})`)
@@ -82,7 +83,6 @@ export const publishToAmplify = (repoName: string, repoId: number) => {
       (e) => new AmplifyError(`Publish to Amplify failed: ${e}`)
     )
       .andThen((out: CreateAppCommandOutput) => {
-        logger.debug(`CreateAppCommandOutput: ${JSON.stringify(out, null, 2)}`)
         const { app } = out
 
         if (!app) {
@@ -121,14 +121,8 @@ export const publishToAmplify = (repoName: string, repoId: number) => {
               appArn,
               appId
             )
-        ).map((out: CreateBranchCommandOutput) => {
-          logger.debug(
-            `Successfully created master branch: ${JSON.stringify(
-              out,
-              null,
-              2
-            )}`
-          )
+        ).map((_out: CreateBranchCommandOutput) => {
+          // Can inspect _out here if necessary.
           return amplifyInfo
         })
       })
@@ -153,14 +147,8 @@ export const publishToAmplify = (repoName: string, repoId: number) => {
               amplifyInfo.arn,
               amplifyInfo.id
             )
-        ).map((out: CreateBranchCommandOutput) => {
-          logger.debug(
-            `Successfully created staging branch: ${JSON.stringify(
-              out,
-              null,
-              2
-            )}`
-          )
+        ).map((_out: CreateBranchCommandOutput) => {
+          // Can inspect _out here if necessary.
           return amplifyInfo
         })
       })

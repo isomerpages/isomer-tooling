@@ -10,6 +10,8 @@ provider:
   environment:
     GITHUB_ACCESS_TOKEN: ${env:GITHUB_ACCESS_TOKEN}
     NODE_ENV: ${env:NODE_ENV}
+    CMS_URL: ${env:CMS_URL}
+    CMS_SYSTEM_SECRET: ${env:CMS_SYSTEM_SECRET}
   iam:
     role:
       statements:

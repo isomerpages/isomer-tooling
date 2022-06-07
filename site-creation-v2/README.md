@@ -48,7 +48,7 @@ site-creation-backend has two possible entrypoints:
 # Deployment
 Make sure to build before you try to deploy (`npm run build`).
 
-This application is deployed into API Gateway and AWS Lambda; each
+This application is deployed into AWS Lambda; each
 endpoint exposed is handled by a separate lambda function that happens
 to share the same codebase. 
 
@@ -58,24 +58,29 @@ The lambda codebase in turn is the Express.js application wrapped by
 ## Manual Deployment
 This application is set up to use [Lambda Function URLs](https://www.serverless.com/framework/docs/providers/aws/guide/functions#lambda-function-urls)
 instead of an API Gateway. Deploying this way means that each function will get its own sub-domain, 
-but (confusingly) endpoints must still include the function name in the path 
+but (confusingly) each endpoint must still include the function name in the path 
 (e.g. https://rghgtljmksnniwtlqivxozpwse0ovptv.lambda-url.ap-southeast-1.on.aws/sites) 
 
-Deploy manually by from the project root directory with the command
-`npx serverless deploy` (or simply `serverless deploy`, if you want to install serverless). 
-You will need to specify an AWS account. For example...
+To deploy to staging:
+- Open a shell and cd into the project root folder (where this README.md is stored).
+- Make sure environment variables are in your shell's environment by putting the needed variables in `.env` 
+  and running `source .env`. (Alternatively, you may install [direnv](https://direnv.net/), which will run `source .env`
+  automatically when you cd into the project root folder.)
+- Specify an AWS account to use for deployment. You can do this in one of the following ways:
+  - Define the environment variables `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` for your account or another one
+    with permission to deploy.
+  - Set up a default [aws profile](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html)
+    for an account with permission to deploy.
+  - Set up a named [aws profile](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html)
+    for an account with permission to deploy (e.g. `cicd-serverless`) and do one of the following:
+    - Define the environment variable `AWS_PROFILE` (e.g. `AWS_PROFILE="cicd-serverless" npx serverless deploy`)
+    - Specify the profile on the command line (e.g. `npx serverless deploy --aws-profile cicd-serverless`)
+- After you have completed the above steps, run `npx serverless deploy` (or simply `serverless deploy`, 
+  if you have installed serverless globally).
 
-- Define the environment variables `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` for an account
-  with permission to deploy.
-- Set up a default [aws profile](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html)
-  for an account with permission to deploy.
-- Set up a named [aws profile](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html)
-  for an account with permission to deploy (e.g. `cicd-serverless`) and do one of the following:
-  - Define the environment variable `AWS_PROFILE` (e.g. `AWS_PROFILE="cicd-serverless" npx serverless deploy`)
-  - Specify the profile on the command line (e.g. `npx serverless deploy --aws-profile cicd-serverless`)
-
-To deploy to production:
-- Modify `.env` to define production variables and reload environment, e.g. `direnv reload`. 
+To deploy to production, follow the same procedure for deploying to staging, with the following modifications:
+- Modify `.env` to define production variables and reload environment into your shell, 
+  e.g. `direnv reload` if you use [direnv](https://direnv.net/). 
 - Specify the production stage on the command line, e.g. `npx serverless deploy --stage production`
 
 ## Incremental deployment
