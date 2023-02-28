@@ -125,7 +125,7 @@ updateRepos = async () => {
       }
     })
 
-    await Promise.all(nestedPromises)
+    await nestedPromises
 
   } catch (err) {
     console.log(err)
