@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@aws-sdk/client-amplify": "^3.310.0"
+  }
+}
