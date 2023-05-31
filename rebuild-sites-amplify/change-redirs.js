@@ -39,7 +39,6 @@ async function changeRedirs() {
   }
   for (const site in sitesList) {
     const siteInfo = sitesList[site]
-    if (siteInfo.appId !== "dm5zdzybbp42c") continue
     let alreadyHasRule = false
     siteInfo.customRules.forEach(rule => {
       if (rule.source === "</%5c/>") alreadyHasRule = true
