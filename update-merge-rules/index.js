@@ -39,7 +39,6 @@ async function getRepos(orgName) {
     return repos;
   } catch (err) {
     console.log(err);
-    fs.appendFileSync("repo-error.log", `Error fetching repos: ${err}\n`);
     return [];
   }
 }
