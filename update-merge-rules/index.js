@@ -18,6 +18,7 @@ const ISOMER_ADMIN_REPOS = [
   "editor",
   "ci-test",
   "infra",
+  "isomer-infra",
   "markdown-helper",
 ]
 
