@@ -10,6 +10,24 @@ const fs = require("fs");
 const csv = require("fast-csv");
 require("dotenv").config();
 
+const ISOMER_ADMIN_REPOS = [
+  "isomercms-backend",
+  "isomercms-frontend",
+  "isomer-redirection",
+  "isomerpages-template",
+  "isomer-conversion-scripts",
+  "isomer-wysiwyg",
+  "isomer-slackbot",
+  "isomer-tooling",
+  "generate-site",
+  "travisci-scripts",
+  "recommender-train",
+  "editor",
+  "ci-test",
+  "infra",
+  "markdown-helper",
+];
+
 const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN,
 });
@@ -60,6 +78,7 @@ async function getUsers(orgName) {
 
   const repos = await getRepos(orgName);
   for (let repo of repos) {
+    if (ISOMER_ADMIN_REPOS.includes(repo.name)) continue;
     repoCsvStream.write({ Repo: repo.name });
 
     const collaborators = await getCollaborators(orgName, repo.name);
@@ -72,4 +91,5 @@ async function getUsers(orgName) {
   userCsvStream.end();
 }
 
+const orgName = "isomerpages";
 getUsers(orgName);
