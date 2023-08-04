@@ -4,7 +4,7 @@
 /* 
 This script is meant for a one time use to clone all repos into our mounted EFS.
 To use, we need to ssh into our ec2 instance, and run this scipt. Before running,
-add .env with GITHUB_TOKEN, EFS_VOL_PATH, SSH_KNOWN_HOSTS_PATH, and SSH_PRIVATE_KEY_PATH
+add .env with GITHUB_TOKEN, EFS_VOL_PATH
 */
 
 const ISOMER_ADMIN_REPOS = [
@@ -30,8 +30,7 @@ const fs = require("fs");
 const csv = require("fast-csv");
 require("dotenv").config();
 const simpleGit = require("simple-git");
-const GIT_SSH_COMMAND = `ssh -o UserKnownHostsFile=${process.env.SSH_KNOWN_HOSTS_PATH} -o StrictHostKeyChecking=no -i ${process.env.SSH_PRIVATE_KEY_PATH}`;
-const git = simpleGit().env('GIT_SSH_COMMAND', GIT_SSH_COMMAND)
+const git = simpleGit()
 
 const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN,
@@ -68,7 +67,11 @@ async function cloneRepos(orgName) {
     if (!ISOMER_ADMIN_REPOS.includes(repo.name)) {
       // Make check for prior existence of repo
       const repoPath = `${process.env.EFS_VOL_PATH}/${repo.name}`
-      if (fs.existsSync(repoPath)) continue
+      if (fs.existsSync(repoPath)) {
+        console.log(`${repo.name} already exists!`)
+        continue
+      }
+      console.log(`Cloning ${repo.name}`)
       const repoUrl = `git@github.com:${orgName}/${repo.name}.git`
       await cloneRepository(repoUrl, repoPath)
     }
