@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-
+const fetch = require("node-fetch");
 /* 
 This script is meant for a one time use to clone all repos into our mounted EFS.
 To use, we need to ssh into our ec2 instance, and run this scipt. Before running,
@@ -34,6 +34,9 @@ const git = simpleGit()
 
 const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN,
+  request: {
+    fetch: fetch,
+  },
 });
 
 async function getRepos(orgName) {
