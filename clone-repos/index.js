@@ -27,7 +27,6 @@ const ISOMER_ADMIN_REPOS = [
 
 const { Octokit } = require("@octokit/rest");
 const fs = require("fs");
-const csv = require("fast-csv");
 require("dotenv").config();
 const simpleGit = require("simple-git");
 const git = simpleGit()
@@ -48,6 +47,10 @@ async function getRepos(orgName) {
     return repos;
   } catch (err) {
     console.log(err);
+    fs.appendFileSync(
+      "clone-repo.log",
+      `Error retrieving repos from ${orgName}: ${err}\n`
+    );
     return [];
   }
 }
@@ -59,7 +62,7 @@ const cloneRepository = async (repositoryUrl, destinationPath) => {
     console.log(err)
     fs.appendFileSync(
       "clone-repo.log",
-      `Error cloning repo ${repo}: ${err}\n`
+      `Error cloning repo ${repositoryUrl}: ${err}\n`
     );
   }
 };
@@ -81,4 +84,11 @@ async function cloneRepos(orgName) {
   }
 }
 
-cloneRepos("isomerpages");
+(async function() {
+  try {
+      await cloneRepos("isomerpages");
+  } catch (err) {
+      console.log(err); 
+      process.exit(1);
+  }
+})();
