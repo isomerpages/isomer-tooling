@@ -1,0 +1,15 @@
+{
+  "name": "get-list-of-repos",
+  "version": "1.0.0",
+  "description": "",
+  "main": "get-list-of-domains.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "get-domain": "node get-list-of-domains.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  }
+}
