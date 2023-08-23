@@ -5,7 +5,7 @@
   "main": "get-list-of-domains.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "get-domain": "node get-list-of-domains.js"
+    "get-domains": "node get-list-of-domains.js"
   },
   "author": "",
   "license": "ISC",
