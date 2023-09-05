@@ -92,4 +92,11 @@ async function getUsers(orgName) {
 }
 
 const orgName = "isomerpages";
-getUsers(orgName);
+(async function () {
+  try {
+    await getUsers(orgName);
+  } catch (err) {
+    console.log(err);
+    process.exit(1);
+  }
+})();
