@@ -47,6 +47,16 @@ async function cleanup(cleanupGithub) {
       }
     }
 
+    try {
+      await fs.unlink(path.join(__dirname, "mem.log"));
+      console.log("Deleted errors.log");
+    } catch (error) {
+      // Only log the error if the file exists and couldn't be deleted
+      if (error.code !== "ENOENT") {
+        console.error(`Failed to delete mem.log: ${error.message}`);
+      }
+    }
+
     if (cleanupGithub) {
       for (let i = 0; i < TOTAL_REPOS; i++) {
         try {

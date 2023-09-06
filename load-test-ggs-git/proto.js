@@ -1,5 +1,6 @@
 // This initialises a simple git client for each operation performed
 require("dotenv").config();
+const { exec } = require("child_process");
 const fs = require("fs").promises;
 const { Octokit } = require("@octokit/rest");
 const simpleGit = require("simple-git");
@@ -7,7 +8,7 @@ const simpleGit = require("simple-git");
 const DIRECTORY_PATH = "./testDirectories";
 const REPO_PREFIX = "testRepo_";
 const TOTAL_REPOS = 200;
-const MAX_CONCURRENT_PROCESSES = 500; // Adjust this as needed
+const MAX_CONCURRENT_PROCESSES = 200; // Adjust this as needed
 const RANDOM_OPS = 10;
 let successCount = 0;
 let failedCount = 0;
@@ -33,6 +34,34 @@ async function logError(error) {
 async function logInfo(info) {
   await fs.appendFile("info.log", `${info} at ${new Date().toISOString()}\n`);
 }
+
+async function logMem(info) {
+  await fs.appendFile("mem.log", `${info} at ${new Date().toISOString()}\n`);
+}
+
+function monitorMemoryUsage(interval = 1000) {
+  return setInterval(async () => {
+    const memoryUsage = process.memoryUsage();
+    const rss = (memoryUsage.rss / 1024 / 1024).toFixed(2); // Resident Set Size
+    const heapTotal = (memoryUsage.heapTotal / 1024 / 1024).toFixed(2); // Total size of the allocated heap
+    const heapUsed = (memoryUsage.heapUsed / 1024 / 1024).toFixed(2); // Actual memory used during execution
+    // Get the number of git processes
+    exec(
+      "ps aux | grep git | grep -v grep | wc -l",
+      async (error, stdout, stderr) => {
+        if (error) {
+          console.error(`exec error: ${error}`);
+          return;
+        }
+        const gitProcesses = stdout.trim(); // Remove any newline or spaces
+        await logMem(
+          `Memory Usage - RSS: ${rss} MB, Heap Total: ${heapTotal} MB, Heap Used: ${heapUsed} MB, Git Processes: ${gitProcesses}`
+        );
+      }
+    );
+  }, interval);
+}
+
 async function performRepoOperations(i, createOnGithub) {
   const repoDir = `${DIRECTORY_PATH}/${REPO_PREFIX}${i}`;
   let failedOps = 0;
@@ -96,6 +125,9 @@ function getExecutionTime(startTime) {
 async function main(createOnGithub) {
   const startTime = new Date();
 
+  // Start monitoring memory usage every second
+  const memoryInterval = monitorMemoryUsage();
+
   await fs.mkdir(DIRECTORY_PATH, { recursive: true });
   await logInfo(`Base directory ${DIRECTORY_PATH} created.`);
 
@@ -117,6 +149,10 @@ async function main(createOnGithub) {
   }
 
   await Promise.all(promises);
+
+  // Stop the memory monitoring
+  clearInterval(memoryInterval);
+
   console.log("success count: ", successCount);
   console.log("failed count: ", failedCount);
   const executionTime = getExecutionTime(startTime);
