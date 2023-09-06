@@ -8,8 +8,8 @@ const simpleGit = require("simple-git");
 
 const DIRECTORY_PATH = "./testDirectories";
 const REPO_PREFIX = "testRepo_";
-const TOTAL_REPOS = 10;
-const MAX_CONCURRENT_PROCESSES = 140;
+const TOTAL_REPOS = 200;
+const MAX_CONCURRENT_PROCESSES = 200;
 const RANDOM_OPS = 10;
 let successCount = 0;
 let failedCount = 0;
@@ -84,7 +84,13 @@ async function initializeRepo(i, createOnGithub) {
     const {
       data: { clone_url },
     } = await createRepoOngithub(`${REPO_PREFIX}${i}`);
-    await git.addRemote("origin", clone_url);
+    console.log(clone_url);
+    await git
+      .cwd(repoDir)
+      .addRemote(
+        "origin",
+        `git@github.com:${process.env.GIT_USERNAME}/${REPO_PREFIX}${i}.git`
+      );
     await logInfo(
       `GitHub repo ${REPO_PREFIX}${i} created and connected to local repo.`
     );
@@ -107,7 +113,7 @@ async function performGitOperations(repoDir, createOnGithub) {
     }
 
     if (createOnGithub) {
-      await git.push("origin", "master");
+      await git.cwd(repoDir).push("origin", "main");
       await logInfo(`Changes pushed to GitHub for ${repoDir}.`);
     }
   }

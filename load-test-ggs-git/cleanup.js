@@ -6,8 +6,8 @@ const path = require("path");
 
 const DIRECTORY_PATH = "./testDirectories";
 const REPO_PREFIX = "testRepo_";
-const TOTAL_REPOS = 100;
-const USER_NAME = "YOUR_GITHUB_USERNAME"; // This should be the owner of the repo
+const TOTAL_REPOS = 50;
+const USER_NAME = process.env.GIT_USERNAME; // This should be the owner of the repo
 
 const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN,
@@ -23,8 +23,12 @@ async function deleteRepoOnGithub(repoName) {
 async function cleanup(cleanupGithub) {
   try {
     // Delete local repositories
-    await fs.rmdir(DIRECTORY_PATH, { recursive: true });
-    console.log(`Deleted local directories in ${DIRECTORY_PATH}`);
+    try {
+      await fs.rmdir(DIRECTORY_PATH, { recursive: true });
+      console.log(`Deleted local directories in ${DIRECTORY_PATH}`);
+    } catch (e) {
+      console.log("Unable to delete test directory. Not found.");
+    }
 
     // Delete logs
     try {
