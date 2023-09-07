@@ -85,34 +85,37 @@ const getBuildTimes = async (): Promise<buildTime[]> => {
       console.log("no job summaries", app.name, app.appId);
       continue;
     }
+    const latestJob = listJobsCommandOutput.jobSummaries[0];
 
-    if (listJobsCommandOutput.jobSummaries[0].status !== JobStatus.SUCCEED) {
+    if (latestJob.status !== JobStatus.SUCCEED) {
       // we skip if build process failed/running
       console.log("status not success", app.name, app.appId);
       continue;
     }
-
-    const endTime = listJobsCommandOutput.jobSummaries[0].endTime;
-    const commitTime = listJobsCommandOutput.jobSummaries[0].commitTime;
-    const startTime = listJobsCommandOutput.jobSummaries[0].startTime;
+    const endTime = latestJob.endTime;
+    const commitTime = latestJob.commitTime;
+    const startTime = latestJob.startTime;
 
     if (!endTime || !commitTime || !startTime) {
       console.log("missing time info", app.name, app.appId);
       continue;
     }
 
-    const ttl = (endTime.getTime() - commitTime.getTime()) / 1000 / 60;
-    const timeToLive = Math.round(ttl * 100) / 100;
+    const timeToLiveInMinFloat =
+      (endTime.getTime() - commitTime.getTime()) / 1000 / 60;
+    // convert to 2 dp
+    const timeToLive = Math.round(timeToLiveInMinFloat * 100) / 100;
 
-    const build = (endTime.getTime() - startTime.getTime()) / 1000 / 60;
-    const buildTime = Math.round(build * 100) / 100;
+    const buildTimeInMinFloat =
+      (endTime.getTime() - startTime.getTime()) / 1000 / 60;
+    // convert to 2 dp
+    const buildTimeInMinute = Math.round(buildTimeInMinFloat * 100) / 100;
 
     buildTimes.push({
       timeToLive,
-      buildTime,
+      buildTime: buildTimeInMinute,
       name: app.name || "Name does not exist",
     });
-    break;
   }
   return buildTimes;
 };
