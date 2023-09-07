@@ -1,0 +1,19 @@
+{
+  "name": "get-build-times",
+  "version": "1.0.0",
+  "description": "",
+  "main": "get-build-times.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "ts-node get-build-status.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@aws-sdk/client-amplify": "^3.395.0",
+    "aws-sdk": "^2.1442.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.5.3"
+  }
+}
