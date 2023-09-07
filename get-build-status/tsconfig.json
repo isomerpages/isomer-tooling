@@ -6,5 +6,5 @@
     "preserveConstEnums": true,
     "sourceMap": true
   },
-  "files": ["get-build-times.ts"]
+  "files": ["get-build-status.ts"]
 }
