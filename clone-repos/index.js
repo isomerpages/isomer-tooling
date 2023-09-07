@@ -68,17 +68,20 @@ const cloneRepository = async (repositoryUrl, destinationPath) => {
 };
 
 async function cloneRepos(orgName) {
-  const repos = await getRepos(orgName);
-  for (let repo of repos) {
-    if (!ISOMER_ADMIN_REPOS.includes(repo.name)) {
+  // const repos = await getRepos(orgName);
+  const allowedRepos = [
+      "isomer-demo",
+    ]
+  for (let repo of allowedRepos) {
+    if (!ISOMER_ADMIN_REPOS.includes(repo)) {
       // Make check for prior existence of repo
-      const repoPath = `${process.env.EFS_VOL_PATH}/${repo.name}`
+      const repoPath = `${process.env.EFS_VOL_PATH}/${repo}`
       if (fs.existsSync(repoPath)) {
-        console.log(`${repo.name} already exists!`)
+        console.log(`${repo} already exists!`)
         continue
       }
-      console.log(`Cloning ${repo.name}`)
-      const repoUrl = `git@github.com:${orgName}/${repo.name}.git`
+      console.log(`Cloning ${repo}`)
+      const repoUrl = `git@github.com:${orgName}/${repo}.git`
       await cloneRepository(repoUrl, repoPath)
     }
   }
