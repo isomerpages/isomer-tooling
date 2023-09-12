@@ -68,7 +68,6 @@ const cloneRepository = async (repositoryUrl, destinationPath) => {
 };
 
 async function cloneRepos(orgName) {
-  // const repos = await getRepos(orgName);
   const allowedRepos = [
       "isomer-demo",
     ]
