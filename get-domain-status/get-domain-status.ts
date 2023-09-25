@@ -39,16 +39,12 @@ async function getMonitors(): Promise<Monitor[]> {
   } while (!paginationEndReached);
   console.log(`Got ${monitors.length} monitors`);
 
-  //   throw new Error("test");
   return monitors;
 }
 
 async function getDomainsInCheck(): Promise<string[]> {
   const monitors = await getMonitors();
-  console.log(monitors);
-  //   const domainMonitors = monitors.filter(
-  //     (monitor) => monitor.type === 1 && monitor.sub_type === 1
-  //   );
+
   const domains = monitors.map((monitor) =>
     monitor.url
       // remove any protocol
@@ -64,18 +60,6 @@ async function getDomainsInCheck(): Promise<string[]> {
   return domains;
 }
 
-async function getDomainIps(domain: string): Promise<string[]> {
-  return new Promise((resolve, reject) => {
-    dns.resolve(domain, (error, addresses) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve(addresses);
-      }
-    });
-  });
-}
-
 async function hasAAAARecord(domain: string): Promise<boolean> {
   //   console.log(`Checking AAAA record for ${domain}`);
   return new Promise((resolve, reject) => {
@@ -83,7 +67,6 @@ async function hasAAAARecord(domain: string): Promise<boolean> {
       if (error) {
         reject(error);
       } else {
-        // console.log(`AAAA record for ${domain}: ${addresses}`);
         if (addresses[0].includes("Error: queryAaaa ENODATA")) {
           resolve(false);
         }
@@ -99,7 +82,6 @@ async function hasCNAMERecord(domain: string): Promise<boolean> {
       if (error) {
         resolve(false);
       } else {
-        // console.log(`CNAME record for ${domain}: ${addresses}`);
         if (addresses[0].includes("Error: queryCname ENODATA")) {
           resolve(false);
         }
@@ -115,7 +97,6 @@ async function hasGreaterThanOneARecord(domain: string): Promise<boolean> {
       if (error) {
         resolve(false);
       } else {
-        // console.log(`A record for ${domain}: ${addresses}`);
         if (addresses.length > 1) {
           resolve(true);
         }
@@ -131,8 +112,6 @@ async function getDomainsWithAAAARecord(domains: string[]): Promise<string[]> {
     try {
       const hasAAAA = await hasAAAARecord(domain);
       if (hasAAAA && !(await hasCNAMERecord(domain))) {
-        // console.log(`Domain ${domain} has AAAA record`);
-
         domainsWithAAAARecord.push(domain);
       }
     } catch (error) {
