@@ -5,7 +5,7 @@ require("dotenv").config();
 const { createDecipheriv } = require("crypto");
 const { Command } = require("commander");
 
-const ENCRYPTION_ALGORITHM = "aes-256-cbc";
+const ENCRYPTION_ALGORITHM = "aes-256-gcm";
 const KEY = process.env.KEY || "";
 
 const program = new Command();
