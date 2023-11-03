@@ -95,10 +95,14 @@ async function getUsersInOrg(orgName) {
   }
 }
 
-async function getAllUsersInTeams(orgName) {
+async function getAllUsersInTeams(orgName, excludedTeams = []) {
   const teams = await getTeams(orgName);
   const users = [];
   for (let team of teams) {
+    if (excludedTeams.includes(team.name)) {
+      continue;
+    }
+
     try {
       const response = await octokit.paginate(octokit.teams.listMembersInOrg, {
         org: orgName,
@@ -120,6 +124,8 @@ async function getAllUsersInTeams(orgName) {
 
 async function getTeamsWithNoRepos(orgName, dryRun = true) {
   const teams = await getTeams(orgName);
+  const result = [];
+
   for (let team of teams) {
     const repos = await getTeamRepos(orgName, team.name);
     if (repos !== null && repos.length === 0) {
@@ -130,14 +136,17 @@ async function getTeamsWithNoRepos(orgName, dryRun = true) {
           "cleanup-github.log",
           `DRY RUN: Deleting team ${team.name} from ${orgName}\n`
         );
+        result.push(team.name);
       }
     }
   }
+
+  return result;
 }
 
-async function getUsersWithNoTeams(orgName, dryRun = true) {
+async function getUsersWithNoTeams(orgName, excludedTeams = [], dryRun = true) {
   const usersInOrg = await getUsersInOrg(orgName);
-  const usersInTeams = await getAllUsersInTeams(orgName);
+  const usersInTeams = await getAllUsersInTeams(orgName, excludedTeams);
   const usersNotInTeams = usersInOrg.filter(
     (user) => !usersInTeams.includes(user)
   );
@@ -161,11 +170,8 @@ async function getUsersWithNoTeams(orgName, dryRun = true) {
       await getUsersWithNoTeams("isomerpages", false);
     } else if (process.argv.length === 3 && process.argv[2] === "--dry-run") {
       console.log("Dry run only. No changes will be made.");
-      await getTeamsWithNoRepos("isomerpages", true);
-      await getUsersWithNoTeams("isomerpages", true);
-      console.log(
-        "NOTE: The list of users removed may be inaccurate, as they do not include users in teams that will be removed."
-      );
+      const teams = await getTeamsWithNoRepos("isomerpages", true);
+      await getUsersWithNoTeams("isomerpages", teams, true);
     } else {
       console.log("Run with --dry-run to see what changes the script will do.");
       console.log(
