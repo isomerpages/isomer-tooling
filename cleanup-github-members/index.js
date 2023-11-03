@@ -3,9 +3,6 @@ const fs = require("fs");
 
 const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN,
-  request: {
-    fetch: fetch,
-  },
 });
 
 async function deleteTeam(orgName, teamName) {
@@ -87,7 +84,7 @@ async function getUsersInOrg(orgName) {
       org: orgName,
       per_page: 100,
     });
-    return users;
+    return users.map((user) => user.login);
   } catch (err) {
     console.log(err);
     fs.appendFileSync(
@@ -103,11 +100,12 @@ async function getAllUsersInTeams(orgName) {
   const users = [];
   for (let team of teams) {
     try {
-      const teamUsers = await octokit.paginate(octokit.teams.listMembersInOrg, {
+      const response = await octokit.paginate(octokit.teams.listMembersInOrg, {
         org: orgName,
         team_slug: team.name,
         per_page: 100,
       });
+      const teamUsers = response.map((user) => user.login);
       users.push(...teamUsers);
     } catch (err) {
       console.log(err);
@@ -115,47 +113,62 @@ async function getAllUsersInTeams(orgName) {
         "cleanup-github-error.log",
         `Error retrieving users from ${orgName} for ${team.name}: ${err}\n`
       );
-      return null;
     }
   }
   return users;
 }
 
-async function getTeamsWithNoRepos(orgName) {
+async function getTeamsWithNoRepos(orgName, dryRun = true) {
   const teams = await getTeams(orgName);
   for (let team of teams) {
     const repos = await getTeamRepos(orgName, team.name);
     if (repos !== null && repos.length === 0) {
-      // await deleteTeam(orgName, team.name);
-      console.log(`Team ${team.name} has no repos!`);
+      if (!dryRun) {
+        await deleteTeam(orgName, team.name);
+      }
+
       fs.appendFileSync(
-        "cleanup-github-teams.log",
-        `Team ${team.name} has no repos!\n`
+        "cleanup-github.log",
+        `DRY RUN: Deleting team ${team.name} from ${orgName}\n`
       );
     }
   }
 }
 
-async function getUsersWithNoTeams(orgName) {
+async function getUsersWithNoTeams(orgName, dryRun = true) {
   const usersInOrg = await getUsersInOrg(orgName);
   const usersInTeams = await getAllUsersInTeams(orgName);
   const usersNotInTeams = usersInOrg.filter(
     (user) => !usersInTeams.includes(user)
   );
+
   for (let user of usersNotInTeams) {
-    // await deleteUserFromOrg(orgName, user.login);
-    console.log(`User ${user.login} is not in any teams!`);
+    if (!dryRun) {
+      await deleteUserFromOrg(orgName, user);
+    }
+
     fs.appendFileSync(
-      "cleanup-github-users.log",
-      `User ${user.login} is not in any teams!\n`
+      "cleanup-github.log",
+      `DRY RUN: Deleting user ${user} from ${orgName}\n`
     );
   }
 }
 
 (async function () {
   try {
-    // getTeamsWithNoRepos("isomerpages");
-    getUsersWithNoTeams("isomerpages");
+    if (process.argv.length === 3 && process.argv[2] === "--force") {
+      getTeamsWithNoRepos("isomerpages", false);
+      getUsersWithNoTeams("isomerpages", false);
+    } else if (process.argv.length === 3 && process.argv[2] === "--dry-run") {
+      console.log("Dry run only. No changes will be made.");
+      await getTeamsWithNoRepos("isomerpages", true);
+      await getUsersWithNoTeams("isomerpages", true);
+    }
+
+    console.log("Run with --dry-run to see what changes the script will do.");
+    console.log(
+      "Run with --force when you are really sure to execute the changes!"
+    );
   } catch (err) {
     console.log(err);
     process.exit(1);
