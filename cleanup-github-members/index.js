@@ -11,7 +11,7 @@ async function deleteTeam(orgName, teamName) {
       "cleanup-github.log",
       `Deleting team ${teamName} from ${orgName}\n`
     );
-    await octokit.teams.delete({
+    await octokit.teams.deleteInOrg({
       org: orgName,
       team_slug: teamName,
     });
@@ -125,12 +125,12 @@ async function getTeamsWithNoRepos(orgName, dryRun = true) {
     if (repos !== null && repos.length === 0) {
       if (!dryRun) {
         await deleteTeam(orgName, team.name);
+      } else {
+        fs.appendFileSync(
+          "cleanup-github.log",
+          `DRY RUN: Deleting team ${team.name} from ${orgName}\n`
+        );
       }
-
-      fs.appendFileSync(
-        "cleanup-github.log",
-        `DRY RUN: Deleting team ${team.name} from ${orgName}\n`
-      );
     }
   }
 }
@@ -145,30 +145,36 @@ async function getUsersWithNoTeams(orgName, dryRun = true) {
   for (let user of usersNotInTeams) {
     if (!dryRun) {
       await deleteUserFromOrg(orgName, user);
+    } else {
+      fs.appendFileSync(
+        "cleanup-github.log",
+        `DRY RUN: Deleting user ${user} from ${orgName}\n`
+      );
     }
-
-    fs.appendFileSync(
-      "cleanup-github.log",
-      `DRY RUN: Deleting user ${user} from ${orgName}\n`
-    );
   }
 }
 
 (async function () {
   try {
     if (process.argv.length === 3 && process.argv[2] === "--force") {
-      getTeamsWithNoRepos("isomerpages", false);
-      getUsersWithNoTeams("isomerpages", false);
+      await getTeamsWithNoRepos("isomerpages", false);
+      await getUsersWithNoTeams("isomerpages", false);
     } else if (process.argv.length === 3 && process.argv[2] === "--dry-run") {
       console.log("Dry run only. No changes will be made.");
       await getTeamsWithNoRepos("isomerpages", true);
       await getUsersWithNoTeams("isomerpages", true);
+      console.log(
+        "NOTE: The list of users removed may be inaccurate, as they do not include users in teams that will be removed."
+      );
+    } else {
+      console.log("Run with --dry-run to see what changes the script will do.");
+      console.log(
+        "Run with --force when you are really sure to execute the changes!"
+      );
+      return;
     }
 
-    console.log("Run with --dry-run to see what changes the script will do.");
-    console.log(
-      "Run with --force when you are really sure to execute the changes!"
-    );
+    console.log("Script has ended! Check the logs for more details.");
   } catch (err) {
     console.log(err);
     process.exit(1);
