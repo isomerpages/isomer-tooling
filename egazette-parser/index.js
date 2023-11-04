@@ -1,11 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 const csv = require("csv-parser");
-const { format } = require("date-fns");
-const createCsvWriter = require("fast-csv").writeToPath;
-const fastCsv = require("fast-csv");
 
-const metadataDir = path.join(__dirname, "metadata");
+const metadataDir = path.join(__dirname, "metadata_test");
 
 // Helper function to process and transform the file URL
 function transformFileURL(url) {
@@ -18,89 +15,108 @@ function extractNotificationNumber(href) {
   return filename.split(".")[0];
 }
 
-// Recursive function to process directories and files
-function processDirectory(directory, gazetteCategory, gazetteSubCategory = "") {
+function processDirectory(
+  directory,
+  gazetteCategory = null,
+  subCategory = null
+) {
   fs.readdir(directory, { withFileTypes: true }, (err, entries) => {
     if (err) {
       console.error(`Error reading directory ${directory}:`, err);
       return;
     }
 
+    let isTopLevel = directory === metadataDir;
+
     for (const entry of entries) {
       const fullPath = path.join(directory, entry.name);
-      console.log("Full-Path", fullPath);
       if (entry.isDirectory()) {
-        // If entry is a directory, recurse into it
-        processDirectory(fullPath, gazetteCategory, entry.name);
+        const newCategory = isTopLevel ? entry.name : gazetteCategory;
+        const newSubCategory = isTopLevel ? null : entry.name;
+        processDirectory(fullPath, newCategory, newSubCategory);
       } else if (entry.isFile() && path.extname(entry.name) === ".csv") {
-        // If entry is a CSV file, process it
-        processCSV(fullPath, gazetteCategory, gazetteSubCategory);
+        processCSV(fullPath, gazetteCategory, subCategory);
       }
     }
   });
 }
 
-// Define createCsvLogger function to set up the CSV logger
-function createCsvLogger(filePath, headers) {
-  const ws = fs.createWriteStream(filePath);
-  return fastCsv.format({ headers, writeHeaders: true }).pipe(ws);
+function createJsonLogFilePath(filePath, suffix) {
+  const logsDir = path.join(__dirname, suffix);
+  if (!fs.existsSync(logsDir)) {
+    fs.mkdirSync(logsDir);
+  }
+  const logFileName = `${path.basename(filePath, ".csv")}.json`;
+  return path.join(logsDir, logFileName);
 }
 
-function processCSV(filePath, gazetteCategory, gazetteSubCategory) {
+function writeToJsonFile(logFilePath, data) {
+  fs.writeFileSync(logFilePath, JSON.stringify(data, null, 2));
+}
+
+function logError(logFilePath, row, error) {
+  const errorLogDir = path.join(__dirname, "errors");
+  if (!fs.existsSync(errorLogDir)) {
+    fs.mkdirSync(errorLogDir);
+  }
+  fs.appendFileSync(
+    logFilePath,
+    JSON.stringify({ row, error: error.message }) + "\n"
+  );
+}
+
+function processCSV(filePath, category, subCategory) {
+  const logFilePath = createJsonLogFilePath(filePath, "logs");
+  const errorLogFilePath = createJsonLogFilePath(filePath, "errors");
   const results = [];
-  const logFileName = `${path.basename(filePath, ".csv")}_log.csv`;
-  const csvLogStream = createCsvLogger(logFileName, [
-    "row",
-    "status",
-    "message",
-  ]);
 
   fs.createReadStream(filePath)
-    .pipe(fastCsv.parse({ headers: true }))
+    .pipe(csv())
     .on("data", (row) => {
       try {
-        const gazetteNotificationNumber =
+        const notificationNum =
           row.Notification_No || extractNotificationNumber(row.Subject);
-        const fileURL = transformFileURL(
+        const fileUrl = transformFileURL(
           new URL(row.Subject.match(/href="([^"]*)/)[1]).toString()
         );
-        const gazetteTitle = row.Subject.match(/>(.*?)<\/a>/)[1];
+        console.log(`Reading subject`, row.Subject);
+        const title = row.Subject.match(/>(.*?)<\/a>/s)[1];
         const publishDate = row.Published_Date; // Assuming the date is already in the correct format
 
-        // Add your processed data to the results array
-        results.push({
-          gazetteCategory,
-          gazetteSubCategory,
-          gazetteNotificationNumber,
-          gazetteTitle,
+        const logEntry = {
+          objectID: "",
+          notificationNum,
+          title,
+          category,
+          subCategory,
+          fileUrl,
           publishDate,
-          fileURL,
-        });
+          publishTimestamp: new Date(publishDate).getTime(),
+        };
 
-        // Log the success for this row
-        csvLogStream.write({
-          row: gazetteNotificationNumber,
-          status: "success",
-          message: "Processed successfully",
-        });
+        if (subCategory) {
+          logEntry.objectID = `${category}-${subCategory}-${notificationNum}`;
+        } else {
+          logEntry.objectID = `${category}-${notificationNum}`;
+        }
+
+        results.push(logEntry);
       } catch (error) {
-        // Log any errors for this row
-        csvLogStream.write({
-          row: row.Notification_No || "N/A",
-          status: "error",
-          message: error.message,
-        });
+        console.log(`Error: `, error);
+        logError(errorLogFilePath, row, error);
       }
     })
     .on("end", () => {
-      csvLogStream.end(); // Ensure to close the write stream
-      // At this point, you have a 'results' array filled with processed data
-      // You can now do further processing with the results array
-      console.log("CSV file processing complete.");
+      writeToJsonFile(logFilePath, results);
+      console.log(
+        `CSV file ${filePath} processing complete. JSON written to ${logFilePath}`
+      );
     })
     .on("error", (error) => {
-      console.error("An error occurred while processing the CSV file:", error);
+      console.log(`Error: `, error);
+      logError(errorLogFilePath, {}, error);
     });
 }
+
 // Start processing from the metadata directory
-processDirectory(metadataDir, path.basename(metadataDir));
+processDirectory(metadataDir);
