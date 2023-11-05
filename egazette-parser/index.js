@@ -44,7 +44,7 @@ function processDirectory(
 function createJsonLogFilePath(filePath, suffix) {
   const logsDir = path.join(__dirname, suffix);
   if (!fs.existsSync(logsDir)) {
-    fs.mkdirSync(logsDir);
+    fs.mkdirSync(logsDir, { recursive: true });
   }
   const logFileName = `${path.basename(filePath, ".csv")}.json`;
   return path.join(logsDir, logFileName);
@@ -57,7 +57,7 @@ function writeToJsonFile(logFilePath, data) {
 function logError(logFilePath, row, error) {
   const errorLogDir = path.join(__dirname, "errors");
   if (!fs.existsSync(errorLogDir)) {
-    fs.mkdirSync(errorLogDir);
+    fs.mkdirSync(errorLogDir, { recursive: true });
   }
   fs.appendFileSync(
     logFilePath,
@@ -66,8 +66,9 @@ function logError(logFilePath, row, error) {
 }
 
 function processCSV(filePath, category, subCategory) {
-  const logFilePath = createJsonLogFilePath(filePath, "logs");
-  const errorLogFilePath = createJsonLogFilePath(filePath, "errors");
+  const suffix = subCategory ? `${category}/${subCategory}` : `${category}`;
+  const logFilePath = createJsonLogFilePath(filePath, `egazette/${suffix}`);
+  const errorLogFilePath = createJsonLogFilePath(filePath, `errors/${suffix}`);
   const results = [];
 
   fs.createReadStream(filePath)
