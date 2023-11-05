@@ -11,6 +11,11 @@ if (!fs.existsSync(outputDir)) {
   fs.mkdirSync(outputDir, { recursive: true });
 }
 
+function toTimestamp(strDate) {
+  const datum = new Date(strDate);
+  return datum.getTime();
+}
+
 async function fetchDataFromAPI(domain, resourceId) {
   let records = [];
   let url = `${domain}/api/action/datastore_search?resource_id=${resourceId}`;
@@ -93,8 +98,9 @@ function processRecords(records, category) {
 
   for (const record of records) {
     let gazetteNotificationNum = record.Notification_No;
+    let publishDate = record.Published_Date;
     let gazetteCategory = category.replace("2023", "").trim();
-    let subCategory = "";
+    let subCategory = null;
 
     const match = record.Subject.match(/href="([^"]+)">(.+?)<\/a>/);
     if (!match) {
@@ -144,13 +150,23 @@ function processRecords(records, category) {
       gazetteCategory = "Government Gazette";
     }
 
-    processedData.push({
-      gazetteNotificationNum,
+    const finalRecord = {
+      objectID: "",
+      notificationNum: gazetteNotificationNum,
       fileUrl,
-      gazetteTitle,
-      gazetteCategory,
+      title: gazetteTitle,
+      category: gazetteCategory,
       subCategory,
-    });
+      publishDate,
+      publishTimestamp: toTimestamp(publishDate),
+    };
+
+    if (subCategory) {
+      finalRecord.objectID = `${gazetteCategory}-${subCategory}-${gazetteNotificationNum}`;
+    } else {
+      finalRecord.objectID = `${gazetteCategory}-${gazetteNotificationNum}`;
+    }
+    processedData.push(finalRecord);
   }
 
   return processedData;
