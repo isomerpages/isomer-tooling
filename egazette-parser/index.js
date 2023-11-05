@@ -67,7 +67,7 @@ function logError(logFilePath, row, error) {
 
 function processCSV(filePath, category, subCategory) {
   const suffix = subCategory ? `${category}/${subCategory}` : `${category}`;
-  const logFilePath = createJsonLogFilePath(filePath, `egazette/${suffix}`);
+  const logFilePath = createJsonLogFilePath(filePath, `egazettes/${suffix}`);
   const errorLogFilePath = createJsonLogFilePath(filePath, `errors/${suffix}`);
   const results = [];
 
