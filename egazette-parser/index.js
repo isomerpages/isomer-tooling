@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const csv = require("csv-parser");
 
-const metadataDir = path.join(__dirname, "metadata_test");
+const metadataDir = path.join(__dirname, "metadata");
 
 // Helper function to process and transform the file URL
 function transformFileURL(url) {
