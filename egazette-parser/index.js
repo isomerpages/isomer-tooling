@@ -1,3 +1,7 @@
+/* Given the metadata folder, this will spin out the search records to index as a JSON output.
+Once this is done, run the combine-jsons.js to combine the jsons within the output folder into 
+a single combined JSON to upload to search indexing.
+ */
 const fs = require("fs");
 const path = require("path");
 const csv = require("csv-parser");
