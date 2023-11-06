@@ -18,7 +18,7 @@ async function deleteTeam(orgName, teamName) {
   } catch (err) {
     console.log(err);
     fs.appendFileSync(
-      "cleanup-github.log",
+      "cleanup-github-error.log",
       `Error deleting team ${teamName} from ${orgName}: ${err}\n`
     );
   }
@@ -37,7 +37,7 @@ async function deleteUserFromOrg(orgName, userName) {
   } catch (err) {
     console.log(err);
     fs.appendFileSync(
-      "cleanup-github.log",
+      "cleanup-github-error.log",
       `Error deleting user ${userName} from ${orgName}: ${err}\n`
     );
   }
