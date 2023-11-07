@@ -167,7 +167,7 @@ async function getUsersWithNoTeams(orgName, excludedTeams = [], dryRun = true) {
   try {
     if (process.argv.length === 3 && process.argv[2] === "--force") {
       await getTeamsWithNoRepos("isomerpages", false);
-      await getUsersWithNoTeams("isomerpages", false);
+      await getUsersWithNoTeams("isomerpages", [], false);
     } else if (process.argv.length === 3 && process.argv[2] === "--dry-run") {
       console.log("Dry run only. No changes will be made.");
       const teams = await getTeamsWithNoRepos("isomerpages", true);
