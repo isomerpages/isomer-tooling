@@ -13,6 +13,18 @@ function transformFileURL(url) {
   return url.replace("storage-uat", "storage");
 }
 
+function formatObjectId(objectId) {
+  // Remove apostrophes and whitespaces
+  let formattedId = objectId.replace(/['\s]/g, "");
+
+  // If the first character is a dash, remove it
+  if (formattedId.startsWith("-")) {
+    formattedId = formattedId.substring(1);
+  }
+
+  return formattedId;
+}
+
 // Helper function to extract the notification number from the filename
 function extractNotificationNumber(href) {
   const filename = href.split("filename=")[1];
@@ -98,11 +110,12 @@ function processCSV(filePath, category, subCategory) {
           publishDate,
           publishTimestamp: new Date(publishDate).getTime(),
         };
-
         if (subCategory) {
-          logEntry.objectID = `${category}-${subCategory}-${notificationNum}`;
+          const objectID = `${category}-${subCategory}-${notificationNum}-${title}`;
+          logEntry.objectID = formatObjectId(objectID);
         } else {
-          logEntry.objectID = `${category}-${notificationNum}`;
+          const objectID = `${category}-${notificationNum}-${title}`;
+          logEntry.objectID = formatObjectId(objectID);
         }
 
         results.push(logEntry);

@@ -16,6 +16,18 @@ function toTimestamp(strDate) {
   return datum.getTime();
 }
 
+function formatObjectId(objectId) {
+  // Remove apostrophes and whitespaces
+  let formattedId = objectId.replace(/['\s]/g, "");
+
+  // If the first character is a dash, remove it
+  if (formattedId.startsWith("-")) {
+    formattedId = formattedId.substring(1);
+  }
+
+  return formattedId;
+}
+
 async function fetchDataFromAPI(domain, resourceId) {
   let records = [];
   let url = `${domain}/api/action/datastore_search?resource_id=${resourceId}`;
@@ -162,9 +174,11 @@ function processRecords(records, category) {
     };
 
     if (subCategory) {
-      finalRecord.objectID = `${gazetteCategory}-${subCategory}-${gazetteNotificationNum}`;
+      const objectID = `${gazetteCategory}-${subCategory}-${gazetteNotificationNum}=${gazetteTitle}`;
+      finalRecord.objectID = formatObjectId(objectID);
     } else {
-      finalRecord.objectID = `${gazetteCategory}-${gazetteNotificationNum}`;
+      const objectID = `${gazetteCategory}-${gazetteNotificationNum}-${gazetteTitle}`;
+      finalRecord.objectID = formatObjectId(objectID);
     }
     processedData.push(finalRecord);
   }
