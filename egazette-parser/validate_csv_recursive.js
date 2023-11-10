@@ -1,3 +1,9 @@
+/** Validates the given CSV's notification number to ensure no weird chars.
+ * Allows alphanumeric, dot and whitespace in regex.
+ * Regex can be modified to validate other patterns.
+ *
+ * Given a path, it recursively finds and validates CSVs within this path.
+ * */
 const fs = require("fs");
 const path = require("path");
 const Papa = require("papaparse");
