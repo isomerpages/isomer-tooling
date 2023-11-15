@@ -1,3 +1,6 @@
+/**
+ * Fetches gazettes from DGS and stores them as JSON files in a specified directory
+ */
 const fs = require("fs");
 const path = require("path");
 const csv = require("csv-parser");

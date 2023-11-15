@@ -1,3 +1,6 @@
+/**
+ * Counts the number of objects within a JSON file assuming the file contains a large JSON array
+ */
 const fs = require("fs");
 const path = require("path");
 

@@ -1,3 +1,7 @@
+/**
+ * Given a directory, recursively find all JSON files titled "combined.json" and create
+ * a master JSON called "all_combined.json"
+ */
 const fs = require("fs");
 const path = require("path");
 

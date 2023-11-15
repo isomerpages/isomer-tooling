@@ -1,3 +1,7 @@
+/**
+ * Given a starting directory, this script recursively combines all the JSON files
+ * within this directory into a single JSON.
+ */
 const fs = require("fs");
 const path = require("path");
 
