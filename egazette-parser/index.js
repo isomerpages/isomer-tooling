@@ -5,24 +5,21 @@ a single combined JSON to upload to search indexing.
 const fs = require("fs");
 const path = require("path");
 const csv = require("csv-parser");
+const crypto = require("crypto");
 
-const metadataDir = path.join(__dirname, "metadata");
+const metadataDir = path.join(
+  __dirname,
+  "metadata_mci_formatted_with_correct_categories_statutes_adv_csv_fixed"
+);
 
 // Helper function to process and transform the file URL
 function transformFileURL(url) {
   return url.replace("storage-uat", "storage");
 }
 
-function formatObjectId(objectId) {
-  // Remove apostrophes and whitespaces
-  let formattedId = objectId.replace(/['\s]/g, "");
-
-  // If the first character is a dash, remove it
-  if (formattedId.startsWith("-")) {
-    formattedId = formattedId.substring(1);
-  }
-
-  return formattedId;
+function hashRecord(record) {
+  const recordString = JSON.stringify(record);
+  return crypto.createHash("sha256").update(recordString).digest("hex");
 }
 
 // Helper function to extract the notification number from the filename
@@ -86,22 +83,23 @@ function processCSV(filePath, category, subCategory) {
   const logFilePath = createJsonLogFilePath(filePath, `egazettes/${suffix}`);
   const errorLogFilePath = createJsonLogFilePath(filePath, `errors/${suffix}`);
   const results = [];
+  let lineCount = 0; // Counter for lines processed
 
   fs.createReadStream(filePath)
     .pipe(csv())
     .on("data", (row) => {
+      lineCount++;
       try {
         const notificationNum =
           row.Notification_No || extractNotificationNumber(row.Subject);
         const fileUrl = transformFileURL(
           new URL(row.Subject.match(/href="([^"]*)/)[1]).toString()
         );
-        console.log(`Reading subject`, row.Subject);
-        const title = row.Subject.match(/>(.*?)<\/a>/s)[1];
+        // console.log(`Reading subject`, row.Subject);
+        const title = row.Subject.match(/>(.*?)<\/a>/s)[1]; // retrieve the title from the Subject's href between the <a> and </a> tags
         const publishDate = row.Published_Date; // Assuming the date is already in the correct format
 
-        const logEntry = {
-          objectID: "",
+        const rawEntry = {
           notificationNum,
           title,
           category,
@@ -110,13 +108,8 @@ function processCSV(filePath, category, subCategory) {
           publishDate,
           publishTimestamp: new Date(publishDate).getTime(),
         };
-        if (subCategory) {
-          const objectID = `${category}-${subCategory}-${notificationNum}-${title}`;
-          logEntry.objectID = formatObjectId(objectID);
-        } else {
-          const objectID = `${category}-${notificationNum}-${title}`;
-          logEntry.objectID = formatObjectId(objectID);
-        }
+
+        const logEntry = { objectID: hashRecord(rawEntry), ...rawEntry };
 
         results.push(logEntry);
       } catch (error) {
@@ -125,10 +118,15 @@ function processCSV(filePath, category, subCategory) {
       }
     })
     .on("end", () => {
+      if (results.length !== lineCount) {
+        console.error(
+          `Mismatch in line count and results length for file: ${filePath}`
+        );
+      }
       writeToJsonFile(logFilePath, results);
-      console.log(
-        `CSV file ${filePath} processing complete. JSON written to ${logFilePath}`
-      );
+      // console.log(
+      //   `CSV file ${filePath} processing complete. JSON written to ${logFilePath}`
+      // );
     })
     .on("error", (error) => {
       console.log(`Error: `, error);
