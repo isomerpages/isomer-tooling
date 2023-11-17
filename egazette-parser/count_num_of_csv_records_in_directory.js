@@ -2,11 +2,10 @@ const fs = require("fs");
 const path = require("path");
 const util = require("util");
 
-// const directoryPath = "./metadata_dgs";
-// const outputFilePath = "./metadata_dgs/tally.json";
-
-const directoryPath = "./metadata_mci_formatted";
-const outputFilePath = "./metadata_mci_formatted/tally.json";
+const directoryPath =
+  "./metadata_mci_formatted_with_correct_categories_statutes_adv_csv_fixed";
+const outputFilePath =
+  "./metadata_mci_formatted_with_correct_categories_statutes_adv_csv_fixed/tally.json";
 
 const readFileAsync = util.promisify(fs.readFile);
 const writeFileAsync = util.promisify(fs.writeFile);
@@ -15,7 +14,7 @@ const statAsync = util.promisify(fs.stat);
 
 async function countCsvRecords(filePath) {
   const data = await readFileAsync(filePath, "utf8");
-  return data.trim().split("\n").length - 1;
+  return data.trim().split("\n").length - 1; // remove the header row from the count
 }
 
 async function processDirectory(dirPath) {
