@@ -4,7 +4,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const inputFile = "./2023-gazettes/combined.json"; // Replace with the path to your JSON file
+const inputFile = "./egazettes/all_combined.json"; // Replace with the path to your JSON file
 
 // Function to read JSON from file
 function readJsonFromFile(filePath) {
