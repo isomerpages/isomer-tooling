@@ -22,12 +22,6 @@ function hashRecord(record) {
   return crypto.createHash("sha256").update(recordString).digest("hex");
 }
 
-// Helper function to extract the notification number from the filename
-function extractNotificationNumber(href) {
-  const filename = href.split("filename=")[1];
-  return filename.split(".")[0];
-}
-
 function processDirectory(
   directory,
   gazetteCategory = null,
@@ -90,8 +84,7 @@ function processCSV(filePath, category, subCategory) {
     .on("data", (row) => {
       lineCount++;
       try {
-        const notificationNum =
-          row.Notification_No || extractNotificationNumber(row.Subject);
+        const notificationNum = row.Notification_No;
         const fileUrl = transformFileURL(
           new URL(row.Subject.match(/href="([^"]*)/)[1]).toString()
         );

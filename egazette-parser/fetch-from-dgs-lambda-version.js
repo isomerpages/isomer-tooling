@@ -133,7 +133,7 @@ exports.handler = async (event) => {
     }
 
     for (const record of records) {
-      let gazetteNotificationNum = record.Notification_No;
+      let notificationNum = record.Notification_No;
       let publishDate = record.Published_Date;
       let gazetteCategory = category.replace("2023", "").trim();
       let subCategory = null;
@@ -149,37 +149,6 @@ exports.handler = async (event) => {
       const fileUrl = match[1];
       const gazetteTitle = match[2];
 
-      // If notification number is missing and the category is "Advertisements 2023"
-      if (!gazetteNotificationNum && category === "Advertisements 2023") {
-        if (fileUrl.includes("23ggcon_")) {
-          const filenameMatch = fileUrl.match(/filename=23ggcon_(\d+)\.pdf/i);
-          gazetteNotificationNum = filenameMatch ? filenameMatch[1] : null;
-        } else {
-          const filenameMatch = fileUrl.match(
-            /filename=23adv\d*([a-z]?)(\d+)[a-z]*\.pdf/i
-          );
-          gazetteNotificationNum = filenameMatch ? filenameMatch[2] : null;
-        }
-
-        // Log an error if we still don't have a notification number
-        if (!gazetteNotificationNum) {
-          fs.appendFileSync(
-            path.join(outputDir, "errors.log"),
-            `Notification number is missing for record ID ${record._id} and cannot be derived from file URL: ${fileUrl}\n`
-          );
-          continue; // Skip this record and move to the next
-        }
-      }
-
-      // If we don't have a notification number for other categories, log an error
-      if (!gazetteNotificationNum) {
-        fs.appendFileSync(
-          path.join(outputDir, "errors.log"),
-          `Notification_No is missing for record ID ${record._id} in category ${category}\n`
-        );
-        continue; // Skip this record and move to the next
-      }
-
       // Check if the category is one of the specified prefixes
       if (isPrefixCategory(gazetteCategory)) {
         subCategory = gazetteCategory;
@@ -187,7 +156,7 @@ exports.handler = async (event) => {
       }
 
       const rawEntry = {
-        notificationNum: gazetteNotificationNum,
+        notificationNum,
         fileUrl,
         title: gazetteTitle,
         category: gazetteCategory,
