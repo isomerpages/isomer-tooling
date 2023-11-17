@@ -5,9 +5,13 @@ const fs = require("fs");
 const path = require("path");
 const csv = require("csv-parser");
 const axios = require("axios");
+const crypto = require("crypto");
 
 const csvFilePath = path.join(__dirname, "2023-dgs-datasets-edited.csv"); // Replace with your actual CSV file path
 const outputDir = path.join(__dirname, "2023-gazettes"); // Directory to save JSON files
+
+let catSet = new Set();
+let subCatSet = new Set();
 
 // Make sure the output directory exists
 if (!fs.existsSync(outputDir)) {
@@ -19,16 +23,9 @@ function toTimestamp(strDate) {
   return datum.getTime();
 }
 
-function formatObjectId(objectId) {
-  // Remove apostrophes and whitespaces
-  let formattedId = objectId.replace(/['\s]/g, "");
-
-  // If the first character is a dash, remove it
-  if (formattedId.startsWith("-")) {
-    formattedId = formattedId.substring(1);
-  }
-
-  return formattedId;
+function hashRecord(record) {
+  const recordString = JSON.stringify(record);
+  return crypto.createHash("sha256").update(recordString).digest("hex");
 }
 
 async function fetchDataFromAPI(domain, resourceId) {
@@ -106,6 +103,15 @@ function processRecords(records, category) {
     "Vacation of Service",
   ];
 
+  // Some discrepancies in the categories/sub-categories phrasing
+  // This fixes by consolidating the records
+  const mappingsToReplace = {
+    "Notices under the Bankruptcy Act": "Bankruptcy Act Notices", // subCat
+    "Notices under the Companies Act": "Companies Act Notices", // subCat
+    "Notices under various other Acts": "Notices under other Acts", // subCat
+    "Supplement  to Government Gazette": "Government Gazette Supplement", // cat
+  };
+
   // Function to determine if category matches any of the prefixes
   function isPrefixCategory(cat) {
     return prefixes.some((prefix) => cat.startsWith(prefix));
@@ -165,8 +171,7 @@ function processRecords(records, category) {
       gazetteCategory = "Government Gazette";
     }
 
-    const finalRecord = {
-      objectID: "",
+    const rawEntry = {
       notificationNum: gazetteNotificationNum,
       fileUrl,
       title: gazetteTitle,
@@ -176,14 +181,19 @@ function processRecords(records, category) {
       publishTimestamp: toTimestamp(publishDate),
     };
 
-    if (subCategory) {
-      const objectID = `${gazetteCategory}-${subCategory}-${gazetteNotificationNum}=${gazetteTitle}`;
-      finalRecord.objectID = formatObjectId(objectID);
-    } else {
-      const objectID = `${gazetteCategory}-${gazetteNotificationNum}-${gazetteTitle}`;
-      finalRecord.objectID = formatObjectId(objectID);
+    // fix discrepancies in categories and subcategories
+    if (rawEntry.category in mappingsToReplace) {
+      rawEntry.category = mappingsToReplace[rawEntry.category];
     }
-    processedData.push(finalRecord);
+
+    if (rawEntry.subCategory in mappingsToReplace) {
+      rawEntry.subCategory = mappingsToReplace[rawEntry.subCategory];
+    }
+
+    const logEntry = { objectID: hashRecord(rawEntry), ...rawEntry };
+    catSet.add(logEntry.category);
+    subCatSet.add(logEntry.subCategory);
+    processedData.push(logEntry);
   }
 
   return processedData;
@@ -222,6 +232,8 @@ async function processCsvRows(csvFilePath, domain) {
         }
       }
       console.log("CSV file processing complete.");
+      console.log(`Categories: `, ...catSet);
+      console.log(`SubCategories`, ...subCatSet);
     });
 }
 
