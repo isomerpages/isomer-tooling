@@ -5,8 +5,8 @@
 const fs = require("fs");
 const path = require("path");
 
-const targetDirectory = "./egazettes/Government Gazette"; // Replace with the directory you want to search
-const outputFile = "./egazettes/Government Gazette/all_combined.json";
+const targetDirectory = "./egazettes"; // Replace with the directory you want to search
+const outputFile = "./egazettes/all_combined.json";
 
 // Function to recursively find 'combined.json' files
 function findCombinedJsonFiles(dir, fileList = []) {
@@ -31,7 +31,7 @@ function mergeJsonFiles(files) {
   files.forEach((file) => {
     let rawData = fs.readFileSync(file);
     let jsonData = JSON.parse(rawData);
-    mergedData.push(jsonData);
+    mergedData = mergedData.concat(jsonData);
   });
 
   return mergedData;
