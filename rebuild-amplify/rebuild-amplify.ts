@@ -58,10 +58,14 @@ const getAllApps = async () => {
       nextToken: token,
       maxResults: 100,
     });
-    const listAppsCommandOutput = await amplifyClient.send(listAppsCommand);
-    token = listAppsCommandOutput.nextToken;
-    const outputApps = listAppsCommandOutput.apps;
-    if (outputApps) apps.push(...outputApps);
+    try {
+      const listAppsCommandOutput = await amplifyClient.send(listAppsCommand);
+      token = listAppsCommandOutput.nextToken;
+      const outputApps = listAppsCommandOutput.apps;
+      if (outputApps) apps.push(...outputApps);
+    } catch (e) {
+      console.error(`Error occurred in for loop of getAllApps`, e);
+    }
   } while (token);
   return apps;
 };
@@ -79,8 +83,12 @@ const listLatestJobFor = async (
     // result in a drift between CMS and the app
     maxResults: 1,
   });
-  const output = await amplifyClient.send(input);
-  return output.jobSummaries[0];
+  try {
+    const output = await amplifyClient.send(input);
+    return output.jobSummaries[0];
+  } catch (e) {
+    console.error(`Error occurred in listLatestJobFor`, e);
+  }
 };
 
 const retryJob = (
@@ -102,7 +110,11 @@ const retryJob = (
 const rebuildAllApps = async (): Promise<void> => {
   const apps = await getAllApps();
   apps.map(async (app) => {
-    const latestJob = await listLatestJobFor(app, BRANCHES.STAGING);
-    retryJob(latestJob, app.appId, BRANCHES.STAGING);
+    try {
+      const latestJob = await listLatestJobFor(app, BRANCHES.STAGING);
+      retryJob(latestJob, app.appId, BRANCHES.STAGING);
+    } catch (e) {
+      console.error(`Error occurred in rebuildAllApps`, e);
+    }
   });
 };
