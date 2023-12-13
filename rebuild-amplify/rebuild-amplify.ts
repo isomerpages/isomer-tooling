@@ -71,11 +71,11 @@ const getAllApps = async () => {
 };
 
 const listLatestJobFor = async (
-  app: App,
+  appId: string,
   branch: (typeof BRANCHES)[keyof typeof BRANCHES]
 ): Promise<JobSummary> => {
   const input = createListJobsCommand({
-    appId: app.appId,
+    appId,
     branchName: branch,
     // NOTE: We only care about the latest job
     // as we only want to retry the latest job.
@@ -108,11 +108,12 @@ const retryJob = (
 };
 
 const rebuildAllApps = async (): Promise<void> => {
-  const apps = await getAllApps();
-  apps.map(async (app) => {
+  // const apps = await getAllApps();
+  const apps = ["d3eswj7uomryi1"];
+  apps.map(async (appId) => {
     try {
-      const latestJob = await listLatestJobFor(app, BRANCHES.STAGING);
-      retryJob(latestJob, app.appId, BRANCHES.STAGING);
+      const latestJob = await listLatestJobFor(appId, BRANCHES.STAGING);
+      retryJob(latestJob, appId, BRANCHES.STAGING);
     } catch (e) {
       console.error(`Error occurred in rebuildAllApps`, e);
     }
