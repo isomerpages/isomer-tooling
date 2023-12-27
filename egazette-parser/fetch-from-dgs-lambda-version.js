@@ -10,8 +10,8 @@ exports.handler = async (event) => {
   const apiKey = process.env.API_KEY;
   const indexName = process.env.INDEX_NAME;
 
-  const csvFilePath = path.join(__dirname, "2023-dgs-datasets-edited.csv"); // Replace with your actual CSV file path
-  const outputDir = path.join("/tmp", "2023-gazettes"); // Directory to save JSON files
+  const csvFilePath = path.join(__dirname, "2023-2024-dgs-datasets.csv"); // Replace with your actual CSV file path
+  const outputDir = path.join("/tmp", "2023-2024-gazettes"); // Directory to save JSON files
 
   // Initialize Algolia client
   const client = algoliasearch(appId, apiKey);
