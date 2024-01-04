@@ -66,7 +66,6 @@ async function getCommitsWithinDates(
               sha: commit.sha,
               date: commit.date,
               name:
-                commit.name === "Isomer Admin" &&
                 parsedMessage.userId in userTable
                   ? userTable[parsedMessage.userId]
                   : commit.name,
