@@ -23,7 +23,7 @@ Next, you will require the correct environment variables and credentials.
 - `DB_HOST` (read-only access to the production database, this is the hostname of the RDS instance)
 - `SSH_USER` (Refer to our environment variables)
 - `SSH_HOST` (Refer to our environment variables, points to our bastion host)
-- `DB_URI` (Refer to our environment variables and ensure that the hostname is `localhost`, since we will be setting up the port-forwarding service in the next step)
+- `DB_URI` (Refer to our environment variables and ensure that the hostname is `localhost` and the port is `5433`, since we will be setting up the port-forwarding service in the next step)
 
 3. Next, run the following command: `npm run jump:<staging | prod>`. This sets up the port-forwarding service.
 
