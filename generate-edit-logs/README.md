@@ -20,10 +20,10 @@ Next, you will require the correct environment variables and credentials.
 2. Source your environment variables using `source .env`. The variables you will require are:
 
 - `GITHUB_ACCESS_TOKEN` (Github personal access token)
-- `DB_HOST` (read-only access to the production database)
+- `DB_HOST` (read-only access to the production database, this is the hostname of the RDS instance)
 - `SSH_USER` (Refer to our environment variables)
-- `SSH_HOST` (Refer to our environment variables)
-- `DB_URI` (Refer to our environment variables)
+- `SSH_HOST` (Refer to our environment variables, points to our bastion host)
+- `DB_URI` (Refer to our environment variables and ensure that the hostname is `localhost`, since we will be setting up the port-forwarding service in the next step)
 
 3. Next, run the following command: `npm run jump:<staging | prod>`. This sets up the port-forwarding service.
 
