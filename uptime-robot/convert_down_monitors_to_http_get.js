@@ -1,6 +1,3 @@
-// import { getAllMonitors } from "./get-all-monitors";
-// import { updateMonitor } from "./update-monitor";
-
 const getAllMonitors = require("./get-all-monitors");
 const updateMonitor = require("./update-monitor");
 
