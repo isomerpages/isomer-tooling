@@ -11,7 +11,7 @@ Monitor statuses - https://uptimerobot.com/api/#parameters
 9 - down
 */
 
-const getAllMonitors = (status) => {
+const getMonitorsPage = (statuses = "0-1-2-8-9", offset) => {
   return new Promise((resolve, reject) => {
     const options = {
       method: "POST",
@@ -20,31 +20,66 @@ const getAllMonitors = (status) => {
         "cache-control": "no-cache",
         "content-type": "application/x-www-form-urlencoded",
       },
-      form: { api_key: process.env.API_KEY, format: "json", statuses: status },
+      form: {
+        api_key: process.env.API_KEY,
+        format: "json",
+        statuses,
+        offset: offset,
+        limit: 50,
+      },
     };
     request(options, function (error, response, body) {
       if (error) {
         reject(error);
       } else {
-        resolve(body);
+        resolve(JSON.parse(body));
       }
     });
   });
 };
 
-getAllMonitors("8-9") // only if seems down, or is down
-  // getAllMonitors() // all statuses
-  .then((data) => {
-    fs.writeFile("all-monitors.json", data, (err) => {
-      if (err) {
-        console.error("Error writing to file:", err);
-      } else {
-        console.log("Saved data to all-monitors.json");
-      }
-    });
-  })
-  .catch((error) => {
-    console.error("Error:", error);
-  });
+const getAllMonitors = async (status) => {
+  let allMonitors = [];
+  let offset = 0;
+  let total = null;
+
+  do {
+    try {
+      console.log(`Getting offset: ${offset}, total: ${total}`);
+      const response = await getMonitorsPage(status, offset);
+      allMonitors = allMonitors.concat(response.monitors);
+      total = response.pagination.total;
+      offset += 50; // Adjust if necessary
+    } catch (error) {
+      console.error("Error:", error);
+      break;
+    }
+  } while (offset < total);
+
+  return allMonitors;
+};
+
+/*
+ Use this code block if you just want to get the monitors
+*/
+
+// getAllMonitors("8-9") // only if seems down, or is down
+// getAllMonitors() // all statuses
+//   .then((monitors) => {
+//     fs.writeFile(
+//       "all-monitors.json",
+//       JSON.stringify({ monitors: monitors }, null, 2),
+//       (err) => {
+//         if (err) {
+//           console.error("Error writing to file:", err);
+//         } else {
+//           console.log("Saved data to all-monitors.json");
+//         }
+//       }
+//     );
+//   })
+//   .catch((error) => {
+//     console.error("Error:", error);
+//   });
 
 module.exports = getAllMonitors;
