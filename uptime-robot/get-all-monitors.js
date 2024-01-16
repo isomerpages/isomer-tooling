@@ -11,6 +11,8 @@ Monitor statuses - https://uptimerobot.com/api/#parameters
 9 - down
 */
 
+const MAX_PAGE_LIMIT = 50;
+
 const getMonitorsPage = (statuses = "0-1-2-8-9", offset) => {
   return new Promise((resolve, reject) => {
     const options = {
@@ -25,7 +27,7 @@ const getMonitorsPage = (statuses = "0-1-2-8-9", offset) => {
         format: "json",
         statuses,
         offset: offset,
-        limit: 50,
+        limit: MAX_PAGE_LIMIT,
       },
     };
     request(options, function (error, response, body) {
