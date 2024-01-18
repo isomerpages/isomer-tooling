@@ -20,6 +20,7 @@ async function getAllIndirectionDomains() {
     file.path.startsWith("dns/")
   );
 
+  // Remove the ".ts" extension from the file name
   const domains = dnsFiles.map((file) => file.path.split("/")[1].slice(0, -3));
 
   return domains;
@@ -40,6 +41,7 @@ async function getDomainsOnIndirectionLayer(domains) {
 
   for (let i = 0; i < domains.length; i++) {
     const result = await getDomainCNAMERecord(domains[i]);
+    // Reuse the same line in the terminal to show the progress
     process.stdout.clearLine(0);
     process.stdout.cursorTo(0);
     process.stdout.write(`Checking domain ${i + 1}/${domains.length}...`);
@@ -58,7 +60,7 @@ async function getDomainsOnIndirectionLayer(domains) {
   return domainsOnIndirectionLayer;
 }
 
-(async function () {
+async function main() {
   try {
     const domains = await getAllIndirectionDomains();
     const domainsOnIndirectionLayer = await getDomainsOnIndirectionLayer(
@@ -68,9 +70,9 @@ async function getDomainsOnIndirectionLayer(domains) {
       (domain) => !domainsOnIndirectionLayer.includes(domain)
     );
 
-    fs.writeFileSync("indirection-domains.log", domains.join("\n"));
+    fs.writeFileSync("github-indirection-domains.log", domains.join("\n"));
     fs.writeFileSync(
-      "domains-on-indirection.log",
+      "live-domains-on-indirection.log",
       domainsOnIndirectionLayer.join("\n")
     );
     fs.writeFileSync(
@@ -104,4 +106,6 @@ async function getDomainsOnIndirectionLayer(domains) {
     );
     process.exit(1);
   }
-})();
+}
+
+main();

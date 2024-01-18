@@ -33,9 +33,9 @@ Percentage: 25.77%
 
 4. The list of domains for each metric is stored in the respective log files.
 
-   1. `indirection-domains.log` - represents the list of domains registered in the `isomer-indirection` repository. This is all domains that are known to be on the indirection layer.
+   1. `github-indirection-domains.log` - represents the list of domains registered in the `isomer-indirection` repository. This is all domains that are known to be on the indirection layer.
 
-   2. `domains-on-indirection.log` - represents the list of domains that have correctly configured their DNS to point to the DNS indirection layer.
+   2. `live-domains-on-indirection.log` - represents the list of domains that have correctly configured their DNS to point to the DNS indirection layer.
 
    3. `domains-not-on-indirection.log` - represents the list of domains that have not yet configured their DNS to point to the DNS indirection layer.
 
