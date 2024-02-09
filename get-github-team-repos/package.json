@@ -1,0 +1,14 @@
+{
+  "name": "get-github-team-repos",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@octokit/rest": "^20.0.2"
+  }
+}
