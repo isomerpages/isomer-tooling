@@ -1,18 +1,13 @@
 const fs = require("fs-extra");
 const path = require("path");
 
-// Define base source and destination paths
-const basePathSource = path.join("");
-const basePathDestination = path.join("");
-
-// Construct specific paths using the base paths
-const sourceImagesPath = path.join(basePathSource, "images");
-const sourceFilesPath = path.join(basePathSource, "files");
-const destImagesPath = path.join(basePathDestination, "public", "images");
-const destFilesPath = path.join(basePathDestination, "public", "files");
-
 // Function to copy directories
-async function copyDirectories() {
+async function copyDirectories(basePathSource, basePathDestination) {
+  // Construct specific paths using the base paths
+  const sourceImagesPath = path.join(basePathSource, "images");
+  const sourceFilesPath = path.join(basePathSource, "files");
+  const destImagesPath = path.join(basePathDestination, "public", "images");
+  const destFilesPath = path.join(basePathDestination, "public", "files");
   try {
     // Copy the images directory
     await fs.copy(sourceImagesPath, destImagesPath);

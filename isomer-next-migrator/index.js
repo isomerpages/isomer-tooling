@@ -13,7 +13,7 @@ const basePathDestination = path.join("");
 const startMigration = async () => {
   try {
     // Copy media files + images
-    await copyDirectories()
+    await copyDirectories(basePathSource, basePathDestination)
       .then(() => console.log("Copying of media dirs completed."))
       .catch((err) => console.error("Copying of media dirs failed:", err));
 
