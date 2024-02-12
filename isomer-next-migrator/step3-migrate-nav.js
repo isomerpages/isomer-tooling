@@ -90,7 +90,11 @@ const processNavigation = async (basePathSource, basePathDestination) => {
             url: "https://www.isomer.gov.sg${navData.logo}",
             alt: "Isomer logo",
           },
-          links: ${JSON.stringify(links, null, 2)}
+          links: ${JSON.stringify(links, null, 2)},
+          search: {
+            isEnabled: true,
+            "searchUrl": "/search"
+          },
         },
       },
     ],
