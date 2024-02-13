@@ -356,6 +356,9 @@ async function main() {
     const amplifyExceptions = amplifySites.filter(
       (site) => !result.map((r) => r.amplifyAppId).includes(site.siteId)
     );
+    const keyCdnExceptions = keyCDNSites.filter(
+      (site) => !result.map((r) => r.keyCDNZoneId).includes(site.zoneId)
+    );
 
     const csvOutput =
       "repo,netlifyStagingId,netlifyStagingName,netlifyProdId,netlifyProdName,keyCDNZoneId,keyCDNZoneName,keyCDNZoneIsActive,amplifyAppId,amplifyAppName\n" +
@@ -363,6 +366,15 @@ async function main() {
         .map(
           (r) =>
             `${r.repoName},${r.netlifyStagingId},${r.netlifyStagingName},${r.netlifyProdId},${r.netlifyProdName},${r.keyCDNZoneId},${r.keyCDNZoneName},${r.keyCDNZoneIsActive},${r.amplifyAppId},${r.amplifyAppName}`
+        )
+        .join("\n");
+
+    const keyCdnExceptionsCsv =
+      "zoneName,originUrl,customDomain,isActive\n" +
+      keyCdnExceptions
+        .map(
+          (site) =>
+            `${site.zoneName},${site.originUrl},${site.domainName},${site.isKeyCDNActive}`
         )
         .join("\n");
 
@@ -375,6 +387,7 @@ async function main() {
       "amplify-exceptions.log",
       amplifyExceptions.map((site) => site.siteName).join("\n")
     );
+    fs.writeFileSync("keycdn-exceptions.csv", keyCdnExceptionsCsv);
   } catch (err) {
     console.error(err);
     fs.appendFileSync(
