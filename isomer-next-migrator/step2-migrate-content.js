@@ -60,6 +60,7 @@ const processMarkdownFile = async (filePath, basePathDestination) => {
   import { schema } from "@/schema/${permalink}/schema";
   import * as Config from "@/config"
   import sitemap from "@/sitemap.json"
+  import Link from "next/link"
   
   export default function Page() {
     const renderSchema = schema;
@@ -71,6 +72,7 @@ const processMarkdownFile = async (filePath, basePathDestination) => {
           sitemap={sitemap}
           permalink={renderSchema.permalink}
           components={renderSchema.components}
+          LinkComponent={Link}
       />
     );
   }`;
