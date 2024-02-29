@@ -1,0 +1,18 @@
+{
+  "name": "generate-edit-logs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "jump:staging": "source .ssh/.env.staging && ssh -L 5433:$DB_HOST:5432 $SSH_USER@$SSH_HOST -i .ssh/isomercms-staging-bastion.pem",
+    "jump:prod": "source .ssh/.env.prod && ssh -L 5433:$DB_HOST:5432 $SSH_USER@$SSH_HOST -i .ssh/isomercms-production-bastion.pem"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@octokit/rest": "^20.0.2",
+    "commander": "^11.1.0",
+    "pg": "^8.11.3"
+  }
+}

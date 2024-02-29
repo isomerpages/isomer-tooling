@@ -2,11 +2,15 @@
 */node_modules/
 setup-hosting/
 .DS_Store
+*/.ssh/
+*.log
 
 # JetBrains settings
 .idea/
+
 
 metadata*/
 egazettes*/
 errors*/
 2023-gazettes*/
+
