@@ -2,10 +2,7 @@ const {
   AmplifyClient,
   StartJobCommand,
   ListAppsCommand,
-  UpdateAppCommand,
 } = require("@aws-sdk/client-amplify");
-const path = require("path");
-const fs = require("fs");
 const awsClient = new AmplifyClient({
   region: "ap-southeast-1",
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -49,4 +46,5 @@ async function rebuildAllAmplifySites() {
     
   }
 }
+
 rebuildAllAmplifySites()
