@@ -18,7 +18,7 @@ async function changeRedirs() {
   const listCommand = new ListAppsCommand({
     maxResults: MAX_RESULTS_PER_PAGE,
   })
-  response = await (awsClient.send(listCommand))
+  let response = await (awsClient.send(listCommand))
   nextToken = response.nextToken
   while (nextToken) {
     response.apps.forEach(app => {
@@ -41,8 +41,7 @@ async function changeRedirs() {
     const siteInfo = sitesList[site]
     let alreadyHasRule = false
     siteInfo.customRules.forEach(rule => {
-      if (rule.source === "</%5c/>") alreadyHasRule = true
-      else if (rule.source === "</%5C/>") alreadyHasRule = true
+      if (rule.source.toLowerCase() === "</%5c/>") alreadyHasRule = true
     })
     if (alreadyHasRule) {
       console.log(`${site} already has redirect rule`)
