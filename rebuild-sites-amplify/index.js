@@ -17,7 +17,7 @@ async function rebuildAllAmplifySites() {
   const listCommand = new ListAppsCommand({
     maxResults: MAX_RESULTS_PER_PAGE,
   })
-  response = await (awsClient.send(listCommand))
+  let response = await (awsClient.send(listCommand))
   nextToken = response.nextToken
   while (nextToken) {
     response.apps.forEach(app => {
