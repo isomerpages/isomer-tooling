@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@octokit/rest": "^18.9.1",
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "bluebird": "^3.7.2",
     "csv-writer": "^1.6.0",
     "js-base64": "^3.6.1",
