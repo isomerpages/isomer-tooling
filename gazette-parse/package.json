@@ -1,0 +1,22 @@
+{
+  "name": "gazette-parse",
+  "version": "1.0.0",
+  "description": "",
+  "main": "gazetteParse.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "ts-node gazetteParse.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "algoliasearch": "^4.22.1",
+    "pdf-parse": "^1.1.1",
+    "pdf2json": "^3.0.5",
+    "pdfreader": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.17",
+    "@types/pdf-parse": "^1.1.4"
+  }
+}
