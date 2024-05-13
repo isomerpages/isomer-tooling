@@ -225,7 +225,7 @@ async function getSitesOnKeyCDN() {
   );
 }
 
-// Retrieves all AWS Ampllify sites
+// Retrieves all AWS Amplify sites
 async function getSitesOnAmplify() {
   console.log("Getting list of Amplify sites...");
   let nextToken = undefined;
