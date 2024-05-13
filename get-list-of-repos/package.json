@@ -2,14 +2,16 @@
   "name": "get-list-of-repos",
   "version": "1.0.0",
   "description": "",
-  "main": "get-list-of-domains.js",
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "get-domains": "node get-list-of-domains.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "dotenv": "^16.3.1"
+    "@aws-sdk/client-amplify": "^3.507.0",
+    "@octokit/rest": "^20.0.2",
+    "axios": "^1.6.7",
+    "node-dig-dns": "^0.3.3"
   }
 }
