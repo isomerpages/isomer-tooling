@@ -102,11 +102,11 @@ const listLatestJobFor = async (
   }
 };
 
-const retryJob = (
+const retryJob = async (
   job: JobSummary,
   appId: string,
   branch: (typeof BRANCHES)[keyof typeof BRANCHES]
-): void => {
+): Promise<void> => {
   const input = {
     appId,
     branchName: branch,
@@ -115,17 +115,16 @@ const retryJob = (
     jobReason: JOB_RETRY_REASON,
   };
   const command = new StartJobCommand(input);
-  amplifyClient.send(command);
+  await amplifyClient.send(command);
 };
 
-const removeEnvVar = async (appId: string): Promise<void> => {
+const modifyEnvVar = async (appId: string): Promise<void> => {
   const currentEnvVars = (
     await amplifyClient.send(new GetAppCommand({ appId }))
   ).app.environmentVariables;
 
   if (!currentEnvVars["_CUSTOM_IMAGE"]) {
     console.log("no custom image found, skipping", appId);
-    return;
   }
   delete currentEnvVars["_CUSTOM_IMAGE"];
 
@@ -139,9 +138,7 @@ const removeEnvVar = async (appId: string): Promise<void> => {
 
   const command = new UpdateAppCommand({
     appId,
-    environmentVariables: {
-      ...currentEnvVars,
-    },
+    environmentVariables: currentEnvVars
   });
   console.log("About to send command", command, appId);
   await amplifyClient.send(command);
@@ -156,7 +153,7 @@ const rebuildAllApps = async (): Promise<void> => {
 
   // todo: when modifying all the repos, recommended to 
   // do slicing in case of any rate limits  
-  apps = apps.slice();
+  // apps = apps.slice();
 
   const blacklist = [
     // the list below are nextjs sites or test sites
@@ -166,33 +163,35 @@ const rebuildAllApps = async (): Promise<void> => {
     "d2hlsj8fqs2uyd",
     "dxonh6jngzf1c",
   ];
-  apps = apps.filter((app) => !blacklist.includes(app.appId));
+  // apps = apps.filter((app) => !blacklist.includes(app.appId));
 
-
+  apps = apps.filter((app) => app.appId === "dm3ixw9ab6o2")
 
   // done sequentially so can hard stop on error 
   for (const app of apps) {
     const { appId, name } = app;
     try {
-      await removeEnvVar(appId);
+      await modifyEnvVar(appId);
 
       if (name.endsWith("staging-lite")) {
         const stgLiteJob = await listLatestJobFor(appId, BRANCHES.STAGING_LITE);
         if (stgLiteJob && stgLiteJob.status === JobStatus.FAILED) {
-          retryJob(stgLiteJob, appId, BRANCHES.STAGING_LITE);
+          await retryJob(stgLiteJob, appId, BRANCHES.STAGING_LITE);
         }
       } else {
         const stgLatestJob = await listLatestJobFor(appId, BRANCHES.STAGING);
         console.log(stgLatestJob);
         if (stgLatestJob && stgLatestJob.status === JobStatus.FAILED) {
-          retryJob(stgLatestJob, appId, BRANCHES.STAGING);
+          await retryJob(stgLatestJob, appId, BRANCHES.STAGING);
         }
 
         const prodLatestJob = await listLatestJobFor(appId, BRANCHES.MASTER);
         if (prodLatestJob && prodLatestJob.status === JobStatus.FAILED) {
-          retryJob(prodLatestJob, appId, BRANCHES.MASTER);
+          await retryJob(prodLatestJob, appId, BRANCHES.MASTER);
         }
       }
+
+      console.log(`Succeeded for ${appId}, ${name}`)
     } catch (e) {
       console.error(`Error occurred in rebuildAllApps`, e, appId, name);
       throw e;
