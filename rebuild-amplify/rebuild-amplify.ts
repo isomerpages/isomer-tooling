@@ -163,9 +163,7 @@ const rebuildAllApps = async (): Promise<void> => {
     "d2hlsj8fqs2uyd",
     "dxonh6jngzf1c",
   ];
-  // apps = apps.filter((app) => !blacklist.includes(app.appId));
-
-  apps = apps.filter((app) => app.appId === "dm3ixw9ab6o2")
+  apps = apps.filter((app) => !blacklist.includes(app.appId));
 
   // done sequentially so can hard stop on error 
   for (const app of apps) {
