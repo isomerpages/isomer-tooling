@@ -19,3 +19,5 @@ source .env
 npm install
 node index.js
 ```
+
+This should output a sorted list of repos in `repos.txt`. Amplify will not be able to handle sites which are larger than 5GB - we should consider a custom anything close to 5000000 should be moved to a custom deploy. Note that there is a little buffer, as the build files are overall smaller than the repo files due to unnecessary files being removed.
