@@ -59,7 +59,8 @@ const checkBuildStatuses = async (apps) => {
     for (const branchName of branches) {
       try {
         const response = await amplify
-          .listJobs({ appId: app.appId, branchName })
+          // maxResults = 1 since we only need the latest job
+          .listJobs({ appId: app.appId, branchName, maxResults: 1 })
           .promise();
         if (response.jobSummaries.length > 0) {
           const buildStatus = response.jobSummaries[0].status;
