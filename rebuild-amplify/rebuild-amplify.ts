@@ -11,7 +11,12 @@ import {
   Job,
   JobSummary,
   StartJobCommand,
+  UpdateAppCommand,
+  GetAppCommand,
 } from "@aws-sdk/client-amplify";
+import Papa = require("papaparse");
+
+import * as fs from "node:fs/promises";
 
 const amplifyClient = new AmplifyClient({
   region: "ap-southeast-1",
@@ -20,6 +25,7 @@ const amplifyClient = new AmplifyClient({
 const BRANCHES = {
   STAGING: "staging",
   MASTER: "master",
+  STAGING_LITE: "staging-lite",
 } as const;
 
 const JOB_TYPE = "RETRY";
@@ -67,8 +73,13 @@ const getAllApps = async () => {
       console.error(`Error occurred in for loop of getAllApps`, e);
     }
   } while (token);
+  const appIds = apps.map((app) => app.appId);
+  console.log(appIds);
+  const appsCsv = Papa.unparse(apps, { header: true });
+  await fs.writeFile("apps.csv", appsCsv);
   return apps;
 };
+
 
 const listLatestJobFor = async (
   appId: string,
@@ -91,11 +102,11 @@ const listLatestJobFor = async (
   }
 };
 
-const retryJob = (
+const retryJob = async (
   job: JobSummary,
   appId: string,
   branch: (typeof BRANCHES)[keyof typeof BRANCHES]
-): void => {
+): Promise<void> => {
   const input = {
     appId,
     branchName: branch,
@@ -104,18 +115,104 @@ const retryJob = (
     jobReason: JOB_RETRY_REASON,
   };
   const command = new StartJobCommand(input);
-  amplifyClient.send(command);
+  await amplifyClient.send(command);
+};
+
+const modifyEnvVar = async (appId: string): Promise<void> => {
+  const currentEnvVars = (
+    await amplifyClient.send(new GetAppCommand({ appId }))
+  ).app.environmentVariables;
+
+  if (!currentEnvVars["_CUSTOM_IMAGE"]) {
+    console.log("no custom image found, skipping", appId);
+  }
+  delete currentEnvVars["_CUSTOM_IMAGE"];
+
+  if (!currentEnvVars["LC_ALL"]) {
+    currentEnvVars["LC_ALL"] = "C.UTF-8"
+  }
+
+  if (!currentEnvVars["LANG"]) {
+    currentEnvVars["LANG"] = "C.UTF-8"
+  }
+
+  const command = new UpdateAppCommand({
+    appId,
+    environmentVariables: currentEnvVars
+  });
+  console.log("About to send command", command, appId);
+  await amplifyClient.send(command);
 };
 
 const rebuildAllApps = async (): Promise<void> => {
-  // const apps = await getAllApps();
-  const apps = ["d3eswj7uomryi1"];
-  apps.map(async (appId) => {
+  await getAllApps();
+
+  let apps: App[] = await promisifyPapaParse(
+    await fs.readFile("apps.csv", "utf-8")
+  );
+
+  // todo: when modifying all the repos, recommended to 
+  // do slicing in case of any rate limits  
+  // apps = apps.slice();
+
+  const blacklist = [
+    // the list below are nextjs sites or test sites
+    "d1pna4xeuwj0i3",
+    "d2an0oz4gcja0b",
+    "d1q764d34icpva",
+    "d2hlsj8fqs2uyd",
+    "dxonh6jngzf1c",
+  ];
+  apps = apps.filter((app) => !blacklist.includes(app.appId));
+
+  // done sequentially so can hard stop on error 
+  for (const app of apps) {
+    const { appId, name } = app;
     try {
-      const latestJob = await listLatestJobFor(appId, BRANCHES.STAGING);
-      retryJob(latestJob, appId, BRANCHES.STAGING);
+      await modifyEnvVar(appId);
+
+      if (name.endsWith("staging-lite")) {
+        const stgLiteJob = await listLatestJobFor(appId, BRANCHES.STAGING_LITE);
+        if (stgLiteJob && stgLiteJob.status === JobStatus.FAILED) {
+          await retryJob(stgLiteJob, appId, BRANCHES.STAGING_LITE);
+        }
+      } else {
+        const stgLatestJob = await listLatestJobFor(appId, BRANCHES.STAGING);
+        console.log(stgLatestJob);
+        if (stgLatestJob && stgLatestJob.status === JobStatus.FAILED) {
+          await retryJob(stgLatestJob, appId, BRANCHES.STAGING);
+        }
+
+        const prodLatestJob = await listLatestJobFor(appId, BRANCHES.MASTER);
+        if (prodLatestJob && prodLatestJob.status === JobStatus.FAILED) {
+          await retryJob(prodLatestJob, appId, BRANCHES.MASTER);
+        }
+      }
+
+      console.log(`Succeeded for ${appId}, ${name}`)
     } catch (e) {
-      console.error(`Error occurred in rebuildAllApps`, e);
+      console.error(`Error occurred in rebuildAllApps`, e, appId, name);
+      throw e;
     }
-  });
+  }
 };
+
+export function promisifyPapaParse<T>(content: string) {
+  return new Promise<T>((resolve, reject) => {
+    Papa.parse(content, {
+      header: true,
+      complete(results) {
+        // validate the csv
+        if (!results.data) {
+          reject(new Error("Failed to parse csv"));
+        }
+        resolve(results.data as T);
+      },
+      error(error: unknown) {
+        reject(error);
+      },
+    });
+  });
+}
+
+rebuildAllApps();

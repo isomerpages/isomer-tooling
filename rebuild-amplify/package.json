@@ -12,9 +12,11 @@
   "dependencies": {
     "@aws-sdk/client-amplify": "^3.395.0",
     "aws-sdk": "^2.1442.0",
-    "csv-writer": "^1.6.0"
+    "csv-writer": "^1.6.0",
+    "papaparse": "^5.4.1"
   },
   "devDependencies": {
-    "@types/node": "^20.5.3"
+    "@types/node": "^20.5.3",
+    "@types/papaparse": "^5.3.14"
   }
 }
