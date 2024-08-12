@@ -1,0 +1,22 @@
+{
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.609.0",
+    "algoliasearch": "^4.24.0",
+    "csv-parser": "^3.0.0",
+    "htmlparser2": "^9.1.0",
+    "md5": "^2.3.0",
+    "pdf-image": "^2.0.0",
+    "pdfreader": "^2.0.0",
+    "tesseract.js": "^5.1.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "source .env && ts-node gazetteParse.ts",
+    "uploadS3": "source .env && ts-node uploadToS3.ts",
+    "uploadAlgolia": "source .env && ts-node uploadToAlgolia.ts"
+  },
+  "devDependencies": {
+    "@types/md5": "^2.3.5",
+    "@types/node": "^20.14.10"
+  }
+}
