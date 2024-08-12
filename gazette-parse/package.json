@@ -11,7 +11,6 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "source .env && ts-node gazetteParse.ts",
     "uploadS3": "source .env && ts-node uploadToS3.ts",
     "uploadAlgolia": "source .env && ts-node uploadToAlgolia.ts"
   },
