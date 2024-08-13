@@ -219,6 +219,15 @@ const addToSearchIndex = async ({
 };
 
 const main = async () => {
+  const args = process.argv.slice(2);
+  let shouldUseImageParse = false;
+  let shouldUpload = true;
+  if (args.includes("image")) {
+    shouldUseImageParse = true;
+  }
+  if (args.includes("noUpload")) {
+    shouldUpload = false;
+  }
   const fileData = await parseMetadataCsv(METADATA_PATH);
   const publishDate = new Date();
   const year = publishDate.getFullYear();
@@ -235,21 +244,26 @@ const main = async () => {
     const data = await fs.promises.readFile(path.resolve(filePath.trim()));
     const isPdfFile = fileName.includes(".pdf");
     // parse text
-    const parsedFile = isPdfFile
+    const parsedFile = shouldUseImageParse
+      ? await parsePdfAsImage(filePath)
+      : isPdfFile
       ? await parseFullTextFromPDF(data)
       : await parseFullTextFromHtm(data);
-    // const parsedFile = await parsePdfAsImage(filePath);
     if (!parsedFile) throw new Error("Could not parse file content");
     // upload to algolia
-    await addToSearchIndex({
-      gazetteCategory: file.category,
-      gazetteSubCategory: file.subCategory,
-      gazetteNotificationNum: file.notificationNumber,
-      gazetteTitle: file.title,
-      publishTime: publishDate.toLocaleDateString("en-SG"),
-      objectKey: objectKey,
-      content: parsedFile,
-    });
+    if (shouldUpload)
+      await addToSearchIndex({
+        gazetteCategory: file.category,
+        gazetteSubCategory: file.subCategory,
+        gazetteNotificationNum: file.notificationNumber,
+        gazetteTitle: file.title,
+        publishTime: publishDate.toLocaleDateString("en-SG"),
+        objectKey: objectKey,
+        content: parsedFile,
+      });
+    else {
+      console.log(parsedFile);
+    }
   }
 };
 
