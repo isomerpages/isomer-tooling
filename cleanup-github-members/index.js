@@ -106,7 +106,7 @@ async function getAllUsersInTeams(orgName, excludedTeams = []) {
     try {
       const response = await octokit.paginate(octokit.teams.listMembersInOrg, {
         org: orgName,
-        team_slug: team.name,
+        team_slug: team.slug,
         per_page: 100,
       });
       const teamUsers = response.map((user) => user.login);
@@ -127,10 +127,10 @@ async function getTeamsWithNoRepos(orgName, dryRun = true) {
   const result = [];
 
   for (let team of teams) {
-    const repos = await getTeamRepos(orgName, team.name);
+    const repos = await getTeamRepos(orgName, team.slug);
     if (repos !== null && repos.length === 0) {
       if (!dryRun) {
-        await deleteTeam(orgName, team.name);
+        await deleteTeam(orgName, team.slug);
       } else {
         fs.appendFileSync(
           "cleanup-github.log",
