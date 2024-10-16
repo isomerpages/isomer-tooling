@@ -36,6 +36,7 @@
     "@tiptap/extension-underline": "^2.4.0",
     "@tiptap/html": "^2.4.0",
     "fast-xml-parser": "^4.4.0",
-    "jsdom": "^24.1.0"
+    "jsdom": "^24.1.0",
+    "papaparse": "^5.4.1"
   }
 }
