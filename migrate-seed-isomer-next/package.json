@@ -1,0 +1,24 @@
+{
+  "name": "seed-from-repo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "tsx index.ts",
+    "jump:prod": "source .ssh/.env.prod && ssh -L 5433:$DB_HOST:5432 $SSH_USER@$SSH_HOST -i .ssh/isomer-next-prod-bastion",
+    "jump:vapt": "source .ssh/.env.vapt && ssh -L 5433:$DB_HOST:5432 $SSH_USER@$SSH_HOST -i .ssh/isomer-next-vapt-bastion"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@octokit/rest": "^21.0.2",
+    "dotenv": "^16.4.5",
+    "pg": "^8.12.0",
+    "tsx": "^4.19.1"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.11.6"
+  }
+}
