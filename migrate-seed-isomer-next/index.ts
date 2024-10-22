@@ -13,11 +13,8 @@ import { GET_ALL_RESOURCES_WITH_FULL_PERMALINKS } from "./constants";
 // Studio database.
 export const MIGRATING_SITES_MAPPING: Record<string, number> = {
   // "moh-corp-next": 3,
-  // "moh-biosafety-next": 4,
-  // "moh-prepare-next": 5,
-  "moh-dc-next": 6,
   // "moh-hcsa-next": 7,
-  // "mddi-forwardsg-next": 8,
+  "mddi-forwardsg-next": 8,
 };
 
 // Do not touch below this line
@@ -600,25 +597,25 @@ function studioifyContent(
 
   for (const asset of Object.keys(assetsMap)) {
     newContent = newContent
-      .replace(`"${asset}"`, `"${assetsMap[asset]}"`)
-      .replace(`'${asset}'`, `'${assetsMap[asset]}'`);
+      .replaceAll(`"${asset}"`, `"${assetsMap[asset]}"`)
+      .replaceAll(`'${asset}'`, `'${assetsMap[asset]}'`);
   }
 
   for (const page of Object.keys(resourcesMap)) {
     newContent = newContent
-      .replace(
+      .replaceAll(
         `"${page}"`,
         `"[resource:${String(siteId)}:${String(resourcesMap[page].id)}]"`
       )
-      .replace(
+      .replaceAll(
         `"${page}/"`,
         `"[resource:${String(siteId)}:${String(resourcesMap[page].id)}]"`
       )
-      .replace(
+      .replaceAll(
         `'${page}'`,
         `'[resource:${String(siteId)}:${String(resourcesMap[page].id)}]'`
       )
-      .replace(
+      .replaceAll(
         `'${page}/'`,
         `'[resource:${String(siteId)}:${String(resourcesMap[page].id)}]'`
       );
