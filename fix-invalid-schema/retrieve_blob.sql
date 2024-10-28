@@ -30,14 +30,15 @@ blobs_with_invalid_schema AS (
 		OR jsonb_path_exists ("content",
 			'$.** ? (@.type == "heading" && @.attrs.type() == "object" && @.attrs.level == 1)')
 )
--- not great code but it works
+
 SELECT
 	*
 FROM
 	blobs_with_invalid_schema
+	left join "Version" on blobs_with_invalid_schema.id = "Version"."blobId"
 WHERE
-	id IN(
+	blobs_with_invalid_schema.id IN(
 		SELECT
 			"blobId" FROM valid_versions)
 ORDER BY
-	id ASC;
+	blobs_with_invalid_schema.id ASC;
