@@ -84,4 +84,27 @@ function isHardBreakParagraph(node) {
     return JSON.stringify(node) === JSON.stringify(hardBreakParagraph);
 }
 
+function fixHeadingFrom1To2() {
+    const jsonData = readFile();
+
+    function traverse(node) {
+        if (node.type === 'heading' && node.attrs.level === 1) {
+            node.attrs.level = 2;
+        }
+
+        // Traverse all properties
+        for (const key in node) {
+            if (Array.isArray(node[key])) {
+                node[key].forEach(item => traverse(item));
+            } else if (typeof node[key] === 'object') {
+                traverse(node[key]);
+            }
+        }
+    }
+
+    traverse(jsonData);
+    writeFile(jsonData);
+}
+
 fixInvalidTableHeaders()
+fixHeadingFrom1To2()
