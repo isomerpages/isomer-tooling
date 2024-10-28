@@ -29,13 +29,17 @@ blobs_with_invalid_schema AS (
 		-- heading with no content
 		OR jsonb_path_exists ("content",
 			'$.** ? (@.type == "heading" && @.attrs.type() == "object" && @.attrs.level == 1)')
+		-- image with no src
+		-- NOTE: will throw false positives since some instances we just need { type: 'image' }
+		OR jsonb_path_exists ("content",
+			'$.** ? (@.type == "image" && (@.src == null || !exists(@.src)))')
 )
 
 SELECT
 	*
 FROM
 	blobs_with_invalid_schema
-	left join "Version" on blobs_with_invalid_schema.id = "Version"."blobId"
+	LEFT JOIN "Version" ON blobs_with_invalid_schema.id = "Version"."blobId"
 WHERE
 	blobs_with_invalid_schema.id IN(
 		SELECT
