@@ -106,5 +106,36 @@ function fixHeadingFrom1To2() {
     writeFile(jsonData);
 }
 
+function removeEmptyProseComponent() {
+    const jsonData = readFile();
+
+    const emptyProseComponent = {
+        type: 'prose',
+        content: []
+    }
+
+    function traverse(node) {
+        if (node.type === 'prose' && JSON.stringify(node) === JSON.stringify(emptyProseComponent)) {
+            return null;
+        }
+
+        // Traverse all properties
+        for (const key in node) {
+            if (Array.isArray(node[key])) {
+                node[key] = node[key].filter(item => {
+                    const result = traverse(item);
+                    return result !== null;
+                });
+            } else if (typeof node[key] === 'object') {
+                traverse(node[key]);
+            }
+        }
+        return node;
+    }
+    traverse(jsonData);
+    writeFile(jsonData);
+}
+
 fixInvalidTableHeaders()
 fixHeadingFrom1To2()
+removeEmptyProseComponent()
