@@ -4,6 +4,15 @@ import { readFileSync, writeFileSync } from 'fs';
 const FILE_PATH = "./sample.json";
 const TO_MINIFY = false;
 
+function writeFile(jsonData) {
+    writeFileSync(
+        FILE_PATH,
+        TO_MINIFY ?
+            JSON.stringify(jsonData) :
+            JSON.stringify(jsonData, null, 2)
+    );
+}
+
 function fixInvalidTableHeaders() {
     const fileContent = readFileSync(FILE_PATH, 'utf8');
     const jsonData = JSON.parse(fileContent);
@@ -46,12 +55,7 @@ function fixInvalidTableHeaders() {
     }
 
     traverse(jsonData);
-    writeFileSync(
-        FILE_PATH,
-        TO_MINIFY ?
-            JSON.stringify(jsonData) :
-            JSON.stringify(jsonData, null, 2)
-    );
+    writeFile(jsonData);
 }
 
 function fixUnorderedList(node) {
