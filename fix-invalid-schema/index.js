@@ -3,6 +3,7 @@ import { readFileSync, writeFileSync } from 'fs';
 // Recursive function to traverse the JSON structure
 const FILE_PATH = "./sample.json";
 const TO_MINIFY = false;
+const REPLACE_TABLE_HEADER_TO_TABLE_CELL = true;
 
 function readFile() {
     const fileContent = readFileSync(FILE_PATH, 'utf8');
@@ -48,11 +49,15 @@ function fixInvalidTableHeaders() {
             );
             
             if (hasNonParagraphContent) {
+                if (REPLACE_TABLE_HEADER_TO_TABLE_CELL) {
+                    node.type = 'tableCell';
+                }
+
                 // Replace non-paragraph content with paragraph wrapper
                 node.content = node.content.map(child => {
                     switch (child.type) {
                         case 'unorderedList':
-                            return fixUnorderedList(child);
+                            return REPLACE_TABLE_HEADER_TO_TABLE_CELL ? child : fixUnorderedList(child);
                         case 'paragraph':
                             return isHardBreakParagraph(child) ? null : child;
                         default:
