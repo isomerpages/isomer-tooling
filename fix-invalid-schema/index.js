@@ -18,6 +18,20 @@ function writeFile(jsonData) {
     );
 }
 
+function traverseAllNodes(node, traverse) {
+    for (const key in node) {
+        if (Array.isArray(node[key])) {
+            node[key] = node[key].filter(item => {
+                const result = traverse(item);
+                return result !== null;
+            });
+        } else if (typeof node[key] === 'object') {
+            node[key] = traverse(node[key]);
+        }
+    }
+    return node;
+}
+
 function fixInvalidTableHeaders() {
     const jsonData = readFile();
 
@@ -48,14 +62,7 @@ function fixInvalidTableHeaders() {
             }
         }
 
-        // Traverse all properties
-        for (const key in node) {
-            if (Array.isArray(node[key])) {
-                node[key].forEach(item => traverse(item));
-            } else if (typeof node[key] === 'object') {
-                traverse(node[key]);
-            }
-        }
+        return traverseAllNodes(node, traverse);
     }
 
     traverse(jsonData);
@@ -92,14 +99,7 @@ function fixHeadingFrom1To2() {
             node.attrs.level = 2;
         }
 
-        // Traverse all properties
-        for (const key in node) {
-            if (Array.isArray(node[key])) {
-                node[key].forEach(item => traverse(item));
-            } else if (typeof node[key] === 'object') {
-                traverse(node[key]);
-            }
-        }
+        return traverseAllNodes(node, traverse);
     }
 
     traverse(jsonData);
@@ -119,18 +119,7 @@ function removeEmptyProseComponent() {
             return null;
         }
 
-        // Traverse all properties
-        for (const key in node) {
-            if (Array.isArray(node[key])) {
-                node[key] = node[key].filter(item => {
-                    const result = traverse(item);
-                    return result !== null;
-                });
-            } else if (typeof node[key] === 'object') {
-                traverse(node[key]);
-            }
-        }
-        return node;
+        return traverseAllNodes(node, traverse);
     }
 
     traverse(jsonData);
@@ -145,14 +134,7 @@ function fixImageSrc() {
             node.src = '';
         }   
 
-        // Traverse all properties
-        for (const key in node) {
-            if (Array.isArray(node[key])) {
-                node[key].forEach(item => traverse(item));
-            } else if (typeof node[key] === 'object') {
-                traverse(node[key]);
-            }
-        }
+        return traverseAllNodes(node, traverse);
     }
 
     traverse(jsonData);
