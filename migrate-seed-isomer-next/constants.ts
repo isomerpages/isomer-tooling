@@ -32,7 +32,6 @@ WITH RECURSIVE "resourcePath" (id, title, permalink, parentId, type, "fullPermal
     -- This join determines if the recursion continues if there are more rows
     INNER JOIN "resourcePath" path ON r."parentId" = path.id
     WHERE r."siteId" = $1
-    AND r.type IN ('Page', 'CollectionPage', 'IndexPage', 'RootPage')
 )
 
 SELECT * FROM "resourcePath";

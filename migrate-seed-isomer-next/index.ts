@@ -12,9 +12,8 @@ import { GET_ALL_RESOURCES_WITH_FULL_PERMALINKS } from "./constants";
 // These are the sites to migrate and their corresponding site IDs inside the
 // Studio database.
 export const MIGRATING_SITES_MAPPING: Record<string, number> = {
-  // "moh-corp-next": 3,
-  // "moh-hcsa-next": 7,
-  "mddi-forwardsg-next": 8,
+  // "mof-spor-next": 9,
+  // "mof-spor-next": 10,
 };
 
 // Do not touch below this line
@@ -56,6 +55,8 @@ async function main() {
       await seedDatabase(client, siteId, siteName);
 
       await studioifySite(client, siteId, siteName);
+
+      console.log("All done! Remember to upload the assets to S3.");
     }
   } catch (err) {
     console.error(err);
@@ -236,7 +237,7 @@ async function seedDatabase(client: Client, siteId: number, siteName: string) {
   const schemaDir = path.join(__dirname, "repos", siteName, "schema");
   await processDirectory(schemaDir, null);
 
-  await importSiteConfig(client, siteId, siteName);
+  // await importSiteConfig(client, siteId, siteName);
   await importNavbar(client, siteId, siteName);
   await importFooter(client, siteId, siteName);
 }
@@ -343,8 +344,12 @@ async function importNavbar(client: Client, siteId: number, siteName: string) {
   );
   const navbar = fs.readFileSync(navbarPath, "utf-8");
 
+  // await client.query(
+  //   `INSERT INTO public."Navbar" ("siteId", content) VALUES ($1, $2)`,
+  //   [siteId, navbar]
+  // );
   await client.query(
-    `INSERT INTO public."Navbar" ("siteId", content) VALUES ($1, $2)`,
+    `UPDATE public."Navbar" SET content = $2 WHERE "siteId" = $1`,
     [siteId, navbar]
   );
 }
@@ -360,8 +365,12 @@ async function importFooter(client: Client, siteId: number, siteName: string) {
   );
   const footer = fs.readFileSync(footerPath, "utf-8");
 
+  // await client.query(
+  //   `INSERT INTO public."Footer" ("siteId", content) VALUES ($1, $2)`,
+  //   [siteId, footer]
+  // );
   await client.query(
-    `INSERT INTO public."Footer" ("siteId", content) VALUES ($1, $2)`,
+    `UPDATE public."Footer" SET content = $2 WHERE "siteId" = $1`,
     [siteId, footer]
   );
 }
@@ -375,6 +384,7 @@ async function studioifySite(client: Client, siteId: number, siteName: string) {
 
   for (const page of pages) {
     const resource = resourcesMap[page];
+    console.log(`Studioifying page: /${resource.fullPermalink}`);
     const content = await getBlob(client, resource.blobId!);
     const updatedContent = studioifyContent(
       content,
@@ -385,6 +395,7 @@ async function studioifySite(client: Client, siteId: number, siteName: string) {
     await updateBlob(client, resource.blobId!, updatedContent);
   }
 
+  console.log("Studioifying navbar, footer, and site config");
   const navbarContent = await getNavbar(client, siteId);
   const updatedNavbar = studioifyContent(
     navbarContent,
