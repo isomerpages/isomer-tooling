@@ -2,6 +2,8 @@ import { readFileSync, writeFileSync } from 'fs';
 
 // Recursive function to traverse the JSON structure
 const FILE_PATH = "./sample.json";
+const TO_MINIFY = false;
+
 function fixInvalidTableHeaders() {
     const fileContent = readFileSync(FILE_PATH, 'utf8');
     const jsonData = JSON.parse(fileContent);
@@ -44,7 +46,12 @@ function fixInvalidTableHeaders() {
     }
 
     traverse(jsonData);
-    writeFileSync(FILE_PATH, JSON.stringify(jsonData, null, 2));
+    writeFileSync(
+        FILE_PATH,
+        TO_MINIFY ?
+            JSON.stringify(jsonData) :
+            JSON.stringify(jsonData, null, 2)
+    );
 }
 
 function fixUnorderedList(node) {
