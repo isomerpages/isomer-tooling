@@ -31,7 +31,7 @@ function fixInvalidTableHeaders() {
                         default:
                             throw new Error(`Invalid content type "${child.type}" in table header`);
                     }
-                }).filter(item => item !== null);
+                }).flat().filter(item => item !== null);
             }
         }
 
@@ -55,7 +55,15 @@ function fixInvalidTableHeaders() {
 }
 
 function fixUnorderedList(node) {
-    return node.content[0].content[0]
+    return node.content.map((listItem) => ({
+        type: 'paragraph',
+        content: [
+            {
+                text: listItem.content.map((listItemChild) => listItemChild.content[0].text).join(' '),
+                type: 'text'
+            }
+        ]
+    }))
 }
 
 function isHardBreakParagraph(node) {
