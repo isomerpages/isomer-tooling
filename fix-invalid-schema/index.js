@@ -132,6 +132,29 @@ function removeEmptyProseComponent() {
         }
         return node;
     }
+
+    traverse(jsonData);
+    writeFile(jsonData);
+}
+
+function fixImageSrc() {
+    const jsonData = readFile();
+
+    function traverse(node) {
+        if (node.type === 'image' && node.src === undefined) {
+            node.src = '';
+        }   
+
+        // Traverse all properties
+        for (const key in node) {
+            if (Array.isArray(node[key])) {
+                node[key].forEach(item => traverse(item));
+            } else if (typeof node[key] === 'object') {
+                traverse(node[key]);
+            }
+        }
+    }
+
     traverse(jsonData);
     writeFile(jsonData);
 }
@@ -139,3 +162,4 @@ function removeEmptyProseComponent() {
 fixInvalidTableHeaders()
 fixHeadingFrom1To2()
 removeEmptyProseComponent()
+fixImageSrc()
