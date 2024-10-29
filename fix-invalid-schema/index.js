@@ -59,7 +59,7 @@ function fixInvalidTableHeaders() {
                         case 'unorderedList':
                             return REPLACE_TABLE_HEADER_TO_TABLE_CELL ? child : fixUnorderedList(child);
                         case 'paragraph':
-                            return isHardBreakParagraph(child) ? null : child;
+                            return isHardBreakParagraph(child) || isEmptyStringParagraph(child) ? null : child;
                         default:
                             throw new Error(`Invalid content type "${child.type}" in table header`);
                     }
@@ -94,6 +94,28 @@ function isHardBreakParagraph(node) {
         }]
     }
     return JSON.stringify(node) === JSON.stringify(hardBreakParagraph);
+}
+
+function isEmptyStringParagraph(node) {
+    const emptyStringParagraph =  {
+        type: "paragraph",
+        content: [
+            {
+                text: " ",
+                type: "text"
+            }
+        ]
+    }
+    const emptyStringParagraph2 =  {
+        type: "paragraph",
+        content: [
+            {
+                text: " ",
+                type: "text"
+            }
+        ]
+    }
+    return JSON.stringify(node) === JSON.stringify(emptyStringParagraph) || JSON.stringify(node) === JSON.stringify(emptyStringParagraph2);
 }
 
 function fixHeadingFrom1To2() {
