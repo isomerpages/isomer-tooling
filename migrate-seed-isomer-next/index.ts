@@ -12,8 +12,7 @@ import { GET_ALL_RESOURCES_WITH_FULL_PERMALINKS } from "./constants";
 // These are the sites to migrate and their corresponding site IDs inside the
 // Studio database.
 export const MIGRATING_SITES_MAPPING: Record<string, number> = {
-  // "mof-spor-next": 9,
-  // "mof-spor-next": 10,
+  "mof-spor-next": 10,
 };
 
 // Do not touch below this line
@@ -237,12 +236,21 @@ async function seedDatabase(client: Client, siteId: number, siteName: string) {
   const schemaDir = path.join(__dirname, "repos", siteName, "schema");
   await processDirectory(schemaDir, null);
 
-  // await importSiteConfig(client, siteId, siteName);
+  await importSiteConfig(client, siteId, siteName);
   await importNavbar(client, siteId, siteName);
   await importFooter(client, siteId, siteName);
 }
 
 async function createBlob(client: Client, content: any): Promise<number> {
+  if (!content.page) {
+    // For _pages.json
+    const result = await client.query(
+      `INSERT INTO public."Blob" (content) VALUES ($1) RETURNING id`,
+      [JSON.stringify(content)]
+    );
+    return result.rows[0].id;
+  }
+
   const { permalink, lastModified, ...rest } = content.page;
   const newContent = {
     ...content,
@@ -344,14 +352,14 @@ async function importNavbar(client: Client, siteId: number, siteName: string) {
   );
   const navbar = fs.readFileSync(navbarPath, "utf-8");
 
-  // await client.query(
-  //   `INSERT INTO public."Navbar" ("siteId", content) VALUES ($1, $2)`,
-  //   [siteId, navbar]
-  // );
   await client.query(
-    `UPDATE public."Navbar" SET content = $2 WHERE "siteId" = $1`,
+    `INSERT INTO public."Navbar" ("siteId", content) VALUES ($1, $2)`,
     [siteId, navbar]
   );
+  // await client.query(
+  //   `UPDATE public."Navbar" SET content = $2 WHERE "siteId" = $1`,
+  //   [siteId, navbar]
+  // );
 }
 
 async function importFooter(client: Client, siteId: number, siteName: string) {
@@ -365,14 +373,14 @@ async function importFooter(client: Client, siteId: number, siteName: string) {
   );
   const footer = fs.readFileSync(footerPath, "utf-8");
 
-  // await client.query(
-  //   `INSERT INTO public."Footer" ("siteId", content) VALUES ($1, $2)`,
-  //   [siteId, footer]
-  // );
   await client.query(
-    `UPDATE public."Footer" SET content = $2 WHERE "siteId" = $1`,
+    `INSERT INTO public."Footer" ("siteId", content) VALUES ($1, $2)`,
     [siteId, footer]
   );
+  // await client.query(
+  //   `UPDATE public."Footer" SET content = $2 WHERE "siteId" = $1`,
+  //   [siteId, footer]
+  // );
 }
 
 async function studioifySite(client: Client, siteId: number, siteName: string) {
