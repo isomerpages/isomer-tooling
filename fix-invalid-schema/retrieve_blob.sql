@@ -33,6 +33,9 @@ blobs_with_invalid_schema AS (
 		-- NOTE: will throw false positives since some instances we just need { type: 'image' }
 		OR jsonb_path_exists ("content",
 			'$.** ? (@.type == "image" && (@.src == null || !exists(@.src)))')
+		-- infocards with no title
+		OR jsonb_path_exists ("content",
+			'$.** ? (@.type == "infocards" && (@.title == null || !exists(@.title)))')
 )
 
 SELECT

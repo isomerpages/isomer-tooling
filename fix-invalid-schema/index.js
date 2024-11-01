@@ -168,7 +168,23 @@ function fixImageSrc() {
     writeFile(jsonData);
 }
 
+function fixInfocardsTitle() {
+    const jsonData = readFile();
+
+    function traverse(node) {
+        if (node.type === 'infocards' && node.title === undefined) {
+            node.title = '';
+        }
+
+        return traverseAllNodes(node, traverse);
+    }
+
+    traverse(jsonData);
+    writeFile(jsonData);
+}
+
 fixInvalidTableHeaders()
 fixHeadingFrom1To2()
 removeEmptyProseComponent()
 fixImageSrc()
+fixInfocardsTitle()
