@@ -183,8 +183,24 @@ function fixInfocardsTitle() {
     writeFile(jsonData);
 }
 
+function removeHardBreakInHeading() {
+    const jsonData = readFile();
+
+    function traverse(node) {
+        if (node.type === 'heading' && Array.isArray(node.content)) {
+            node.content = node.content.filter(item => item.type !== 'hardBreak');
+        }
+
+        return traverseAllNodes(node, traverse);
+    }
+
+    traverse(jsonData);
+    writeFile(jsonData);
+}
+
 fixInvalidTableHeaders()
 fixHeadingFrom1To2()
 removeEmptyProseComponent()
 fixImageSrc()
 fixInfocardsTitle()
+removeHardBreakInHeading()
