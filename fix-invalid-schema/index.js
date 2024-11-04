@@ -198,9 +198,34 @@ function removeHardBreakInHeading() {
     writeFile(jsonData);
 }
 
+function addEmptyParagraphInTableHeaderAndCell() {
+    const emptyParagraph = {
+        type: 'paragraph',
+        content: [{
+            text: '',
+            type: 'text'
+        }]
+    }
+
+    const jsonData = readFile();
+    function traverse(node) {
+        if ((node.type === 'tableHeader' || node.type === 'tableCell') && Array.isArray(node.content)) {
+            if (node.content.length === 0) {
+                node.content = [emptyParagraph];
+            }
+        }
+
+        return traverseAllNodes(node, traverse);
+    }
+
+    traverse(jsonData);
+    writeFile(jsonData);
+}
+
 fixInvalidTableHeaders()
 fixHeadingFrom1To2()
 removeEmptyProseComponent()
 fixImageSrc()
 fixInfocardsTitle()
 removeHardBreakInHeading()
+addEmptyParagraphInTableHeaderAndCell()
