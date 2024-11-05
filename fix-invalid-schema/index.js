@@ -222,11 +222,14 @@ function addEmptyParagraphInTableHeaderAndCell() {
     writeFile(jsonData);
 }
 
-function removeEmptyUnorderedList() {
+function removeEmptyList() {
     const jsonData = readFile();
 
     function traverse(node) {
-        if (node.type === 'unorderedList' && Array.isArray(node.content)) {
+        if (
+            (node.type === 'unorderedList' || node.type === 'orderedList') &&
+            Array.isArray(node.content)
+        ) {
             // Filter out list items with empty content
             node.content = node.content.filter(item => {
                 return item.content && item.content.length > 0;
@@ -252,5 +255,5 @@ fixImageSrc()
 fixInfocardsTitle()
 removeHardBreakInHeading()
 addEmptyParagraphInTableHeaderAndCell()
-removeEmptyUnorderedList()
+removeEmptyList()
 
