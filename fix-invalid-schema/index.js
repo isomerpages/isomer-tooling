@@ -248,6 +248,21 @@ function removeEmptyList() {
     writeFile(jsonData);
 }
 
+function convertImageAltFromNumberToText() {
+    const jsonData = readFile();
+
+    function traverse(node) {
+        if (node.type === 'image' && node.alt && !isNaN(node.alt)) {
+            node.alt = node.alt.toString();
+        }
+
+        return traverseAllNodes(node, traverse);
+    }
+
+    traverse(jsonData);
+    writeFile(jsonData);
+}
+
 fixInvalidTableHeaders()
 fixHeadingFrom1To2()
 removeEmptyProseComponent()
@@ -256,4 +271,4 @@ fixInfocardsTitle()
 removeHardBreakInHeading()
 addEmptyParagraphInTableHeaderAndCell()
 removeEmptyList()
-
+convertImageAltFromNumberToText()
