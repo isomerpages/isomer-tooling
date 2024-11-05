@@ -1,109 +1,125 @@
 // Script for creating the JSON schema files using the CSV file with defined fields
 const Papa = require("papaparse");
+const fs = require("fs").promises;
+const {
+  convertHtmlToSchema,
+  getIsHtmlContainingRedundantDivs,
+} = require("./convert-tiptap");
+const path = require("path");
 
 // CONFIGURATION SETTINGS
 const CSV_FILE = "input.csv";
-const CSV_HEADERS = [
-  "TOSP",
-  "TOSP Description",
-  "Table no.",
-  "TOSP Common name",
-  "Setting",
-  "Ward Type",
-  "Surg Lower Bound",
-  "Surg Upper Bound",
-  "Surg Lower Bound w GST",
-  "Surg Upper Bound w GST",
-  "Ana Lower Bound",
-  "Ana Upper Bound",
-  "Ana Lower Bound w GST",
-  "Ana Upper Bound w GST",
-  "Hosp Lower Bound 1",
-  "Hosp Upper Bound 1 ",
-  "Hosp Lower Bound 2",
-  "Hosp Upper Bound 2",
-  "Hosp Lower Bound 3",
-  "Hosp Upper Bound 3",
-  "Hosp Lower Bound 1 w GST",
-  "Hosp Upper Bound 1 w GST",
-  "Hosp Lower Bound 2 w GST",
-  "Hosp Upper Bound 2 w GST",
-  "Hosp Lower Bound 3 w GST",
-  "Hosp Upper Bound 3 w GST",
-  "P25 Bill",
-  "P50 Bill",
-  "P75 Bill",
-  "P25 TOF",
-  "P50 TOF",
-  "P75 TOF",
-  "P25 Surg Fee",
-  "P50 Surg Fee",
-  "P75 Surg Fee",
-  "P25 Facility Fee",
-  "P50 Facility Fee",
-  "P75 Facility Fee",
-  "P25 Anaes Fee",
-  "P50 Anaes Fee",
-  "P75 Anaes Fee",
-  "P25 Implant Fee",
-  "P50 Implant Fee",
-  "P75 Implant Fee",
-  "P25 Other Fee",
-  "P50 Other Fee",
-  "P75 Other Fee",
-  "Explanatory note (on mouse-over)",
-  "Anaesthetist Fee Explanatory note (on mouse-over)",
-  "Hosp Fee Explantory note 1",
-  "Hosp Fee Explantory note 2",
-  "Hosp Fee Explantory note 3",
-  "Total Bill Size tooltip",
-  "TOSP category",
-  "Ref code 1",
-  "Ref code 2",
-  "Ref code 3",
-  "Editorial Status",
-];
-const JOIN_CSV_FILE = "join.csv";
-const JOIN_CSV_HEADERS = [
-  "TOSP",
-  "TOSP Description",
-  "Table no.",
-  "With FB?",
-  "Common name",
-  "Body Part 1",
-  "Body Part 2",
-  "Body Part 3",
-  "Specialty 1",
-  "Specialty 2",
-  "Specialty 3",
-  "Specialty 4",
-  "Specialty 5",
-  "Volume",
-  "Editorial Status",
-];
-const JOIN_COLUMN = "TOSP";
+const DESTINATION_URL_PREFIX =
+  "https://staging.d306f57gw0yhi9.amplifyapp.com/others/resources-and-statistics";
 
 const main = async () => {
   const reportItems = [];
 
   // Step 0: Create the output directory. If it exists, delete it first
   try {
-    await fs.rmdir("output", { recursive: true });
+    await fs.rm("output", { recursive: true });
   } catch (error) {
     // Ignore error if directory doesn't exist
   }
 
   await fs.mkdir("output");
 
-  // Step 1: Read the CSV files
+  // Step 1: Read the CSV file
   const csv = await fs.readFile(CSV_FILE, "utf-8");
-  const joinCsv = await fs.readFile(JOIN_CSV_FILE, "utf-8");
 
   // Step 2: Parse the CSV files
   const csvParse = Papa.parse(csv, { header: true });
-  const joinCsvParse = Papa.parse(joinCsv, { header: true });
 
-  // Template: https://github.com/isomerpages/moh-corp-next/blob/staging/schema/archive/cost-financing/TOSP-bill-infomation-template.json
+  // Step 3: Iterate through all the rows in the CSV file and convert the page
+  // contents into the Isomer JSON schema
+  for (const row of csvParse.data) {
+    const title = row["Page name"];
+    const category = row["Category"];
+    const publishDate = row["Published date"];
+
+    const originalSlug = row["Page link"].replace(
+      "https://www.moh.gov.sg/resources-statistics/",
+      ""
+    );
+    const fileName = originalSlug.replaceAll("/", "-");
+
+    const html = row["HTML"];
+
+    // const isHtmlContainingRedundantDivs =
+    //   getIsHtmlContainingRedundantDivs(html);
+
+    // if (html.includes("<div") && !isHtmlContainingRedundantDivs) {
+    //   // Skip if html contains any div or span tags that contain attributes
+    //   // that can have visual impact
+    //   reportItems.push({
+    //     title: typeof title === "string" ? title.replaceAll('"', '""') : title,
+    //     url: row["Page link"],
+    //     newUrl: `${DESTINATION_URL_PREFIX}/${fileName}`,
+    //     publishDate,
+    //     status: "Skipped",
+    //     remarks: "HTML contains div tags",
+    //   });
+    //   continue;
+    // } else if (html.includes("<div") && isHtmlContainingRedundantDivs) {
+    //   reportItems.push({
+    //     title: typeof title === "string" ? title.replaceAll('"', '""') : title,
+    //     url: row["Page link"],
+    //     newUrl: `${DESTINATION_URL_PREFIX}/${fileName}`,
+    //     publishDate,
+    //     status: "Migrated",
+    //     remarks: "HTML contained redundant div tags that were removed",
+    //   });
+    // } else
+    if (html.includes("<iframe")) {
+      reportItems.push({
+        title: typeof title === "string" ? title.replaceAll('"', '""') : title,
+        url: row["Page link"],
+        newUrl: `${DESTINATION_URL_PREFIX}/${fileName}`,
+        publishDate,
+        status: "Migrated",
+        remarks: "HTML contains iframe tags",
+      });
+    } else if (html.includes("<img ")) {
+      reportItems.push({
+        title: typeof title === "string" ? title.replaceAll('"', '""') : title,
+        url: row["Page link"],
+        newUrl: `${DESTINATION_URL_PREFIX}/${fileName}`,
+        publishDate,
+        status: "Needs review",
+        remarks: "HTML contains img tags",
+      });
+    } else {
+      reportItems.push({
+        title: typeof title === "string" ? title.replaceAll('"', '""') : title,
+        url: row["Page link"],
+        newUrl: `${DESTINATION_URL_PREFIX}/${fileName}`,
+        publishDate,
+        status: "Migrated",
+        remarks: "",
+      });
+    }
+
+    const schema = convertHtmlToSchema(title, publishDate, category, html);
+
+    // Save schema to file
+    await fs.writeFile(
+      `output/${fileName}.json`,
+      JSON.stringify(schema, null, 2)
+    );
+  }
+
+  // Step 4: Save the report to a file
+  const csvReport = reportItems.map((item, index) => {
+    return `${index + 1},"${item.title}","${item.url}","${item.newUrl}","${
+      item.publishDate
+    }","${item.status}","${item.remarks}"`;
+  });
+  const csvHeaders =
+    "No.,Title,Original URL,Staging URL,Publish Date,Status,Remarks\n";
+  await fs.writeFile(
+    "csv-migration-results.csv",
+    csvHeaders + csvReport.join("\n")
+  );
 };
 
 main();

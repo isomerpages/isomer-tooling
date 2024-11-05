@@ -24,11 +24,59 @@ const { Text } = require("@tiptap/extension-text");
 const { Underline } = require("@tiptap/extension-underline");
 const { generateJSON } = require("@tiptap/html");
 const { Node } = require("@tiptap/core");
+const jsdom = require("jsdom");
+
+const { JSDOM } = jsdom;
+const dom = new JSDOM(
+  `<html>
+      <div class="element"></div>
+    </html>`
+);
+const window = dom.window;
+const document = window.document;
+global.document = document;
+global.window = window;
+
+const getIsHtmlContainingRedundantDivs = (html) => {
+  const dom = new JSDOM(html);
+  const subDoc = dom.window.document;
+  const divs = subDoc.querySelectorAll("div");
+
+  return Array.from(divs).some((div) => {
+    // Check if the div is empty or contains only whitespace
+    if (!div.hasChildNodes() || div.textContent.trim() === "") {
+      return true;
+    }
+
+    // Check if the div has no attributes
+    if (div.attributes.length === 0) {
+      return true;
+    }
+
+    // Check for specific attributes that might affect rendering
+    const impactAttributes = [
+      "style",
+      "class",
+      "onclick",
+      "onmouseover",
+      "onmouseout",
+    ];
+
+    for (let attr of div.attributes) {
+      if (impactAttributes.includes(attr.name)) {
+        return false;
+      }
+    }
+
+    // If none of the checks above indicated an impact, the div is redundant
+    return true;
+  });
+};
 
 // Converts a Tiptap-based schema to an Isomer Next schema
 // tiptapSchema: The schema object from Tiptap
 // headerBlock: A block to add to the beginning of the schema
-const convertFromTiptap = (tiptapSchema, headerBlock) => {
+const convertFromTiptap = (schema, headerBlock) => {
   // Iterate through all the items in the content key of the schema and group
   // them into a prose block. If a "type": "iframe" is found, do not add to the
   // current prose block, keep it separate and continue the process for the
@@ -252,7 +300,7 @@ const getCleanedSchema = (schema) => {
   );
 };
 
-export const convertHtmlToSchema = (title, publishDate, category, html) => {
+const convertHtmlToSchema = (title, publishDate, category, html) => {
   const output = generateJSON(html, [
     // Blockquote,
     Bold,
@@ -380,12 +428,8 @@ export const convertHtmlToSchema = (title, publishDate, category, html) => {
     }),
   ]);
 
-  // Make the date human-readable in the format "1 Jan 2021"
-  const humanDate = new Date(publishDate).toLocaleDateString("en-SG", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+  // Make the date human-readable in the format "DD/MM/YYYY"
+  const humanDate = new Date(publishDate).toLocaleDateString("en-GB");
 
   // Place output into Isomer Schema format
   const schema = {
@@ -394,11 +438,17 @@ export const convertHtmlToSchema = (title, publishDate, category, html) => {
       title: title.toString(),
       category,
       articlePageHeader: {
-        summary: [""],
+        summary: "",
       },
       date: humanDate,
     },
     version: "0.1.0",
+    content: getCleanedSchema(output.content),
+  };
+
+  const result = convertFromTiptap(schema);
+  return {
+    ...result,
     content: [
       {
         type: "callout",
@@ -417,9 +467,12 @@ export const convertHtmlToSchema = (title, publishDate, category, html) => {
           ],
         },
       },
-      ...getCleanedSchema(output.content),
+      ...result.content,
     ],
   };
+};
 
-  return convertFromTiptap(schema);
+module.exports = {
+  convertHtmlToSchema,
+  getIsHtmlContainingRedundantDivs,
 };
