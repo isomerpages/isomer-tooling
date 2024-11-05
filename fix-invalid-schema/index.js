@@ -222,6 +222,29 @@ function addEmptyParagraphInTableHeaderAndCell() {
     writeFile(jsonData);
 }
 
+function removeEmptyUnorderedList() {
+    const jsonData = readFile();
+
+    function traverse(node) {
+        if (node.type === 'unorderedList' && Array.isArray(node.content)) {
+            // Filter out list items with empty content
+            node.content = node.content.filter(item => {
+                return item.content && item.content.length > 0;
+            });
+
+            // Remove the entire unordered list if it has no items left
+            if (node.content.length === 0) {
+                return null;
+            }
+        }
+
+        return traverseAllNodes(node, traverse);
+    }
+
+    traverse(jsonData);
+    writeFile(jsonData);
+}
+
 fixInvalidTableHeaders()
 fixHeadingFrom1To2()
 removeEmptyProseComponent()
@@ -229,3 +252,5 @@ fixImageSrc()
 fixInfocardsTitle()
 removeHardBreakInHeading()
 addEmptyParagraphInTableHeaderAndCell()
+removeEmptyUnorderedList()
+
