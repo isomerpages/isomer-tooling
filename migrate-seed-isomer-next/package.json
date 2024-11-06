@@ -8,8 +8,8 @@
     "start": "tsx index.ts",
     "convert": "tsx migrate-html.ts",
     "links": "tsx convert-links.ts",
-    "jump:prod": "source .ssh/.env.prod && ssh -L 5433:$DB_HOST:5432 $SSH_USER@$SSH_HOST -i .ssh/isomer-next-prod-bastion",
-    "jump:vapt": "source .ssh/.env.vapt && ssh -L 5433:$DB_HOST:5432 $SSH_USER@$SSH_HOST -i .ssh/isomer-next-vapt-bastion"
+    "jump:prod": "source .ssh/.env.prod && ssh -L 5433:$DB_HOST:5432 $SSH_USER@$SSH_HOST -i .ssh/isomer-next-prod-bastion.pem",
+    "jump:staging": "source .ssh/.env.staging && ssh -L 5433:$DB_HOST:5432 $SSH_USER@$SSH_HOST -i .ssh/isomer-next-staging-bastion.pem"
   },
   "keywords": [],
   "author": "",

@@ -210,6 +210,7 @@ async function seedDatabase(client: Client, siteId: number, siteName: string) {
         : path.basename(page.name, ".json").toLowerCase(); // Only use the file name without extension
       const isCollectionLink =
         content.layout === "link" || content.layout === "file";
+      const isPageOrder = page.name === "_pages.json";
 
       if (content.layout === "file") {
         content.layout = "link";
@@ -226,6 +227,8 @@ async function seedDatabase(client: Client, siteId: number, siteName: string) {
           ? isCollectionLink
             ? "CollectionLink"
             : "CollectionPage"
+          : isPageOrder
+          ? "FolderMeta"
           : "Page",
         siteId,
       });
@@ -283,7 +286,8 @@ async function createResource(
       | "RootPage"
       | "Collection"
       | "CollectionPage"
-      | "CollectionLink";
+      | "CollectionLink"
+      | "FolderMeta";
     siteId: number;
   }
 ): Promise<number> {
