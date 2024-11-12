@@ -12,7 +12,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "uploadS3": "source .env && ts-node uploadToS3.ts",
-    "uploadAlgolia": "source .env && ts-node uploadToAlgolia.ts"
+    "uploadAlgolia": "source .env && ts-node uploadToAlgolia.ts",
+    "deleteAlgoliaRecords": "source .env && ts-node deleteAlgoliaRecords.ts"
   },
   "devDependencies": {
     "@types/md5": "^2.3.5",
