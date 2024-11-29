@@ -1,0 +1,16 @@
+{
+  "name": "find-schema-patterns",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "source .env && node index.js",
+    "jump:prod": "source .env && ssh -L 5433:$DB_HOST:5432 $SSH_USER@$SSH_HOST -i isomer-next-prod-bastion.pem"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "pg": "^8.13.1"
+  }
+}
