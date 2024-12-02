@@ -7,6 +7,7 @@ setup-hosting/
 docs/
 images/
 pdf/
+*.csv
 
 # JetBrains settings
 .idea/
