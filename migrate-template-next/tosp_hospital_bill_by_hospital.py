@@ -31,26 +31,45 @@ def get_hospital_bill_by_hospital(records):
   # Get the Inpatient records
   inpatient_records = [record for record in records if 'Day Surgery' not in record['Ward Type']]
 
-  if len(day_surgery_records) + len(inpatient_records) == 0:
-    # Do nothing since there are no records
-    return []
-
   # Prepare output for this section
   hospital_bill_by_hospital_content = []
 
-  hospital_bill_by_hospital_content.append({
+  if len(day_surgery_records) + len(inpatient_records) == 0:
+    hospital_bill_by_hospital_content.append({
     "type": "paragraph",
     "content": [
       {
         "type": "text",
+        "marks": [
+          {
+            "type": "italic"
+          }
+        ],
+        "text": "No record found."
+      },
+      {
+        "type": "text",
         "marks": [],
-        "text": "Based on transacted bills from 1 January 2022 to 31 December 2022. The amount shown covers all cost components inclusive of GST. Only hospitals / wards with sufficient cases are shown. The amount shown covers all cost component inclusive of GST."
+        "text": " Contact your healthcare provider if you have questions on your hospital bill."
       }
     ]
   })
+  else:
+    pass
 
   # Add day surgery section
   if len(day_surgery_records) > 0:
+    hospital_bill_by_hospital_content.append({
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "marks": [],
+          "text": "Based on transacted bills from 1 January 2022 to 31 December 2022. The amount shown covers all cost components inclusive of GST. Only hospitals / wards with sufficient cases are shown. The amount shown covers all cost component inclusive of GST."
+        }
+      ]
+    })
+
     hospital_bill_by_hospital_content.append({
       "type": "heading",
       "attrs": {

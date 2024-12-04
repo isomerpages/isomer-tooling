@@ -36,9 +36,7 @@ def create_tosp_page(tosp_code, tosp_records, tosp_by_hospital, surg_ann_records
         "title": first_record['TOSP Code'] + " - " + first_record['TOSP Description'],
         "category": body_part,
         "articlePageHeader": {
-          "summary": [
-            first_record['TOSP Common name']
-          ]
+          "summary": first_record['TOSP Common name']
         }
       },
       "layout": "article",
@@ -156,8 +154,12 @@ def create_tosp_page(tosp_code, tosp_records, tosp_by_hospital, surg_ann_records
           "content": [
             {
               "type": "text",
-              "marks": [],
-              "text": "<b>Talk to your insurer to find out what your insurance covers and how much you have to pay out-of-pocket. Contact your healthcare provider if you have questions on your hospital bill.</b>"
+              "marks": [
+                {
+                  "type": "bold"
+                }
+              ],
+              "text": "Talk to your insurer to find out what your insurance covers and how much you have to pay out-of-pocket. Contact your healthcare provider if you have questions on your hospital bill."
             }
           ]
         },
@@ -166,8 +168,36 @@ def create_tosp_page(tosp_code, tosp_records, tosp_by_hospital, surg_ann_records
           "content": [
             {
               "type": "text",
-              "marks": [],
-              "text": "<b>Download <a href='/files/managing-medical-expenses/fees-benchmark/fee-publication-data-jan22-dec22-(for-download).xlsx'>all hospital bill amounts [XLXS, 1.2 MB]</a> in excel.</b>"
+              "marks": [
+                {
+                  "type": "bold"
+                }
+              ],
+              "text": "Download "
+            },
+            {
+              "type": "text",
+              "marks": [
+                {
+                  "type": "link",
+                  "attrs": {
+                    "href": "https://isomer-user-content.by.gov.sg/3/f9cba44d-6757-4b0a-a374-e8574ee06d8e/fee-publication-data-jan22-dec22-(for-download).xlsx"
+                  }
+                },
+                {
+                  "type": "bold"
+                }
+              ],
+              "text": "all hospital bill amounts [XLXS, 1.2 MB]" 
+            },
+            {
+              "type": "text",
+              "marks": [
+                {
+                  "type": "bold"
+                }
+              ],
+              "text": " in excel."
             }
           ]
         },
@@ -176,8 +206,60 @@ def create_tosp_page(tosp_code, tosp_records, tosp_by_hospital, surg_ann_records
           "content": [
             {
               "type": "text",
-              "marks": [],
-              "text": "<b>Download full list of fee benchmarks in <a href='/files/managing-medical-expenses/fees-benchmark/full-list-of-fee-benchmarks_010424.pdf'>PDF version [PDF, 2.5 MB]</a> or <a href='/files/managing-medical-expenses/fees-benchmark/full-list-of-fee-benchmarks-(wef-1-april-2024).xlsx'>Excel version [XLXS, 209 KB]</a>.</b>"
+              "marks": [
+                {
+                  "type": "bold"
+                }
+              ],
+              "text": "Download full list of fee benchmarks in "
+            },
+            {
+              "type": "text",
+              "marks": [
+                {
+                  "type": "link",
+                  "attrs": {
+                    "href": "https://isomer-user-content.by.gov.sg/3/69518286-22ab-4366-8198-45ea4b624ecb/full-list-of-fee-benchmarks_010424.pdf"
+                  }
+                },
+                {
+                  "type": "bold"
+                }
+              ],
+              "text": "PDF version [PDF, 2.5 MB]" 
+            },
+            {
+              "type": "text",
+              "marks": [
+                {
+                  "type": "bold"
+                }
+              ],
+              "text": " or "
+            },
+            {
+              "type": "text",
+              "marks": [
+                {
+                  "type": "link",
+                  "attrs": {
+                    "href": "https://isomer-user-content.by.gov.sg/3/e43735ff-2627-4dbf-9ad7-de4a3a4b7c16/full-list-of-fee-benchmarks-(wef-1-april-2024).xlsx"
+                  }
+                },
+                {
+                  "type": "bold"
+                }
+              ],
+              "text": "Excel version [XLXS, 209 KB]" 
+            },
+            {
+              "type": "text",
+              "marks": [
+                {
+                  "type": "bold"
+                }
+              ],
+              "text": "."
             }
           ]
         },
@@ -199,7 +281,7 @@ def create_tosp_page(tosp_code, tosp_records, tosp_by_hospital, surg_ann_records
                 {
                   "type": "link",
                   "attrs": {
-                    "href": "/managing-expenses/bills-and-fee-benchmarks/hospital-bills-and-fee-benchmarks"
+                    "href": "/managing-expenses/bills-and-fee-benchmarks/hospital-bills-and-fee-benchmarks/"
                   }
                 },
                 {
@@ -220,8 +302,12 @@ def create_tosp_page(tosp_code, tosp_records, tosp_by_hospital, surg_ann_records
           "content": [
             {
               "type": "text",
-              "marks": [],
-              "text": "<b>Note:</b>"
+              "marks": [
+                {
+                  "type": "bold"
+                }
+              ],
+              "text": "Note:"
             }
           ]
         },

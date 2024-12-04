@@ -10,26 +10,45 @@ def get_hospital_bill_overall(records):
   public_inpatient_records = [record for record in records if record['Ward Type'] in ['Ward A', 'Ward B1', 'Ward B2', 'Ward C']]
   private_inpatient_records = [record for record in records if record['Ward Type'] in ['Clinics', 'Inpatient']]
 
-  if len(public_day_surgery_records) + len(private_day_surgery_records) + len(public_inpatient_records) + len(private_inpatient_records) == 0:
-    # Do nothing since there are no records
-    return []
-
   # Prepare output for this section
   hospital_bill_overall_content = []
-
-  hospital_bill_overall_content.append({
+  
+  if len(public_day_surgery_records) + len(private_day_surgery_records) + len(public_inpatient_records) + len(private_inpatient_records) == 0:
+    hospital_bill_overall_content.append({
     "type": "paragraph",
     "content": [
       {
         "type": "text",
+        "marks": [
+          {
+            "type": "italic"
+          }
+        ],
+        "text": "No record found."
+      },
+      {
+        "type": "text",
         "marks": [],
-        "text": "Based on transacted bills from 1 January 2022 to 31 December 2022. The amount shown covers all cost components inclusive of GST."
+        "text": " Contact your healthcare provider if you have questions on your hospital bill."
       }
     ]
   })
+  else:
+    pass
 
   # Add day surgery section
   if (len(public_day_surgery_records) + len(private_day_surgery_records)) > 0:
+    hospital_bill_overall_content.append({
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "marks": [],
+          "text": "Based on transacted bills from 1 January 2022 to 31 December 2022. The amount shown covers all cost components inclusive of GST."
+        }
+      ]
+    })
+
     hospital_bill_overall_content.append({
       "type": "heading",
       "attrs": {
@@ -43,6 +62,7 @@ def get_hospital_bill_overall(records):
         }
       ]
     })
+
     hospital_bill_day_surgery_content = [
       {
         "type": "tableRow",
