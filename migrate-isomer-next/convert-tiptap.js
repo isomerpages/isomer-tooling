@@ -25,6 +25,20 @@ const { Underline } = require("@tiptap/extension-underline");
 const { generateJSON } = require("@tiptap/html");
 const { Node } = require("@tiptap/core");
 const jsdom = require("jsdom");
+const fs = require("fs");
+const { mkdir } = require("fs/promises");
+const { Readable } = require("stream");
+const { finished } = require("stream/promises");
+const path = require("path");
+
+// This is the base URL for the site, used for downloading images and files
+const SITE_BASE_URL = "https://www.gov.sg";
+// This is the path prefix for the folder that will host the downloaded images
+// inside the GitHub repository relative to the `public` folder
+const IMAGES_PATH_PREFIX = "/images/interviews";
+// This is the path prefix for the folder that will host the downloaded files
+// inside the GitHub repository relative to the `public` folder
+const FILES_PATH_PREFIX = "/files/interviews";
 
 const { JSDOM } = jsdom;
 const dom = new JSDOM(
@@ -36,6 +50,40 @@ const window = dom.window;
 const document = window.document;
 global.document = document;
 global.window = window;
+
+global.IMAGE_DOWNLOADS = {};
+global.FILE_DOWNLOADS = {};
+let PERMALINK = "";
+
+const fetchWithRetry = async (url) => {
+  while (true) {
+    const res = await fetch(url);
+    if (res.status === 403) {
+      console.error("We are getting rate limited!");
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+    } else {
+      return res;
+    }
+  }
+};
+
+const downloadFile = async (url, type, fileName) => {
+  // console.log("Downloading file:", url);
+  const res = await fetchWithRetry(url);
+  const destination = path.resolve("./downloads", type, PERMALINK, fileName);
+  const folder = path.dirname(destination);
+  if (!fs.existsSync(folder)) await mkdir(folder, { recursive: true });
+  try {
+    const fileStream = fs.createWriteStream(destination, { flags: "wx" });
+    await finished(Readable.fromWeb(res.body).pipe(fileStream));
+  } catch (err) {
+    if (err.code === "EEXIST") {
+      // console.log("File already exists:", destination);
+    } else {
+      console.error(err);
+    }
+  }
+};
 
 const getIsHtmlContainingRedundantDivs = (html) => {
   const dom = new JSDOM(html);
@@ -92,21 +140,203 @@ const convertFromTiptap = (schema, headerBlock) => {
     content: [],
   };
 
-  schema.content.forEach((component) => {
+  schema.forEach((component) => {
     if (component.type === "iframe") {
       outputContent.push(proseBlock);
-      outputContent.push(component);
+
+      if (component.content) {
+        const elem = document.createElement("div");
+        elem.innerHTML = component.content;
+        const iframe = elem.querySelector("iframe");
+        const src = iframe.getAttribute("src");
+        const srcUrl = new URL(src);
+
+        if (srcUrl.host.includes("youtube.com")) {
+          const title = iframe.getAttribute("title") || "YouTube video";
+
+          outputContent.push({
+            type: "video",
+            title,
+            url: src,
+          });
+        } else if (
+          srcUrl.host.includes("google.com") &&
+          srcUrl.pathname.startsWith("/maps")
+        ) {
+          const title = iframe.getAttribute("title") || "Google Maps";
+
+          outputContent.push({
+            type: "map",
+            title,
+            url: src,
+          });
+        } else {
+          outputContent.push(component);
+        }
+      }
+
       proseBlock = {
         type: "prose",
         content: [],
       };
     } else if (component.type === "image") {
       outputContent.push(proseBlock);
-      outputContent.push(component);
+      const { attrs, ...rest } = component;
+      const { alt, src } = attrs;
+
+      if (alt.length > 120) {
+        console.log("Image alt text is too long:", alt);
+        console.log("Image source:", src);
+      }
+
+      const fileName = src.split("?")[0].split("/").pop();
+      const newSrc = `${IMAGES_PATH_PREFIX}/${PERMALINK}/${fileName}`;
+      if (Object.keys(global.IMAGE_DOWNLOADS).includes(src)) {
+        console.log("Image already downloaded:", src);
+      }
+
+      global.IMAGE_DOWNLOADS[src] = newSrc;
+
+      outputContent.push({
+        src: newSrc,
+        alt,
+        ...rest,
+      });
       proseBlock = {
         type: "prose",
         content: [],
       };
+    } else if (component.type === "infobar") {
+      outputContent.push(proseBlock);
+      const { attrs, ...rest } = component;
+      outputContent.push({
+        ...attrs,
+        ...rest,
+      });
+      proseBlock = {
+        type: "prose",
+        content: [],
+      };
+    } else if (component.type === "contentpic") {
+      outputContent.push(proseBlock);
+      // console.log(JSON.stringify(component));
+      const { attrs, content, ...rest } = component;
+      const { imageAlt, imageSrc } = attrs;
+
+      if (!imageAlt) {
+        console.log(
+          "Contentpic image alt text is missing:",
+          JSON.stringify(component)
+        );
+      } else if (imageAlt.length > 120) {
+        console.log("Contentpic image alt text is too long:", imageAlt);
+        console.log("Contentpic image source:", imageSrc);
+      }
+
+      const fileName = imageSrc.split("?")[0].split("/").pop();
+      const newSrc = `${IMAGES_PATH_PREFIX}/${PERMALINK}/${fileName}`;
+      if (Object.keys(global.IMAGE_DOWNLOADS).includes(imageSrc)) {
+        console.log("Image already downloaded:", imageSrc);
+      }
+
+      global.IMAGE_DOWNLOADS[imageSrc] = newSrc;
+      // const newContent = content
+      //   .filter((c) => c.type !== "image")
+      //   .map((c) => {
+      //     if (c.type === "paragraph") {
+      //       const { attrs, ...rest } = c;
+      //       return {
+      //         ...rest,
+      //       };
+      //     }
+
+      //     if (c.type === "contentpic") {
+      //       return c.content[0];
+      //     }
+
+      //     return c;
+      //   });
+
+      // outputContent.push({
+      //   type: "prose",
+      //   content: [
+      //     {
+      //       type: "heading",
+      //       attrs: {
+      //         level: 2,
+      //       },
+      //       content: newContent[1].content
+      //         .filter((c) => c.type !== "hardBreak")
+      //         .map((c) => {
+      //           const { marks, ...rest } = c;
+      //           return {
+      //             ...rest,
+      //           };
+      //         }),
+      //     },
+      //   ],
+      // });
+
+      outputContent.push({
+        imageSrc: newSrc,
+        imageAlt,
+        ...rest,
+        content: {
+          type: "prose",
+          // content: [...newContent.slice(2), newContent[0]],
+          content,
+        },
+      });
+      proseBlock = {
+        type: "prose",
+        content: [],
+      };
+    } else if (
+      component.type === "paragraph" &&
+      component.content &&
+      component.content.length === 1 &&
+      component.content[0].type === "text" &&
+      component.content[0].marks &&
+      component.content[0].marks.some((mark) => mark.type === "link") &&
+      (component.content[0].text.toLocaleLowerCase() ===
+        "share your feedback" ||
+        component.content[0].text.toLocaleLowerCase() === "share your views")
+    ) {
+      outputContent.push(proseBlock);
+
+      outputContent.push({
+        type: "infobar",
+        title: "Have any thoughts and views on this?",
+        buttonLabel: "Share your feedback",
+        buttonUrl: component.content[0].marks[0].attrs.href,
+      });
+
+      proseBlock = {
+        type: "prose",
+        content: [],
+      };
+    } else if (component.type === "paragraph") {
+      const { attrs, ...rest } = component;
+      const newComponent = {
+        ...rest,
+      };
+
+      if (
+        attrs &&
+        attrs.class &&
+        attrs.class.length === 2 &&
+        attrs.class[0] === "h"
+      ) {
+        proseBlock.content.push({
+          type: "heading",
+          attrs: {
+            level: parseInt(attrs.class[1]),
+          },
+          content: newComponent.content,
+        });
+      } else {
+        proseBlock.content.push(newComponent);
+      }
     } else {
       proseBlock.content.push(component);
     }
@@ -116,10 +346,53 @@ const convertFromTiptap = (schema, headerBlock) => {
     outputContent.push(proseBlock);
   }
 
-  return {
-    ...schema,
-    content: outputContent,
-  };
+  const finalContent = [];
+
+  outputContent.forEach((block) => {
+    if (block.type === "prose" && block.content.length > 0) {
+      const newProseContent = [];
+      block.content.forEach((component, index) => {
+        if (
+          component.type === "paragraph" &&
+          component.content.length === 1 &&
+          component.content[0].type === "hardBreak" &&
+          index < block.content.length - 1 &&
+          block.content[index + 1].type === "heading"
+        ) {
+          // Skip the hardBreak if it is followed by a heading
+        } else if (
+          component.type === "divider" &&
+          index < block.content.length - 1 &&
+          block.content[index + 1].type === "heading"
+        ) {
+          // Skip the divider if it is followed by a heading
+        } else if (
+          component.type === "heading" &&
+          component.attrs.level === 4
+        ) {
+          newProseContent.push({
+            ...component,
+            attrs: {
+              level: 2,
+            },
+          });
+        } else {
+          newProseContent.push(component);
+        }
+      });
+
+      finalContent.push({
+        ...block,
+        content: newProseContent,
+      });
+    } else if (block.type === "prose" && block.content.length === 0) {
+      // Skip empty prose blocks
+    } else {
+      finalContent.push(block);
+    }
+  });
+
+  return finalContent;
 };
 
 // Performs some cleaning up of the Tiptap schema due to poor usage of HTML
@@ -212,7 +485,9 @@ const getCleanedSchema = (schema) => {
         (component.type === "paragraph" ||
           component.type === "heading" ||
           component.type === "tableHeader") &&
-        (!component.content || component.content.length === 0)
+        (!component.content ||
+          component.content.length === 0 ||
+          component.content.every((c) => c.type === "hardBreak"))
       ) {
         return false;
       }
@@ -267,7 +542,30 @@ const getCleanedSchema = (schema) => {
               href: mark.attrs.href,
             };
 
-            if (mark.attrs.target === "_blank") {
+            if (mark.attrs.href.startsWith("/docs")) {
+              const fileName = mark.attrs.href.split("?")[0].split("/").pop();
+              const newHref = `${FILES_PATH_PREFIX}/${PERMALINK}/${fileName}`;
+
+              if (
+                Object.keys(global.FILE_DOWNLOADS).includes(mark.attrs.href)
+              ) {
+                // console.log("File already downloaded:", mark.attrs.href);
+              }
+
+              global.FILE_DOWNLOADS[mark.attrs.href] = newHref;
+              console.log(global.FILE_DOWNLOADS);
+              downloadFile(
+                `${SITE_BASE_URL}${mark.attrs.href.replace(SITE_BASE_URL, "")}`,
+                "files",
+                fileName
+              );
+              newAttrs.href = newHref;
+            }
+
+            if (
+              mark.attrs.target === "_blank" &&
+              !mark.attrs.href.startsWith("/")
+            ) {
               newAttrs.target = "_blank";
             }
 
@@ -300,10 +598,112 @@ const getCleanedSchema = (schema) => {
   );
 };
 
-const convertHtmlToSchema = (title, publishDate, category, html) => {
-  const output = generateJSON(html, [
+/**
+ * Move all chldren out of an element, and remove the element.
+ */
+const unwrap = (el) => {
+  let parent = el.parentNode;
+
+  // Move all children to the parent element.
+  while (el.firstChild) parent.insertBefore(el.firstChild, el);
+
+  // Remove the empty element.
+  parent.removeChild(el);
+};
+
+/**
+ * Move all chldren out of an anchor, and set a replacement text.
+ */
+const unwrapLink = (el, replacementText) => {
+  let parent = el.parentNode;
+
+  // Move all children to the parent element.
+  while (el.firstChild) parent.insertBefore(el.firstChild, el);
+
+  // Keep the anchor in the dom but since it's empty we'll
+  // set a replacement text.
+  el.textContent = replacementText;
+};
+
+/**
+ * Wrap a dom node with another node.
+ */
+const wrap = (el, wrapper) => {
+  el.parentNode.insertBefore(wrapper, el);
+  wrapper.appendChild(el);
+};
+
+const fixTipTapContent = (html) => {
+  let container = document.createElement("div");
+  container.innerHTML = html;
+
+  let el;
+  // Move all images out of anchors, and set replacement text for the anchors.
+  while ((el = container.querySelector("a > img"))) {
+    unwrapLink(el.parentNode, el.getAttribute("alt") || "Image link");
+  }
+
+  // Move all images out of paragraphs.
+  while ((el = container.querySelector("p > img"))) {
+    unwrap(el.parentNode);
+  }
+
+  // Wrap all non-paragraph-wrapped anchors in paragraphs.
+  while ((el = container.querySelector("a:not(p a)"))) {
+    wrap(el, document.createElement("p"));
+  }
+
+  // Move youtube iframes out of paragraphs.
+  while ((el = container.querySelector('p > iframe[src*="youtube.com"]'))) {
+    unwrap(el.parentNode);
+  }
+
+  // Wrap youtube iframes in the proper tiptap-element.
+  while (
+    (el = container.querySelector(
+      ':not([data-youtube-video]) > iframe[src*="youtube.com"]'
+    ))
+  ) {
+    let wrapper = document.createElement("div");
+    wrapper.dataset.youtubeVideo = true;
+    wrap(el, wrapper);
+  }
+
+  return container.innerHTML;
+};
+
+const convertHtmlToSchema = async (html, permalink) => {
+  global.IMAGE_DOWNLOADS = {};
+  global.FILE_DOWNLOADS = {};
+  PERMALINK = permalink;
+
+  const output = generateJSON(fixTipTapContent(html), [
     // Blockquote,
-    Bold,
+    Bold.extend({
+      parseHTML() {
+        return [
+          {
+            tag: "strong",
+          },
+          {
+            tag: "dt",
+          },
+          {
+            tag: "b",
+            getAttrs: (node) => node.style.fontWeight !== "normal" && null,
+          },
+          {
+            style: "font-weight=400",
+            clearMark: (mark) => mark.type.name === this.name,
+          },
+          {
+            style: "font-weight",
+            getAttrs: (value) =>
+              /^(bold(er)?|[5-9]\d{2,})$/.test(value) && null,
+          },
+        ];
+      },
+    }),
     BulletList.extend({
       name: "unorderedList",
     }).configure({
@@ -318,7 +718,10 @@ const convertHtmlToSchema = (title, publishDate, category, html) => {
     Gapcursor,
     HardBreak,
     Heading.extend({
+      content: "text*",
       marks: "",
+    }).configure({
+      levels: [2, 3, 4, 5],
     }),
     History,
     HorizontalRule.extend({
@@ -335,7 +738,18 @@ const convertHtmlToSchema = (title, publishDate, category, html) => {
         class: "list-decimal",
       },
     }),
-    Paragraph,
+    Paragraph.extend({
+      addAttributes() {
+        return {
+          class: {
+            default: undefined,
+          },
+        };
+      },
+      parseHTML() {
+        return [{ tag: "p" }, { tag: "dd" }];
+      },
+    }),
     Strike,
     Superscript,
     Subscript,
@@ -377,12 +791,9 @@ const convertHtmlToSchema = (title, publishDate, category, html) => {
     // Iframe
     Node.create({
       name: "iframe",
-
       group: "block",
       atom: true,
-
       draggable: true,
-
       defining: true,
 
       addOptions() {
@@ -422,54 +833,302 @@ const convertHtmlToSchema = (title, publishDate, category, html) => {
         return [
           {
             tag: "iframe",
+            priority: 10000,
           },
         ];
       },
     }),
+    // Custom parser for Contentpic specific for CLC sites
+    // Node.create({
+    //   name: "contentpic",
+    //   group: "block",
+    //   atom: true,
+    //   draggable: true,
+    //   defining: true,
+    //   content: "paragraph*",
+
+    //   addAttributes() {
+    //     return {
+    //       imageSrc: {
+    //         default: null,
+    //         parseHTML: (element) => {
+    //           try {
+    //             const image = [
+    //               "col-md-2",
+    //               "col-md-3",
+    //               "col-md-4",
+    //               "col-md-5",
+    //               "col-md-6",
+    //               "col-md-7",
+    //               "col-md-8",
+    //               "col-md-9",
+    //             ].reduce((acc, cur) => {
+    //               if (acc) {
+    //                 return acc;
+    //               }
+
+    //               const child = element.getElementsByClassName(cur)[0];
+    //               if (child) {
+    //                 const image = child.getElementsByTagName("img")[0];
+    //                 return image;
+    //               }
+    //             }, undefined);
+
+    //             // console.log("test", element);
+    //             // console.log("test", image);
+
+    //             if (!image) {
+    //               return null;
+    //             }
+
+    //             return image.getAttribute("src");
+    //           } catch (e) {
+    //             console.log(element);
+    //             console.error(e);
+    //             throw e;
+    //           }
+    //         },
+    //       },
+    //       imageAlt: {
+    //         default: null,
+    //         parseHTML: (element) => {
+    //           const image = [
+    //             "col-md-2",
+    //             "col-md-3",
+    //             "col-md-4",
+    //             "col-md-5",
+    //             "col-md-6",
+    //             "col-md-7",
+    //             "col-md-8",
+    //             "col-md-9",
+    //           ].reduce((acc, cur) => {
+    //             if (acc) {
+    //               return acc;
+    //             }
+
+    //             const child = element.getElementsByClassName(cur)[0];
+    //             if (child) {
+    //               const image = child.getElementsByTagName("img")[0];
+    //               return image;
+    //             }
+    //           }, undefined);
+
+    //           if (!image) {
+    //             return null;
+    //           }
+
+    //           return image.getAttribute("alt");
+    //         },
+    //       },
+    //     };
+    //   },
+
+    //   parseHTML() {
+    //     return [
+    //       "col-md-2",
+    //       "col-md-3",
+    //       "col-md-4",
+    //       "col-md-5",
+    //       "col-md-6",
+    //       "col-md-7",
+    //       "col-md-8",
+    //       "col-md-9",
+    //     ].map((col) => ({
+    //       tag: `div.row:has(> div.${col} > img)`,
+    //     }));
+    //   },
+    // }),
+    // Node.create({
+    //   name: "contentpic",
+    //   group: "block",
+    //   atom: true,
+    //   draggable: true,
+    //   defining: true,
+    //   content: "paragraph*",
+
+    //   addAttributes() {
+    //     return {
+    //       imageSrc: {
+    //         default: null,
+    //         parseHTML: (element) => {
+    //           console.log(element);
+
+    //           try {
+    //             const child = element.getElementsByClassName(
+    //               "description-group--image"
+    //             )[0];
+    //             const image = child.getElementsByTagName("img")[0];
+
+    //             if (!image) {
+    //               return null;
+    //             }
+
+    //             return image.getAttribute("src");
+    //           } catch (e) {
+    //             console.log(element);
+    //             console.error(e);
+    //             throw e;
+    //           }
+    //         },
+    //       },
+    //       imageAlt: {
+    //         default: null,
+    //         parseHTML: (element) => {
+    //           console.log(element);
+    //           try {
+    //             const child = element.getElementsByClassName(
+    //               "description-group--image"
+    //             )[0];
+    //             const image = child.getElementsByTagName("img")[0];
+
+    //             if (!image) {
+    //               return null;
+    //             }
+
+    //             return image.getAttribute("alt");
+    //           } catch (e) {
+    //             console.log(element);
+    //             console.error(e);
+    //             throw e;
+    //           }
+    //         },
+    //       },
+    //     };
+    //   },
+
+    //   parseHTML() {
+    //     [
+    //       {
+    //         tag: "div:has(.contentpic)",
+    //       },
+    //     ];
+    //   },
+    // }),
+
+    // Custom parser for Infobar
+    //   Node.create({
+    //     name: "infobar",
+    //     group: "block",
+    //     atom: true,
+    //     draggable: true,
+    //     defining: true,
+    //     priority: 10001,
+    //     // content: "paragraph*",
+
+    //     addAttributes() {
+    //       return {
+    //         title: {
+    //           default: "Have any thoughts and views on this?",
+    //         },
+    //         buttonLabel: {
+    //           default: "Share your feedback",
+    //         },
+    //         buttonUrl: {
+    //           default: null,
+    //           parseHTML: (element) => {
+    //             try {
+    //               element.getAttribute("href");
+    //             } catch (e) {
+    //               console.log(element);
+    //               console.error(e);
+    //               throw e;
+    //             }
+    //           },
+    //         },
+    //       };
+    //     },
+
+    //     parseHTML() {
+    //       [
+    //         {
+    //           tag: "a:has(> button.btn--primary)",
+    //         },
+    //       ];
+    //     },
+    //   }),
   ]);
 
   // Make the date human-readable in the format "DD/MM/YYYY"
-  const humanDate = new Date(publishDate).toLocaleDateString("en-GB");
+  // const humanDate = new Date(publishDate).toLocaleDateString("en-GB");
 
   // Place output into Isomer Schema format
-  const schema = {
-    layout: "article",
-    page: {
-      title: title.toString(),
-      category,
-      articlePageHeader: {
-        summary: "",
-      },
-      date: humanDate,
-    },
-    version: "0.1.0",
-    content: getCleanedSchema(output.content),
+  // const schema = {
+  //   layout: "article",
+  //   page: {
+  //     title: title.toString(),
+  //     category,
+  //     articlePageHeader: {
+  //       summary: "",
+  //     },
+  //     date: humanDate,
+  //   },
+  //   version: "0.1.0",
+  //   content: getCleanedSchema(output.content),
+  // };
+
+  const schema = getCleanedSchema(output.content);
+  const result = convertFromTiptap(schema);
+
+  // Download all images
+  await Promise.all(
+    Object.keys(global.IMAGE_DOWNLOADS).map((url) => {
+      const fileName = global.IMAGE_DOWNLOADS[url].split("/").pop();
+      const path = url.replace(SITE_BASE_URL, "");
+
+      if (!path.startsWith("/")) {
+        // console.log("Invalid image path:", path);
+        return;
+      }
+
+      return downloadFile(`${SITE_BASE_URL}${path}`, "images", fileName);
+    })
+  );
+
+  console.log(global.FILE_DOWNLOADS);
+
+  // Download all files
+  await Promise.all(
+    Object.keys(global.FILE_DOWNLOADS).map((url) => {
+      const fileName = global.FILE_DOWNLOADS[url].split("/").pop();
+      const path = url.replace(SITE_BASE_URL, "");
+
+      if (!path.startsWith("/")) {
+        console.log("Invalid file path:", path);
+        return;
+      }
+
+      return downloadFile(`${SITE_BASE_URL}${path})}`, "files", fileName);
+    })
+  );
+
+  const filesMapping = {
+    ...global.IMAGE_DOWNLOADS,
+    ...global.FILE_DOWNLOADS,
   };
 
-  const result = convertFromTiptap(schema);
-  return {
-    ...result,
-    content: [
-      {
-        type: "callout",
-        content: {
-          type: "prose",
-          content: [
-            {
-              type: "paragraph",
-              content: [
-                {
-                  type: "text",
-                  text: "This article has been migrated from an earlier version of the site and may display formatting inconsistencies.",
-                },
-              ],
-            },
-          ],
-        },
-      },
-      ...result.content,
-    ],
-  };
+  // const data = await fs.promises.readFile("filesMapping.json");
+  console.log(filesMapping);
+
+  // let existingData = {};
+  // try {
+  //   existingData = JSON.parse(data);
+  // } catch (e) {
+  //   console.log("No existing data found");
+  // }
+  // const newData = {
+  //   ...existingData,
+  //   ...filesMapping,
+  // };
+
+  // await fs.promises.writeFile(
+  //   "filesMapping.json",
+  //   JSON.stringify(newData, null, 2),
+  //   (err) => {
+  //     if (err) throw err;
+  //   }
+  // );
+
+  return result;
 };
 
 module.exports = {
