@@ -1097,7 +1097,7 @@ const convertHtmlToSchema = async (html, permalink) => {
         return;
       }
 
-      return downloadFile(`${SITE_BASE_URL}${path})}`, "files", fileName);
+      return downloadFile(`${SITE_BASE_URL}${path}`, "files", fileName);
     })
   );
 
