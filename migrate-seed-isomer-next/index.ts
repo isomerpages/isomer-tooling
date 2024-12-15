@@ -434,6 +434,17 @@ async function studioifySite(client: Client, siteId: number, siteName: string) {
     resourcesMap
   );
   await updateSiteConfig(client, siteId, updatedSiteConfig);
+
+  console.log("Saving a mapping of the asset paths");
+  const assetsCsvHeaders = "Original Path,Assets Path\n";
+  const assetsCsv = Object.entries(assetsMap)
+    .map(([original, newAsset]) => `${original},${newAsset}`)
+    .join("\n");
+  fs.writeFileSync(
+    path.join(__dirname, `asset-mappings-${siteId}.csv`),
+    assetsCsvHeaders + assetsCsv,
+    "utf-8"
+  );
 }
 
 function getAssetsMapping(siteId: number, siteName: string) {
