@@ -9,6 +9,8 @@ import {
   BASE_COLLECTION_REF_JSON,
 } from "./constants";
 
+const DATA_FILE = "collections.csv";
+
 dayjs.extend(customParseFormat);
 
 const options = {
@@ -239,11 +241,7 @@ export const generateCollectionArticlePage = ({
   };
 };
 
-generateCollection(
-  "csa.csv",
-  "repos/csa-corp-next/schema/cls",
-  "repos/csa-corp-next/schema/our-programmes/certification-and-labelling-schemes/cls",
-);
+generateCollection(DATA_FILE, "repos/", "repos/");
 
 const getLevelTag = (level: number) => {
   if (!level) {

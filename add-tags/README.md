@@ -28,3 +28,22 @@ this script is used for creating tags for github repositories
 
 - after you've done the steps listed in pre-requisites, run `npx tsx add-tags.ts`
 - afterwards, cd into `/repos/<repo>` and run `git add` , `git commit` and `git push`
+
+# Seeding collections
+
+## Prerequisites
+
+- first, create a `data.csv` inside this folder
+- next, download the repository into the local folder here (by convention this is `repos`)
+- next, update the `collectionIndex` variable to have the correct `title` and `subtitle`
+- take note that the title, filename and tags are all custom at the moment and you would have to update them to the one you want. this is done in the first section of the `forEach` loop
+- double check that csa-corp-next/schema/our-programmes/certification-and-labelling-schemes/clsthe date format is correct also (`CLS_DATE_FORMAT`)
+- next, update the `generateCollection` so that the second argument will provide the path to the collection and the third is the path to the folder
+  - the path to the collection should be the path to the folder that houses the collection pages
+  - the path to the folder should be the path to the folder that the collection items are referencing
+- lastly, update the `ClsProduct` interface to have the correct properties and update it
+
+## Running the script
+
+- after you've done the steps listed in pre-requisites, run `npx tsx add-tags.ts`
+- afterwards, cd into `/repos/<repo>` and run `git add` , `git commit` and `git push`
