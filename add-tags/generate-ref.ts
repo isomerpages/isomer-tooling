@@ -62,7 +62,10 @@ interface GenerateIndexProps {
   title: string;
   subtitle: string;
 }
-export const generateIndex = ({ title, subtitle }: GenerateIndexProps) => {
+export const generateCollectionIndex = ({
+  title,
+  subtitle,
+}: GenerateIndexProps) => {
   return {
     ...BASE_COLLECTION_INDEX_JSON,
     page: {
@@ -72,6 +75,8 @@ export const generateIndex = ({ title, subtitle }: GenerateIndexProps) => {
     },
   };
 };
+
+export const generateFolderIndex = () => {};
 
 interface ClsProduct {
   brand: string;
@@ -96,7 +101,7 @@ export const generateCollection = (
 
   let counter = 0;
 
-  const collectionIndex = generateIndex({
+  const collectionIndex = generateCollectionIndex({
     title: "Cybersecurity Labelling Scheme (CLS) Product List",
     subtitle: "This page lists the products registered under the CLS.",
   });
@@ -112,6 +117,7 @@ export const generateCollection = (
   // date is in dd-mmm-yy
   records.forEach(
     ({ brand, product, model, category, level, date, image }: ClsProduct) => {
+      console.log("processing", model);
       const expiry = dayjs(date, CLS_DATE_FORMAT).format(
         COLLECTIONS_DATE_FORMAT,
       );
@@ -120,18 +126,20 @@ export const generateCollection = (
         .replaceAll(/[^a-zA-Z0-9-]+/g, "-");
       const title = `${brand}, ${model}`;
       const tags = [
-        { category: "CLS level", selected: [level] },
+        { category: "CLS level", selected: [getLevelTag(parseInt(level))] },
         { category: "Brand", selected: [brand] },
       ];
 
+      const imageSrc = image ?? "https://placehold.co/400";
+
       const collectionRefItem = generateRef({
-        ref: path.join(folderPath, filename),
+        ref: `/our-programmes/certification-and-labelling-schemes/cls/${filename}`,
         title,
         date: expiry,
         tags,
         category,
         description: product,
-        imageSrc: image,
+        imageSrc,
       });
 
       fs.writeFileSync(
@@ -144,7 +152,7 @@ export const generateCollection = (
         title,
         date: expiry,
         description: product,
-        imageSrc: image,
+        imageSrc,
         permalink: filename,
       });
 
@@ -231,4 +239,17 @@ export const generateCollectionArticlePage = ({
   };
 };
 
-generateCollection("test.csv", "collections", "articles");
+generateCollection(
+  "csa.csv",
+  "repos/csa-corp-next/schema/cls",
+  "repos/csa-corp-next/schema/our-programmes/certification-and-labelling-schemes/cls",
+);
+
+const getLevelTag = (level: number) => {
+  if (!level) {
+    console.error("received invalid input: ", level);
+    throw new Error();
+  }
+
+  return `${"*".repeat(level)} Level ${level}`;
+};
