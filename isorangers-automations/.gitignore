@@ -7,7 +7,10 @@ setup-hosting/
 docs/
 images/
 pdf/
+docs/
+json/
 *.csv
+*/.ipynb_checkpoints
 
 # JetBrains settings
 .idea/
