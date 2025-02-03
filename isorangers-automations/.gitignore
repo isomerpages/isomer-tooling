@@ -10,7 +10,7 @@ pdf/
 docs/
 json/
 *.csv
-*/.ipynb_checkpoints
+*.ipynb_checkpoints
 
 # JetBrains settings
 .idea/
