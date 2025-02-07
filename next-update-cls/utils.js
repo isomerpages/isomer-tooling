@@ -1,6 +1,6 @@
 const moment = require("moment");
 
-export const getLinkSchema = ({
+const getLinkSchema = ({
   articleId,
   category,
   brand,
@@ -41,7 +41,7 @@ export const getLinkSchema = ({
   };
 };
 
-export const getArticleSchema = ({
+const getArticleSchema = ({
   category,
   brand,
   model,
@@ -427,4 +427,9 @@ export const getArticleSchema = ({
       },
     ],
   };
+};
+
+module.exports = {
+  getLinkSchema,
+  getArticleSchema,
 };

@@ -63,229 +63,265 @@ const main = async () => {
 
     console.log("Connected to the database");
 
-    const allClsArticles = await client.query(RESOURCE_DB_QUERY, [
-      CLS_ARTICLES_FOLDER_RESOURCE_ID,
-    ]);
     const allClsActiveLinks = await client.query(RESOURCE_DB_QUERY, [
       CLS_ACTIVE_LINKS_COLLECTION_RESOURCE_ID,
-    ]);
-    const allClsArchivedLinks = await client.query(RESOURCE_DB_QUERY, [
-      CLS_ARCHIVED_LINKS_COLLECTION_RESOURCE_ID,
     ]);
 
     // Step 3: Find all items that are no longer active and move them to the archive
     // NOTE: We are using the "Shortlink" field, as that contains the permalink we need
-    const csvArchivedItems = archivedItems.data.map((item) =>
-      item["Shortlink"].replace("https://www.csa.gov.sg/", "")
-    );
+    const csvArchivedItems = archivedItems.data
+      .filter((item) => !!item["Shortlink"])
+      .map((item) => item["Shortlink"].replace("https://www.csa.gov.sg/", ""));
 
-    const dbActiveItems = allClsArticles.rows.map((item) => item.permalink);
-    const itemsToArchive = dbActiveItems.filter(
-      (item) => !csvArchivedItems.includes(item)
+    const dbActiveItems = allClsActiveLinks.rows.map((item) => item.permalink);
+    const itemsToArchive = csvArchivedItems.filter((item) =>
+      dbActiveItems.includes(item)
     );
 
     // Step 3a: Move items to the archive
-    await client.query(
-      `UPDATE "Resource" SET "Resource"."parentId" = $1 WHERE "Resource".permalink IN ($2)`,
-      [CLS_ARCHIVED_LINKS_COLLECTION_RESOURCE_ID, itemsToArchive]
-    );
+    for (const item of itemsToArchive) {
+      await client.query(
+        `UPDATE "Resource" SET "parentId" = $1 WHERE "parentId" = $2 AND permalink = $3`,
+        [
+          CLS_ARCHIVED_LINKS_COLLECTION_RESOURCE_ID,
+          CLS_ACTIVE_LINKS_COLLECTION_RESOURCE_ID,
+          item,
+        ]
+      );
+    }
+
+    console.log("Archived the following CLS items:", itemsToArchive.join(", "));
 
     // Step 4: Find all new CLS items and create the article resources + upload the product and label images
-    const csvActiveItems = activeItems.data.map((item) =>
-      item["Shortlink"].replace("https://www.csa.gov.sg/", "")
-    );
+    const csvActiveItems = activeItems.data
+      .filter((item) => !!item["Shortlink"])
+      .map((item) => item["Shortlink"].replace("https://www.csa.gov.sg/", ""));
     const itemsToCreate = csvActiveItems.filter(
       (item) => !dbActiveItems.includes(item)
     );
 
     // Step 4a: Find the items to create and notify the user to prepare the images
-    const itemsToCreateCsv = activeItems.data.filter((item) =>
-      itemsToCreate.includes(
-        item["Shortlink"].replace("https://www.csa.gov.sg/", "")
-      )
+    const itemsToCreateCsv = activeItems.data.filter(
+      (item) =>
+        !!item["Shortlink"] &&
+        itemsToCreate.includes(
+          item["Shortlink"].replace("https://www.csa.gov.sg/", "")
+        )
     );
-    const productImages = itemsToCreateCsv.map(
-      (item) => item["Product Image Filename"]
-    );
-    const labelImages = itemsToCreateCsv.map(
-      (item) => item["Label Image Filename"]
-    );
+    const productImages = itemsToCreateCsv
+      .map((item) => item["Product Image Filename"])
+      .filter((item) => !!item);
+    const labelImages = itemsToCreateCsv
+      .map((item) => item["Label Image Filename"])
+      .filter((item) => !!item);
 
-    console.log("Please obtain the following files from the Google Drive:");
-    console.log(
-      'Product Images (put inside "product" folder): ',
-      productImages.join(", ")
-    );
-    console.log(
-      'Label Images (put inside "label" folder): ',
-      labelImages.join(", ")
-    );
-
-    // Wait for user to confirm
-    let ok = false;
-
-    while (!ok) {
-      ok = await yesno({
-        question: "Have you placed all the images in the correct folders?",
-      });
-    }
-
-    for (const item of itemsToCreate) {
-      // Step 4a: Create the new CLS article resources and collection links
-      // Find the corresponding row in the CSV file
-      const csvRow = activeItems.data.find(
-        (row) =>
-          row["Shortlink"].replace("https://www.csa.gov.sg/", "") === item
+    if (itemsToCreateCsv.length === 0 || productImages.length === 0) {
+      console.log("No new CLS items to create");
+    } else {
+      console.log("Please obtain the following files from the Google Drive:");
+      console.log(
+        'Product Images (put inside "product" folder): ',
+        productImages.join(", ")
       );
-      const category = csvRow["Product Category"];
-      const brand = csvRow["Brand"];
-      const model = csvRow["Model"];
-      const clsLevel = csvRow["CLS Level Issued"];
-      const registrationId = csvRow["CLS Label ID"];
-      const issuanceDate = moment(csvRow["Date of Issue"], "D-MMM-YY").toDate();
-      const expirationDate = moment(
-        csvRow["Date of Expiry"],
-        "D-MMM-YY"
-      ).toDate();
-      const website = csvRow["Product URL"];
-      const vdp = csvRow["Vulnerability Disclosure Policy"];
-      const support = csvRow["Support Period"];
-      const product = csvRow["Product"];
-      const title = `${brand} ${model}`;
-
-      const productImage = csvRow["Product Image Filename"];
-      const labelImage = csvRow["Label Image Filename"];
-
-      // Upload the product and label images to S3
-      const productUuid = crypto.randomUUID();
-      const labelUuid = crypto.randomUUID();
-      exec(
-        `AWS_PROFILE=${AWS_PROFILE} aws s3 cp ${path.join(
-          "product",
-          productImage
-        )} s3://${S3_BUCKET_NAME}/${productUuid}/${productImage}`
-      );
-      exec(
-        `AWS_PROFILE=${AWS_PROFILE} aws s3 cp ${path.join(
-          "label",
-          labelImage
-        )} s3://${S3_BUCKET_NAME}/${labelUuid}/${labelImage}`
+      console.log(
+        'Label Images (put inside "label" folder): ',
+        labelImages.join(", ")
       );
 
-      const productImageUrl = `/${CSA_SITE_ID}/${productUuid}/${productImage}`;
-      const labelImageUrl = `/${CSA_SITE_ID}/${labelUuid}/${labelImage}`;
+      // Wait for user to confirm
+      let ok = false;
 
-      // Step 4b: Create the article blob
-      const articleContent = getArticleSchema({
-        category,
-        brand,
-        model,
-        clsLevel,
-        registrationId,
-        issuanceDate,
-        expirationDate,
-        website,
-        vdp,
-        support,
-        productImage: productImageUrl,
-        labelImage: labelImageUrl,
-      });
+      while (!ok) {
+        ok = await yesno({
+          question:
+            "Have you placed all the images in the correct folders? (Y/N)",
+        });
+      }
 
-      // Create the new blob
-      const articleId = await client.query(
-        `INSERT INTO "Blob" (content) VALUES ($1) RETURNING id`,
-        [articleContent]
-      );
+      for (const item of itemsToCreateCsv) {
+        // Step 4a: Create the new CLS article resources and collection links
+        // Find the corresponding row in the CSV file
+        const csvRow = activeItems.data.find(
+          (row) =>
+            row["Shortlink"].replace("https://www.csa.gov.sg/", "") === item
+        );
+        const category = csvRow["Product Category"];
+        const brand = csvRow["Brand"];
+        const model = csvRow["Model"];
+        const clsLevel = csvRow["CLS Level Issued"];
+        const registrationId = csvRow["CLS Label ID"];
+        const issuanceDate = moment(
+          csvRow["Date of Issue"],
+          "D-MMM-YY"
+        ).toDate();
+        const expirationDate = moment(
+          csvRow["Date of Expiry"],
+          "D-MMM-YY"
+        ).toDate();
+        const website = csvRow["Product URL"];
+        const vdp = csvRow["Vulnerability Disclosure Policy"];
+        const support = csvRow["Support Period"];
+        const product = csvRow["Product"];
+        const title = `${brand} ${model}`;
 
-      // Create the new resource
-      const newResource = await client.query(
-        `INSERT INTO "Resource" (permalink, "siteId", parentId, title, "draftBlobId", state, type, "publishedVersionId", "createdAt", "updatedAt") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id`,
-        [
-          item,
-          CSA_SITE_ID,
-          CLS_ARTICLES_FOLDER_RESOURCE_ID,
-          title,
-          null,
-          "Published",
-          "CollectionPage",
-          null, // This will be updated later
-          new Date(),
-          new Date(),
-        ]
-      );
+        const productImage = csvRow["Product Image Filename"];
+        const labelImage = csvRow["Label Image Filename"];
 
-      // Create the new version
-      const newVersion = await client.query(
-        `INSERT INTO "Version" ("blobId", "versionNum", "resourceId", "createdAt", "updatedAt") VALUES ($1, $2, $3, $4, $5) RETURNING id`,
-        [
-          articleId.rows[0].id,
-          1,
-          newResource.rows[0].id,
-          new Date(),
-          new Date(),
-        ]
-      );
+        // Upload the product and label images to S3
+        const productUuid = crypto.randomUUID();
+        const labelUuid = crypto.randomUUID();
 
-      // Update the resource with the new version
-      await client.query(
-        `UPDATE "Resource" SET "publishedVersionId" = $1 WHERE id = $2`,
-        [newVersion.rows[0].id, newResource.rows[0].id]
-      );
+        await new Promise((resolve, reject) => {
+          exec(
+            `AWS_PROFILE=${AWS_PROFILE} aws s3 cp ${path.join(
+              "product",
+              productImage
+            )} s3://${S3_BUCKET_NAME}/${CSA_SITE_ID}/${productUuid}/${productImage}`,
+            (error, stdout, stderr) => {
+              if (error) {
+                console.error(`exec error: ${error}`);
+                reject(error);
+              }
+              resolve();
+            }
+          );
+        });
 
-      // Step 4c: Create the corresponding collection links that point to the new CLS article resources
-      const linkContent = getLinkSchema({
-        articleId: newResource.rows[0].id,
-        category,
-        brand,
-        model,
-        clsLevel,
-        product,
-        issuanceDate,
-        expirationDate,
-        productImage: productImageUrl,
-        siteId: CSA_SITE_ID,
-      });
+        await new Promise((resolve, reject) => {
+          exec(
+            `AWS_PROFILE=${AWS_PROFILE} aws s3 cp ${path.join(
+              "label",
+              labelImage
+            )} s3://${S3_BUCKET_NAME}/${CSA_SITE_ID}/${labelUuid}/${labelImage}`,
+            (error, stdout, stderr) => {
+              if (error) {
+                console.error(`exec error: ${error}`);
+                reject(error);
+              }
+              resolve();
+            }
+          );
+        });
 
-      // Create the new blob
-      const linkId = await client.query(
-        `INSERT INTO "Blob" (content) VALUES ($1) RETURNING id`,
-        [linkContent]
-      );
+        const productImageUrl = `/${CSA_SITE_ID}/${productUuid}/${productImage}`;
+        const labelImageUrl = `/${CSA_SITE_ID}/${labelUuid}/${labelImage}`;
 
-      // Create the new resource
-      const newLinkResource = await client.query(
-        `INSERT INTO "Resource" (permalink, "siteId", parentId, title, "draftBlobId", state, type, "publishedVersionId", "createdAt", "updatedAt") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id`,
-        [
-          item,
-          CSA_SITE_ID,
-          CLS_ACTIVE_LINKS_COLLECTION_RESOURCE_ID,
-          title,
-          null,
-          "Published",
-          "CollectionLink",
-          null, // This will be updated later
-          new Date(),
-          new Date(),
-        ]
-      );
+        // Step 4b: Create the article blob
+        const articleContent = getArticleSchema({
+          category,
+          brand,
+          model,
+          clsLevel,
+          registrationId,
+          issuanceDate,
+          expirationDate,
+          website,
+          vdp,
+          support,
+          productImage: productImageUrl,
+          labelImage: labelImageUrl,
+        });
 
-      // Create the new version
-      const newLinkVersion = await client.query(
-        `INSERT INTO "Version" ("blobId", "versionNum", "resourceId", "createdAt", "updatedAt") VALUES ($1, $2, $3, $4, $5) RETURNING id`,
-        [
-          linkId.rows[0].id,
-          1,
-          newLinkResource.rows[0].id,
-          new Date(),
-          new Date(),
-        ]
-      );
+        // Create the new blob
+        const articleId = await client.query(
+          `INSERT INTO "Blob" (content) VALUES ($1) RETURNING id`,
+          [articleContent]
+        );
 
-      // Update the resource with the new version
-      await client.query(
-        `UPDATE "Resource" SET "publishedVersionId" = $1 WHERE id = $2`,
-        [newLinkVersion.rows[0].id, newLinkResource.rows[0].id]
-      );
+        // Create the new resource
+        const newResource = await client.query(
+          `INSERT INTO "Resource" (permalink, "siteId", "parentId", title, "draftBlobId", state, type, "publishedVersionId", "createdAt", "updatedAt") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id`,
+          [
+            item,
+            CSA_SITE_ID,
+            CLS_ARTICLES_FOLDER_RESOURCE_ID,
+            title,
+            null,
+            "Published",
+            "CollectionPage",
+            null, // This will be updated later
+            new Date(),
+            new Date(),
+          ]
+        );
+
+        // Create the new version
+        const newVersion = await client.query(
+          `INSERT INTO "Version" ("blobId", "versionNum", "resourceId", "publishedBy", "publishedAt", "updatedAt") VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
+          [
+            articleId.rows[0].id,
+            1,
+            newResource.rows[0].id,
+            process.env.PUBLISHER_USER_ID,
+            new Date(),
+            new Date(),
+          ]
+        );
+
+        // Update the resource with the new version
+        await client.query(
+          `UPDATE "Resource" SET "publishedVersionId" = $1 WHERE id = $2`,
+          [newVersion.rows[0].id, newResource.rows[0].id]
+        );
+
+        // Step 4c: Create the corresponding collection links that point to the new CLS article resources
+        const linkContent = getLinkSchema({
+          articleId: newResource.rows[0].id,
+          category,
+          brand,
+          model,
+          clsLevel,
+          product,
+          issuanceDate,
+          expirationDate,
+          productImage: productImageUrl,
+          siteId: CSA_SITE_ID,
+        });
+
+        // Create the new blob
+        const linkId = await client.query(
+          `INSERT INTO "Blob" (content) VALUES ($1) RETURNING id`,
+          [linkContent]
+        );
+
+        // Create the new resource
+        const newLinkResource = await client.query(
+          `INSERT INTO "Resource" (permalink, "siteId", "parentId", title, "draftBlobId", state, type, "publishedVersionId", "createdAt", "updatedAt") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id`,
+          [
+            item,
+            CSA_SITE_ID,
+            CLS_ACTIVE_LINKS_COLLECTION_RESOURCE_ID,
+            title,
+            null,
+            "Published",
+            "CollectionLink",
+            null, // This will be updated later
+            new Date(),
+            new Date(),
+          ]
+        );
+
+        // Create the new version
+        const newLinkVersion = await client.query(
+          `INSERT INTO "Version" ("blobId", "versionNum", "resourceId", "publishedBy", "publishedAt", "updatedAt") VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
+          [
+            linkId.rows[0].id,
+            1,
+            newLinkResource.rows[0].id,
+            process.env.PUBLISHER_USER_ID,
+            new Date(),
+            new Date(),
+          ]
+        );
+
+        // Update the resource with the new version
+        await client.query(
+          `UPDATE "Resource" SET "publishedVersionId" = $1 WHERE id = $2`,
+          [newLinkVersion.rows[0].id, newLinkResource.rows[0].id]
+        );
+
+        console.log("Created new CLS item: ", item);
+      }
     }
 
     // Step 6: Generate the redirection mappings to be created for the new CLS items
@@ -298,6 +334,10 @@ const main = async () => {
       csvHeaders + csvReport.join("\n")
     );
 
+    console.log();
+    console.log(
+      "Done! All new CLS items have been created and published on Studio"
+    );
     console.log(
       "Redirection mappings have been generated at cls-redirection-mappings.csv"
     );
