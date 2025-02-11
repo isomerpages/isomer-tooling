@@ -31,15 +31,24 @@ const { Readable } = require("stream");
 const { finished } = require("stream/promises");
 const path = require("path");
 
-// This is the base URL for the site, used for downloading images and files
-const SITE_BASE_URL = "https://www.gov.sg";
+// CONFIGURATION SETTINGS
+// This is the base URL for the actual live site, used for downloading images
+// and files directly from them
+const SITE_BASE_URL = "https://www.hack.gov.sg";
 // This is the path prefix for the folder that will host the downloaded images
 // inside the GitHub repository relative to the `public` folder
-const IMAGES_PATH_PREFIX = "/images/interviews";
+const IMAGES_PATH_PREFIX = "/images/2021";
 // This is the path prefix for the folder that will host the downloaded files
 // inside the GitHub repository relative to the `public` folder
-const FILES_PATH_PREFIX = "/files/interviews";
+const FILES_PATH_PREFIX = "/files/2021";
 
+// This is the logic used to determine if a particular link is to a file that
+// should be downloaded and hosted on the new site
+const isFileLink = (link) => {
+  return link.startsWith("/docs");
+};
+
+// DO NOT TOUCH BELOW THIS LINE
 const { JSDOM } = jsdom;
 const dom = new JSDOM(
   `<html>
@@ -170,6 +179,29 @@ const convertFromTiptap = (schema, headerBlock) => {
             title,
             url: src,
           });
+        } else if (srcUrl.host.includes("docs.google.com")) {
+          outputContent.push({
+            type: "prose",
+            content: [
+              {
+                type: "paragraph",
+                content: [
+                  {
+                    type: "text",
+                    marks: [
+                      {
+                        type: "link",
+                        attrs: {
+                          href: src,
+                        },
+                      },
+                    ],
+                    text: "See the full deck on Google Slides.",
+                  },
+                ],
+              },
+            ],
+          });
         } else {
           outputContent.push(component);
         }
@@ -184,7 +216,7 @@ const convertFromTiptap = (schema, headerBlock) => {
       const { attrs, ...rest } = component;
       const { alt, src } = attrs;
 
-      if (alt.length > 120) {
+      if (!!alt && alt.length > 120) {
         console.log("Image alt text is too long:", alt);
         console.log("Image source:", src);
       }
@@ -542,7 +574,7 @@ const getCleanedSchema = (schema) => {
               href: mark.attrs.href,
             };
 
-            if (mark.attrs.href.startsWith("/docs")) {
+            if (isFileLink(mark.attrs.href)) {
               const fileName = mark.attrs.href.split("?")[0].split("/").pop();
               const newHref = `${FILES_PATH_PREFIX}/${PERMALINK}/${fileName}`;
 
@@ -553,7 +585,7 @@ const getCleanedSchema = (schema) => {
               }
 
               global.FILE_DOWNLOADS[mark.attrs.href] = newHref;
-              console.log(global.FILE_DOWNLOADS);
+              console.log(JSON.stringify(global.FILE_DOWNLOADS));
               downloadFile(
                 `${SITE_BASE_URL}${mark.attrs.href.replace(SITE_BASE_URL, "")}`,
                 "files",
@@ -1084,7 +1116,7 @@ const convertHtmlToSchema = async (html, permalink) => {
     })
   );
 
-  console.log(global.FILE_DOWNLOADS);
+  console.log(JSON.stringify(global.FILE_DOWNLOADS));
 
   // Download all files
   await Promise.all(

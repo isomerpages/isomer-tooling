@@ -19,10 +19,13 @@ const main = async () => {
     return { ...acc, ...curr };
   }, {});
 
-  // Step 5: Write the object into a JSON file
+  // Step 5: Write the object into a CSV file
   await fs.promises.writeFile(
-    "fileMappings.json",
-    JSON.stringify(fileMappingsObject, null, 2)
+    "file-mappings.csv",
+    "oldPath,newPath\n" +
+      Object.entries(fileMappingsObject)
+        .map(([key, value]) => `${key},${value}`)
+        .join("\n")
   );
 };
 
