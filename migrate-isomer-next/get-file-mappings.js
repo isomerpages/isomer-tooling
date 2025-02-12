@@ -7,7 +7,15 @@ const main = async () => {
   // Step 2: Perform a text replacement of "}" to "}," to make it a valid JSON
   // then add a "[" at the start and "]" at the end
   const fileMappingsJson =
-    "[" + fileMappings.replaceAll("}\n", "},\n").slice(0, -1) + "]";
+    "[" +
+    fileMappings
+      .replaceAll("}\n", "},\n")
+      .replace(/^\s\s'/gm, '  "')
+      .replace(/': '/g, '": "')
+      .replace(/',$/gm, '",')
+      .replace(/'$/gm, '"')
+      .slice(0, -2) +
+    "]";
 
   // Step 3: Parse the JSON
   const fileMappingsParsed = JSON.parse(fileMappingsJson);
