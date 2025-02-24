@@ -17,27 +17,32 @@ const getLinkSchema = ({
   );
 
   return {
-    ref: `[resource:${siteId}:${articleId}]`,
-    date: moment(issuanceDate).format("DD/MM/YYYY"),
-    tags: [
-      {
-        category: "CLS Level",
-        selected: [`Level ${clsLevel} ${levelStars}`],
+    page: {
+      ref: `[resource:${siteId}:${articleId}]`,
+      date: moment(issuanceDate).format("DD/MM/YYYY"),
+      tags: [
+        {
+          category: "CLS Level",
+          selected: [`Level ${clsLevel} ${levelStars}`],
+        },
+        {
+          category: "Brand",
+          selected: [brand],
+        },
+      ],
+      image: {
+        alt: `${brand} ${model}`,
+        src: productImage,
       },
-      {
-        category: "Brand",
-        selected: [brand],
-      },
-    ],
-    image: {
-      alt: `${brand} ${model}`,
-      src: productImage,
+      title: `${brand} ${model}`,
+      category,
+      description: `${product}\nIssued date: ${moment(issuanceDate).format(
+        "D MMMM YYYY"
+      )}\nExpiry date: ${moment(expirationDate).format("D MMMM YYYY")}`,
     },
-    title: `${brand} ${model}`,
-    category,
-    description: `${product}\nIssued date: ${moment(issuanceDate).format(
-      "D MMMM YYYY"
-    )}\nExpiry date: ${moment(expirationDate).format("D MMMM YYYY")}`,
+    layout: "link",
+    content: [],
+    version: "0.1.0",
   };
 };
 
