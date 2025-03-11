@@ -22,6 +22,8 @@ OUTPUT_DIRECTORY = "output-tosp"
 def create_tosp_page(tosp_code, tosp_records, tosp_by_hospital, surg_ann_records, hosp_records):
   # Step 1: Create the page description
   # Take the first record to extract the common information
+  print(tosp_code)
+  print(surg_ann_records)
   first_record = surg_ann_records[0]
    
   body_parts = [str(part).strip() for part in [first_record['Body Part 1'], first_record['Body Part 2']] if part != '']
@@ -30,9 +32,9 @@ def create_tosp_page(tosp_code, tosp_records, tosp_by_hospital, surg_ann_records
     body_parts = ["Untagged"]
 
   try:
-    summary = tosp_records[0]['TOSP Common name']
+    summary = tosp_records[0]['TOSP Description']
   except:
-    summary = ""
+    summary = " "
 
   output_file = f"{OUTPUT_DIRECTORY}/tosp-{tosp_code.replace(">", "more-than-").replace("≤", "less-than-").replace("<=", "less-than-").replace(">=", "more-than-")}-bill-information.json".lower().replace("_", "-")
   output = {
@@ -41,7 +43,7 @@ def create_tosp_page(tosp_code, tosp_records, tosp_by_hospital, surg_ann_records
       "title": first_record['TOSP'] + " - " + first_record['Description'],
       "category": "TOSP",
       "articlePageHeader": {
-        "summary": "summary"
+        "summary": f"{summary if summary != " " else surg_ann_records[0]['Description']}"
       },
       "tags": [
         {
@@ -425,8 +427,13 @@ def main():
   # Get the set of all records under the TOSP column
   tosp_codes = set()
 
+  # Replace "SH808P_(>6mth)" -> "SH808P>6M", "SH808P_(≤6mth)" -> "SH808P<=6M")
+
   for record in surg_ann_fees:
     tosp_codes.add(record['TOSP'])
+
+  for record in records:
+    tosp_codes.add(record['TOSP Code'])
 
   print("Number of TOSP codes:", len(tosp_codes))
   # print("Number of new TOSP codes:", len(new_tosp_codes))
@@ -434,6 +441,7 @@ def main():
   # Step 2: Create the page for each TOSP code
   for tosp_code in tosp_codes:
     # Filter the records for the current TOSP code
+    # print(tosp_code)
     tosp_records = [record for record in records if record['TOSP Code'] == tosp_code]
     tosp_by_hospital = [record for record in by_hospital if record['TOSP code'] == tosp_code]
     surg_ann_records = [record for record in surg_ann_fees if record['TOSP'] == tosp_code]
