@@ -1,0 +1,307 @@
+{
+  "version": "0.1.0",
+  "layout": "article",
+  "page": {
+    "title": "Temozolomide for the treatment of malignant glioma",
+    "date": "16/10/2017",
+    "articlePageHeader": {
+      "summary": ""
+    }
+  },
+  "content": [
+    {
+      "type": "prose",
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "["
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "marks": [
+                {
+                  "type": "bold"
+                }
+              ],
+              "text": "ACE Technology Guidances "
+            },
+            {
+              "type": "text",
+              "text": "communicate recommendations from the MOH Drug Advisory Committee or the MOH Medical Technology Advisory Committee on the funding status and appropriate use of drugs, vaccines or medical technologies that have been evaluated by ACE. The guidances also include the Committee’s rationale for the funding recommendations, and key clinical and economic evidence which informed their deliberations. "
+            },
+            {
+              "type": "text",
+              "marks": [
+                {
+                  "type": "bold"
+                }
+              ],
+              "text": "Plain English Summaries"
+            },
+            {
+              "type": "text",
+              "text": " ("
+            },
+            {
+              "type": "text",
+              "marks": [
+                {
+                  "type": "bold"
+                }
+              ],
+              "text": "PES"
+            },
+            {
+              "type": "text",
+              "text": ") to explain ACE Technology Guidances are available for patients and the public."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": " Published on 16 Oct 2017 "
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "Last Updated on 16 Oct 2017"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "A-"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "A+"
+            }
+          ]
+        },
+        {
+          "type": "table",
+          "attrs": {
+            "caption": "Table caption"
+          },
+          "content": [
+            {
+              "type": "tableRow",
+              "content": [
+                {
+                  "type": "tableHeader",
+                  "attrs": {
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "colwidth": null
+                  },
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "attrs": {},
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Guidance Recommendation"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableRow",
+              "content": [
+                {
+                  "type": "tableCell",
+                  "attrs": {
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "colwidth": null
+                  },
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "attrs": {},
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "The Ministry of Health's Drug Advisory Committee has recommended:"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "unorderedList",
+                      "content": [
+                        {
+                          "type": "listItem",
+                          "content": [
+                            {
+                              "type": "paragraph",
+                              "attrs": {},
+                              "content": [
+                                {
+                                  "type": "text",
+                                  "text": "Temozolomide 20mg and 100mg capsules in line with their registered indications for the treatment of:"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "unorderedList",
+                              "content": [
+                                {
+                                  "type": "listItem",
+                                  "content": [
+                                    {
+                                      "type": "paragraph",
+                                      "attrs": {},
+                                      "content": [
+                                        {
+                                          "type": "text",
+                                          "text": "Newly diagnosed glioblastoma multiforme concomitantly with radiotherapy and subsequently as monotherapy treatment, and"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "listItem",
+                                  "content": [
+                                    {
+                                      "type": "paragraph",
+                                      "attrs": {},
+                                      "content": [
+                                        {
+                                          "type": "text",
+                                          "text": "Malignant glioma, such as glioblastoma multiforme or anaplastic astrocytoma, showing recurrence or progression after standard therapy."
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableRow",
+              "content": [
+                {
+                  "type": "tableCell",
+                  "attrs": {
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "colwidth": null
+                  },
+                  "content": [
+                    {
+                      "type": "heading",
+                      "attrs": {
+                        "level": 3
+                      },
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Subsidy status"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableRow",
+              "content": [
+                {
+                  "type": "tableCell",
+                  "attrs": {
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "colwidth": null
+                  },
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "attrs": {},
+                      "content": [
+                        {
+                          "type": "text",
+                          "marks": [
+                            {
+                              "type": "bold"
+                            }
+                          ],
+                          "text": "Generic "
+                        },
+                        {
+                          "type": "text",
+                          "text": "temozolomide 20mg and 100mg capsules are recommended for inclusion on the Standard Drug List (SDL)."
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "caption": ""
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "marks": [
+                {
+                  "type": "link",
+                  "attrs": {
+                    "href": "https://www.ace-hta.gov.sg/docs/default-source/drug-guidances/temozolomide-(for-website-16-oct-2017).pdf?sfvrsn=42cca96b_4",
+                    "target": "_blank"
+                  }
+                }
+              ],
+              "text": "Temozolomide (16 Oct 2017)"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "]"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

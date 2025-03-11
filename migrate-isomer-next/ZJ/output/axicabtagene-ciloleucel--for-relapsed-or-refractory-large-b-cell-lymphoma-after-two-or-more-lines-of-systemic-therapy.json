@@ -1,0 +1,209 @@
+{
+  "version": "0.1.0",
+  "layout": "article",
+  "page": {
+    "title": "Axicabtagene ciloleucel \r\nfor relapsed or refractory large B-cell lymphoma after two or more lines of systemic therapy",
+    "date": "13/09/2024",
+    "articlePageHeader": {
+      "summary": ""
+    }
+  },
+  "content": [
+    {
+      "type": "prose",
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "["
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "marks": [
+                {
+                  "type": "bold"
+                }
+              ],
+              "text": "ACE Technology Guidances "
+            },
+            {
+              "type": "text",
+              "text": "communicate recommendations from the MOH Drug Advisory Committee or the MOH Medical Technology Advisory Committee on the funding status and appropriate use of drugs, vaccines or medical technologies that have been evaluated by ACE. The guidances also include the Committee’s rationale for the funding recommendations, and key clinical and economic evidence which informed their deliberations. "
+            },
+            {
+              "type": "text",
+              "marks": [
+                {
+                  "type": "bold"
+                }
+              ],
+              "text": "Plain English Summaries"
+            },
+            {
+              "type": "text",
+              "text": " ("
+            },
+            {
+              "type": "text",
+              "marks": [
+                {
+                  "type": "bold"
+                }
+              ],
+              "text": "PES"
+            },
+            {
+              "type": "text",
+              "text": ") to explain ACE Technology Guidances are available for patients and the public."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": " Published on 13 Sep 2024 "
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "Last Updated on 17 Feb 2025"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "A-"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "A+"
+            }
+          ]
+        },
+        {
+          "type": "table",
+          "attrs": {
+            "caption": "Table caption"
+          },
+          "content": [
+            {
+              "type": "tableRow",
+              "content": [
+                {
+                  "type": "tableHeader",
+                  "attrs": {
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "colwidth": null
+                  },
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "attrs": {},
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Guidance Recommendations"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableRow",
+              "content": [
+                {
+                  "type": "tableCell",
+                  "attrs": {
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "colwidth": null
+                  },
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "attrs": {},
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "The Ministry of Health’s Drug Advisory Committee has not recommended axicabtagene ciloleucel for inclusion on the MOH Cell, Tissue and Gene Therapy Product (CTGTP) List for treating patients with relapsed or refractory large B-cell lymphoma after two or more lines of systemic therapy, including diffuse large B-cell lymphoma (DLBCL), primary mediastinal large B-cell lymphoma, high grade B-cell lymphoma, and DLBCL arising from follicular lymphoma. The decision was based on the unacceptable pricing proposal by the company."
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "caption": ""
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "marks": [
+                {
+                  "type": "link",
+                  "attrs": {
+                    "href": "https://www.ace-hta.gov.sg/docs/default-source/drug-guidances/axicabtagene-ciloleucel-for-relapsed-or-refractory-large-b-cell-lymphoma-after-two-or-more-lines-of-systemic-therapya4ed854e-02a7-4d8f-ba4c-94b0cf4fe50b.pdf?sfvrsn=ae715898_4",
+                    "target": "_blank"
+                  }
+                }
+              ],
+              "text": "Axicabtagene ciloleucel for relapsed or refractory large B-cell lymphoma after two or more lines of systemic therapy (Published 13 Sep 2024)"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "marks": [
+                {
+                  "type": "link",
+                  "attrs": {
+                    "href": "https://www.ace-hta.gov.sg/docs/default-source/drug-guidances/pes-chimeric-antigen-receptor-t-cell-therapies-for-relapsed-or-refractory-large-b-cell-lymphoma_(updated_17_feb_2025).pdf?sfvrsn=83af83ce_4",
+                    "target": "_blank"
+                  }
+                }
+              ],
+              "text": "PES Chimeric antigen receptor T-cell therapies for relapsed or refractory large B-cell-lymphoma (updated 17 Feb 2025)"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "]"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

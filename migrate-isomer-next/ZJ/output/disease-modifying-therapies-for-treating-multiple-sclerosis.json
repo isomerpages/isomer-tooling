@@ -1,0 +1,321 @@
+{
+  "version": "0.1.0",
+  "layout": "article",
+  "page": {
+    "title": "Disease-modifying therapies for treating multiple sclerosis",
+    "date": "04/01/2022",
+    "articlePageHeader": {
+      "summary": ""
+    }
+  },
+  "content": [
+    {
+      "type": "prose",
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "["
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "marks": [
+                {
+                  "type": "bold"
+                }
+              ],
+              "text": "ACE Technology Guidances "
+            },
+            {
+              "type": "text",
+              "text": "communicate recommendations from the MOH Drug Advisory Committee or the MOH Medical Technology Advisory Committee on the funding status and appropriate use of drugs, vaccines or medical technologies that have been evaluated by ACE. The guidances also include the Committee’s rationale for the funding recommendations, and key clinical and economic evidence which informed their deliberations. "
+            },
+            {
+              "type": "text",
+              "marks": [
+                {
+                  "type": "bold"
+                }
+              ],
+              "text": "Plain English Summaries"
+            },
+            {
+              "type": "text",
+              "text": " ("
+            },
+            {
+              "type": "text",
+              "marks": [
+                {
+                  "type": "bold"
+                }
+              ],
+              "text": "PES"
+            },
+            {
+              "type": "text",
+              "text": ") to explain ACE Technology Guidances are available for patients and the public."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": " Published on 04 Jan 2022 "
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "Last Updated on 04 Jan 2022"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "A-"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "A+"
+            }
+          ]
+        },
+        {
+          "type": "table",
+          "attrs": {
+            "caption": "Table caption"
+          },
+          "content": [
+            {
+              "type": "tableRow",
+              "content": [
+                {
+                  "type": "tableHeader",
+                  "attrs": {
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "colwidth": null
+                  },
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "attrs": {},
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Guidance Recommendations"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableRow",
+              "content": [
+                {
+                  "type": "tableCell",
+                  "attrs": {
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "colwidth": null
+                  },
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "attrs": {},
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "The Ministry of Health's Drug Advisory Committee has recommended:"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "unorderedList",
+                      "content": [
+                        {
+                          "type": "listItem",
+                          "content": [
+                            {
+                              "type": "paragraph",
+                              "attrs": {},
+                              "content": [
+                                {
+                                  "type": "text",
+                                  "text": "Fingolimod 0.25 mg and 0.5 mg capsules for treating adults and children with relapsing-remitting multiple sclerosis, and"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "listItem",
+                          "content": [
+                            {
+                              "type": "paragraph",
+                              "attrs": {},
+                              "content": [
+                                {
+                                  "type": "text",
+                                  "text": "Siponimod 0.25 mg and 2 mg tablets for treating adults with secondary progressive multiple sclerosis with active disease evidenced by relapses or imaging features of inflammatory activity."
+                                },
+                                {
+                                  "type": "hardBreak"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableRow",
+              "content": [
+                {
+                  "type": "tableCell",
+                  "attrs": {
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "colwidth": null
+                  },
+                  "content": [
+                    {
+                      "type": "heading",
+                      "attrs": {
+                        "level": 3
+                      },
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Subsidy status"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableRow",
+              "content": [
+                {
+                  "type": "tableCell",
+                  "attrs": {
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "colwidth": null
+                  },
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "attrs": {},
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Fingolimod 0.25 mg and 0.5 mg capsules and siponimod 0.25 mg and 2 mg tablets are recommended for inclusion on the Medication Assistance Fund (MAF) for the abovementioned indications."
+                        }
+                      ]
+                    },
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "MAF assistance "
+                        },
+                        {
+                          "type": "text",
+                          "marks": [
+                            {
+                              "type": "bold"
+                            }
+                          ],
+                          "text": "does not "
+                        },
+                        {
+                          "type": "text",
+                          "text": "apply to any formulations or strengths of alemtuzumab, cladribine, dimethyl fumarate, interferon beta-1a, natalizumab, ofatumumab or teriflunomide for treating adults or children with any form of multiple sclerosis."
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "caption": ""
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "marks": [
+                {
+                  "type": "link",
+                  "attrs": {
+                    "href": "https://www.ace-hta.gov.sg/docs/default-source/drug-guidances/disease-modifying-therapies-for-treating-multiple-sclerosis-(4-jan-2022).pdf?sfvrsn=8b80971e_4",
+                    "target": "_blank"
+                  }
+                }
+              ],
+              "text": "Disease-modifying therapies for treating multiple sclerosis (4 Jan 2022)"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "marks": [
+                {
+                  "type": "link",
+                  "attrs": {
+                    "href": "https://www.ace-hta.gov.sg/docs/default-source/drug-guidances/disease-modifying-therapies-for-multiple-sclerosis-(published-4-jan-2022).pdf?sfvrsn=a4df0645_4",
+                    "target": "_blank"
+                  }
+                }
+              ],
+              "text": "PES Disease-modifying therapies for treating multiple sclerosis (Published 4 Jan 2022)"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "]"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

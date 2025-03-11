@@ -1,0 +1,328 @@
+{
+  "version": "0.1.0",
+  "layout": "article",
+  "page": {
+    "title": "Nicotine replacement therapies to aid smoking cessation",
+    "date": "19/12/2022",
+    "articlePageHeader": {
+      "summary": ""
+    }
+  },
+  "content": [
+    {
+      "type": "prose",
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "["
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "marks": [
+                {
+                  "type": "bold"
+                }
+              ],
+              "text": "ACE Technology Guidances "
+            },
+            {
+              "type": "text",
+              "text": "communicate recommendations from the MOH Drug Advisory Committee or the MOH Medical Technology Advisory Committee on the funding status and appropriate use of drugs, vaccines or medical technologies that have been evaluated by ACE. The guidances also include the Committee’s rationale for the funding recommendations, and key clinical and economic evidence which informed their deliberations. "
+            },
+            {
+              "type": "text",
+              "marks": [
+                {
+                  "type": "bold"
+                }
+              ],
+              "text": "Plain English Summaries"
+            },
+            {
+              "type": "text",
+              "text": " ("
+            },
+            {
+              "type": "text",
+              "marks": [
+                {
+                  "type": "bold"
+                }
+              ],
+              "text": "PES"
+            },
+            {
+              "type": "text",
+              "text": ") to explain ACE Technology Guidances are available for patients and the public."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": " Published on 19 Dec 2022 "
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "Last Updated on 19 Dec 2022"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "A-"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "A+"
+            }
+          ]
+        },
+        {
+          "type": "table",
+          "attrs": {
+            "caption": "Table caption"
+          },
+          "content": [
+            {
+              "type": "tableRow",
+              "content": [
+                {
+                  "type": "tableHeader",
+                  "attrs": {
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "colwidth": null
+                  },
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "attrs": {},
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Guidance Recommendations"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableRow",
+              "content": [
+                {
+                  "type": "tableCell",
+                  "attrs": {
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "colwidth": null
+                  },
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "attrs": {},
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "The Ministry of Health's Drug Advisory Committee has recommended:"
+                        },
+                        {
+                          "type": "hardBreak"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "unorderedList",
+                      "content": [
+                        {
+                          "type": "listItem",
+                          "content": [
+                            {
+                              "type": "paragraph",
+                              "attrs": {},
+                              "content": [
+                                {
+                                  "type": "text",
+                                  "text": "Nicotine 7 mg/ 24 hours, 14 mg/ 24 hours, and 21 mg/ 24 hours transdermal patches (Nicotinell);"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "listItem",
+                          "content": [
+                            {
+                              "type": "paragraph",
+                              "attrs": {},
+                              "content": [
+                                {
+                                  "type": "text",
+                                  "text": "Nicotine 2 mg and 4 mg chewing gums (Nicorette); and"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "listItem",
+                          "content": [
+                            {
+                              "type": "paragraph",
+                              "attrs": {},
+                              "content": [
+                                {
+                                  "type": "text",
+                                  "text": "Nicotine 1 mg lozenge (Nicotinell)"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "paragraph",
+                      "attrs": {},
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "to be used as an aid for smoking cessation in patients who are willing to quit and enrolled in a smoking cessation counselling program, with a documented Fagerstrom score of three and above. The smoking cessation counselling programme should include a minimum of three counselling sessions, and counselling should be delivered by a healthcare professional trained in smoking cessation counselling, at an approved setting. Nicotine replacement therapies should not be used in combination with varenicline for smoking cessation."
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableRow",
+              "content": [
+                {
+                  "type": "tableCell",
+                  "attrs": {
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "colwidth": null
+                  },
+                  "content": [
+                    {
+                      "type": "heading",
+                      "attrs": {
+                        "level": 3
+                      },
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Funding status"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableRow",
+              "content": [
+                {
+                  "type": "tableCell",
+                  "attrs": {
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "colwidth": null
+                  },
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "attrs": {},
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Nicotine 7 mg/ 24 hours, 14 mg/ 24 hours, 21 mg/ 24 hours transdermal patches (Nicotinell), nicotine 2 mg and 4 mg chewing gums (Nicorette) and nicotine 1 mg lozenge (Nicotinell) are recommended for inclusion on the MOH Medication Assistance Fund (MAF) for the abovementioned indication from 1 February 2023."
+                        }
+                      ]
+                    },
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "MAF assistance "
+                        },
+                        {
+                          "type": "text",
+                          "marks": [
+                            {
+                              "type": "bold"
+                            }
+                          ],
+                          "text": "does not"
+                        },
+                        {
+                          "type": "text",
+                          "text": " apply to any strengths of nicotine transdermal patch (Nicorette) and nicotine chewing gum (Nicotinell)."
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "caption": ""
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "marks": [
+                {
+                  "type": "link",
+                  "attrs": {
+                    "href": "https://www.ace-hta.gov.sg/docs/default-source/drug-guidances/nicotine-replacement-therapies-to-aid-smoking-cessation-(19-december-2022).pdf?sfvrsn=bd04ac59_4",
+                    "target": "_blank"
+                  }
+                }
+              ],
+              "text": "Nicotine replacement therapies to aid smoking cessation (19 December 2022)"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "]"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

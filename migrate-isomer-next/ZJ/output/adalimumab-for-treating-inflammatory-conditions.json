@@ -1,0 +1,501 @@
+{
+  "version": "0.1.0",
+  "layout": "article",
+  "page": {
+    "title": "Adalimumab for treating inflammatory conditions",
+    "date": "01/09/2020",
+    "articlePageHeader": {
+      "summary": ""
+    }
+  },
+  "content": [
+    {
+      "type": "prose",
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "["
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "marks": [
+                {
+                  "type": "bold"
+                }
+              ],
+              "text": "ACE Technology Guidances "
+            },
+            {
+              "type": "text",
+              "text": "communicate recommendations from the MOH Drug Advisory Committee or the MOH Medical Technology Advisory Committee on the funding status and appropriate use of drugs, vaccines or medical technologies that have been evaluated by ACE. The guidances also include the Committee’s rationale for the funding recommendations, and key clinical and economic evidence which informed their deliberations. "
+            },
+            {
+              "type": "text",
+              "marks": [
+                {
+                  "type": "bold"
+                }
+              ],
+              "text": "Plain English Summaries"
+            },
+            {
+              "type": "text",
+              "text": " ("
+            },
+            {
+              "type": "text",
+              "marks": [
+                {
+                  "type": "bold"
+                }
+              ],
+              "text": "PES"
+            },
+            {
+              "type": "text",
+              "text": ") to explain ACE Technology Guidances are available for patients and the public."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": " Published on 01 Sep 2020 "
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "Last Updated on 01 Sep 2020"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "A-"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "A+"
+            }
+          ]
+        },
+        {
+          "type": "table",
+          "attrs": {
+            "caption": "Table caption"
+          },
+          "content": [
+            {
+              "type": "tableRow",
+              "content": [
+                {
+                  "type": "tableHeader",
+                  "attrs": {
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "colwidth": null
+                  },
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "attrs": {},
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Guidance Recommendations"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableRow",
+              "content": [
+                {
+                  "type": "tableCell",
+                  "attrs": {
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "colwidth": null
+                  },
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "attrs": {},
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "The Ministry of Health’s Drug Advisory Committee has recommended:"
+                        },
+                        {
+                          "type": "hardBreak"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "unorderedList",
+                      "content": [
+                        {
+                          "type": "listItem",
+                          "content": []
+                        }
+                      ]
+                    },
+                    {
+                      "type": "paragraph",
+                      "attrs": {},
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": " Adalimumab biosimilar (Amgevita) 20 mg/0.4 ml prefilled syringe and 40 mg/0.8 ml prefilled autoinjector and syringe for treating the following inflammatory conditions in line with its registered indications in Singapore:"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "unorderedList",
+                      "content": [
+                        {
+                          "type": "listItem",
+                          "content": []
+                        }
+                      ]
+                    },
+                    {
+                      "type": "unorderedList",
+                      "content": [
+                        {
+                          "type": "listItem",
+                          "content": [
+                            {
+                              "type": "paragraph",
+                              "attrs": {},
+                              "content": [
+                                {
+                                  "type": "text",
+                                  "text": "Adults with moderately to severely active rheumatoid arthritis, ankylosing spondylitis, psoriatic arthritis, chronic plaque psoriasis, ulcerative colitis, Crohn’s disease or hidradenitis suppurativa;"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "listItem",
+                          "content": [
+                            {
+                              "type": "paragraph",
+                              "attrs": {},
+                              "content": [
+                                {
+                                  "type": "text",
+                                  "text": "Adults with non-infectious intermediate, posterior and panuveitis;"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "listItem",
+                          "content": [
+                            {
+                              "type": "paragraph",
+                              "attrs": {},
+                              "content": [
+                                {
+                                  "type": "text",
+                                  "text": "Children aged 2 years or older with chronic non-infectious anterior uveitis or polyarticular juvenile idiopathic arthritis;"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "listItem",
+                          "content": [
+                            {
+                              "type": "paragraph",
+                              "attrs": {},
+                              "content": [
+                                {
+                                  "type": "text",
+                                  "text": "Children aged 4 years or older with severe chronic plaque psoriasis;"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "listItem",
+                          "content": [
+                            {
+                              "type": "paragraph",
+                              "attrs": {},
+                              "content": [
+                                {
+                                  "type": "text",
+                                  "text": "Children aged 6 years or older with moderately to severely active Crohn’s disease or enthesitis-related arthritis; and"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "listItem",
+                          "content": [
+                            {
+                              "type": "paragraph",
+                              "attrs": {},
+                              "content": [
+                                {
+                                  "type": "text",
+                                  "text": "Children aged 12 years or older with moderate to severe hidradenitis suppurativa;"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "listItem",
+                          "content": []
+                        }
+                      ]
+                    },
+                    {
+                      "type": "paragraph",
+                      "attrs": {},
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": " The removal of adalimumab reference biologic (Humira) 40 mg/0.8 ml prefilled autoinjector from the Medication Assistance Fund (MAF) for all indications; and"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "unorderedList",
+                      "content": [
+                        {
+                          "type": "listItem",
+                          "content": []
+                        }
+                      ]
+                    },
+                    {
+                      "type": "paragraph",
+                      "attrs": {},
+                      "content": [
+                        {
+                          "type": "hardBreak"
+                        },
+                        {
+                          "type": "text",
+                          "text": "Not to list new formulations of Humira (20 mg/0.2 ml or 40 mg/0.4 ml prefilled syringe and pen) on SDL or MAF in view of unfavourable cost effectiveness compared with Amgevita at the price proposed by the manufacturer."
+                        }
+                      ]
+                    },
+                    {
+                      "type": "unorderedList",
+                      "content": [
+                        {
+                          "type": "listItem",
+                          "content": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableRow",
+              "content": [
+                {
+                  "type": "tableCell",
+                  "attrs": {
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "colwidth": null
+                  },
+                  "content": [
+                    {
+                      "type": "heading",
+                      "attrs": {
+                        "level": 3
+                      },
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Subsidy status"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableRow",
+              "content": [
+                {
+                  "type": "tableCell",
+                  "attrs": {
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "colwidth": null
+                  },
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "attrs": {},
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Adalimumab biosimilar (Amgevita) 20 mg/0.4 ml prefilled syringe and 40 mg/0.8 ml prefilled autoinjector and syringe are recommended for inclusion on the MOH Standard Drug List (SDL) for the abovementioned indications from 1 September 2020. The MAF listing of Humira will cease on 1 March 2021."
+                        }
+                      ]
+                    },
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "SDL subsidy "
+                        },
+                        {
+                          "type": "text",
+                          "marks": [
+                            {
+                              "type": "bold"
+                            }
+                          ],
+                          "text": "does not "
+                        },
+                        {
+                          "type": "text",
+                          "text": "apply to any formulations or strengths of Humira."
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "caption": ""
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "Previous versions of the guidance may be"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "marks": [
+                {
+                  "type": "link",
+                  "attrs": {
+                    "href": "/resources/archives/withdrawn-ace-technology-guidances"
+                  }
+                }
+              ],
+              "text": "found here"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "marks": [
+                {
+                  "type": "link",
+                  "attrs": {
+                    "href": "https://www.ace-hta.gov.sg/docs/default-source/drug-guidances/adalimumab-for-treating-inflammatory-conditions-(1-sept-2020).pdf?sfvrsn=b1cc83a_0",
+                    "target": "_blank"
+                  }
+                }
+              ],
+              "text": "Adalimumab for treating inflammatory conditions (1 Sept 2020)"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "marks": [
+                {
+                  "type": "link",
+                  "attrs": {
+                    "href": "https://www.ace-hta.gov.sg/docs/default-source/drug-guidances/adalimumab-for-treating-inflammatory-conditions-pes-(1-sept-2020).pdf?sfvrsn=91b12773_0",
+                    "target": "_blank"
+                  }
+                }
+              ],
+              "text": "Adalimumab for treating inflammatory conditions PES (1 Sept 2020)"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "marks": [
+                {
+                  "type": "link",
+                  "attrs": {
+                    "href": "https://www.ace-hta.gov.sg/docs/default-source/drug-guidances/biosimilar-clinician-fact-sheet-(1-mar-2018).pdf?sfvrsn=a5078756_0",
+                    "target": "_blank"
+                  }
+                }
+              ],
+              "text": "Biosimilar Clinician Fact Sheet (1 Mar 2018)"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "]"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

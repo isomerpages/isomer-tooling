@@ -1,0 +1,468 @@
+{
+  "version": "0.1.0",
+  "layout": "article",
+  "page": {
+    "title": "Eltrombopag for treating immune thrombocytopenia and severe aplastic anaemia",
+    "date": "04/01/2022",
+    "articlePageHeader": {
+      "summary": ""
+    }
+  },
+  "content": [
+    {
+      "type": "prose",
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "["
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "marks": [
+                {
+                  "type": "bold"
+                }
+              ],
+              "text": "ACE Technology Guidances "
+            },
+            {
+              "type": "text",
+              "text": "communicate recommendations from the MOH Drug Advisory Committee or the MOH Medical Technology Advisory Committee on the funding status and appropriate use of drugs, vaccines or medical technologies that have been evaluated by ACE. The guidances also include the Committee’s rationale for the funding recommendations, and key clinical and economic evidence which informed their deliberations. "
+            },
+            {
+              "type": "text",
+              "marks": [
+                {
+                  "type": "bold"
+                }
+              ],
+              "text": "Plain English Summaries"
+            },
+            {
+              "type": "text",
+              "text": " ("
+            },
+            {
+              "type": "text",
+              "marks": [
+                {
+                  "type": "bold"
+                }
+              ],
+              "text": "PES"
+            },
+            {
+              "type": "text",
+              "text": ") to explain ACE Technology Guidances are available for patients and the public."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": " Published on 04 Jan 2022 "
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "Last Updated on 04 Jan 2022"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "A-"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "A+"
+            }
+          ]
+        },
+        {
+          "type": "table",
+          "attrs": {
+            "caption": "Table caption"
+          },
+          "content": [
+            {
+              "type": "tableRow",
+              "content": [
+                {
+                  "type": "tableHeader",
+                  "attrs": {
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "colwidth": null
+                  },
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "attrs": {},
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Guidance Recommendations"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableRow",
+              "content": [
+                {
+                  "type": "tableCell",
+                  "attrs": {
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "colwidth": null
+                  },
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "attrs": {},
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "The Ministry of Health’s Drug Advisory Committee has recommended:"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "unorderedList",
+                      "content": [
+                        {
+                          "type": "listItem",
+                          "content": [
+                            {
+                              "type": "paragraph",
+                              "attrs": {},
+                              "content": [
+                                {
+                                  "type": "text",
+                                  "text": "Eltrombopag 25 mg and 50 mg tablets for treating:"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "unorderedList",
+                              "content": [
+                                {
+                                  "type": "listItem",
+                                  "content": [
+                                    {
+                                      "type": "paragraph",
+                                      "attrs": {},
+                                      "content": [
+                                        {
+                                          "type": "text",
+                                          "marks": [
+                                            {
+                                              "type": "bold"
+                                            }
+                                          ],
+                                          "text": "immune thrombocytopenia "
+                                        },
+                                        {
+                                          "type": "text",
+                                          "text": "lasting six months or longer from diagnosis in patients who are intolerant or refractory to other treatments (e.g. corticosteroids, immunosuppressants); and"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "listItem",
+                                  "content": [
+                                    {
+                                      "type": "paragraph",
+                                      "attrs": {},
+                                      "content": [
+                                        {
+                                          "type": "text",
+                                          "marks": [
+                                            {
+                                              "type": "bold"
+                                            }
+                                          ],
+                                          "text": "severe aplastic anaemia "
+                                        },
+                                        {
+                                          "type": "text",
+                                          "text": "in patients who are refractory to immunosuppressive therapy (comprising horse anti-thymocyte globulin plus ciclosporin for at least three months) and have marrow cellularity <25% (or 25 to 50% with <30% residual haematopoietic cells), with at least two of the following:"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "unorderedList",
+                                      "content": [
+                                        {
+                                          "type": "listItem",
+                                          "content": [
+                                            {
+                                              "type": "paragraph",
+                                              "attrs": {},
+                                              "content": [
+                                                {
+                                                  "type": "text",
+                                                  "text": "neutrophils <0.5 x 10"
+                                                },
+                                                {
+                                                  "type": "text",
+                                                  "marks": [
+                                                    {
+                                                      "type": "superscript"
+                                                    }
+                                                  ],
+                                                  "text": "9"
+                                                },
+                                                {
+                                                  "type": "text",
+                                                  "text": "/l"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "type": "listItem",
+                                          "content": [
+                                            {
+                                              "type": "paragraph",
+                                              "attrs": {},
+                                              "content": [
+                                                {
+                                                  "type": "text",
+                                                  "text": "platelets <20 x 10"
+                                                },
+                                                {
+                                                  "type": "text",
+                                                  "marks": [
+                                                    {
+                                                      "type": "superscript"
+                                                    }
+                                                  ],
+                                                  "text": "9"
+                                                },
+                                                {
+                                                  "type": "text",
+                                                  "text": "/l"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "type": "listItem",
+                                          "content": [
+                                            {
+                                              "type": "paragraph",
+                                              "attrs": {},
+                                              "content": [
+                                                {
+                                                  "type": "text",
+                                                  "text": "reticulocyte count <20 x 10"
+                                                },
+                                                {
+                                                  "type": "text",
+                                                  "marks": [
+                                                    {
+                                                      "type": "superscript"
+                                                    }
+                                                  ],
+                                                  "text": "9"
+                                                },
+                                                {
+                                                  "type": "text",
+                                                  "text": "/l (<60 x 10"
+                                                },
+                                                {
+                                                  "type": "text",
+                                                  "marks": [
+                                                    {
+                                                      "type": "superscript"
+                                                    }
+                                                  ],
+                                                  "text": "9"
+                                                },
+                                                {
+                                                  "type": "text",
+                                                  "text": "/l for automated reticulocyte counting)."
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "paragraph",
+                      "attrs": {},
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Eltrombopag should be prescribed by a haematologist with experience in managing immune thrombocytopenia and severe aplastic anaemia."
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableRow",
+              "content": [
+                {
+                  "type": "tableCell",
+                  "attrs": {
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "colwidth": null
+                  },
+                  "content": [
+                    {
+                      "type": "heading",
+                      "attrs": {
+                        "level": 3
+                      },
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Subsidy status"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableRow",
+              "content": [
+                {
+                  "type": "tableCell",
+                  "attrs": {
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "colwidth": null
+                  },
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "attrs": {},
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Eltrombopag 25 mg and 50 mg tablets are recommended for inclusion on the Medication Assistance Fund (MAF) for the abovementioned indications."
+                        }
+                      ]
+                    },
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "MAF assistance "
+                        },
+                        {
+                          "type": "text",
+                          "marks": [
+                            {
+                              "type": "bold"
+                            }
+                          ],
+                          "text": "does not "
+                        },
+                        {
+                          "type": "text",
+                          "text": "apply to the use of eltrombopag for treating newly diagnosed severe aplastic anaemia."
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "caption": ""
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "marks": [
+                {
+                  "type": "link",
+                  "attrs": {
+                    "href": "https://www.ace-hta.gov.sg/docs/default-source/drug-guidances/eltrombopag-for-treating-immune-thrombocytopenia-and-severe-aplastic-anaemia-(4-jan-2022).pdf?sfvrsn=dcfaf3ed_4",
+                    "target": "_blank"
+                  }
+                }
+              ],
+              "text": "Eltrombopag for treating immune thrombocytopenia and severe aplastic anaemia (4 Jan 2022)"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "marks": [
+                {
+                  "type": "link",
+                  "attrs": {
+                    "href": "https://www.ace-hta.gov.sg/docs/default-source/drug-guidances/eltrombopag-for-treating-immune-thrombocytopenia-and-severe-aplastic-anaemia-(published-4-jan-2022).pdf?sfvrsn=626ffa5c_4",
+                    "target": "_blank"
+                  }
+                }
+              ],
+              "text": "PES Eltrombopag for treating immune thrombocytopenia and severe aplastic anaemia (Published 4 Jan 2022)"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "]"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
