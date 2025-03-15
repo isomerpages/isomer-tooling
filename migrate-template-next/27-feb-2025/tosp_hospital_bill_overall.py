@@ -10,7 +10,7 @@ def get_hospital_bill_overall(records):
   public_inpatient_records = [record for record in records if record['Ward Type'] in ['Ward A', 'Ward B1', 'Ward B2', 'Ward C']]
   private_inpatient_records = [record for record in records if record['Ward Type'] in ['Clinics', 'Inpatient']]
 
-  invalid = ["n/a", "-", " ", "", ]
+  invalid = ["n/a", "-", " ", ""]
 
   # Prepare output for this section
   hospital_bill_overall_content = []
@@ -897,7 +897,7 @@ def get_hospital_bill_overall(records):
               "content": [
                 {
                   "type": "text",
-                  "text": replace_na(record[' P50 Operation Fee'])
+                  "text": "Not Available" if record[' P50 Operation Fee'] in invalid else "$" + record[' P50 Operation Fee']
                 }
               ]
             }
@@ -915,7 +915,7 @@ def get_hospital_bill_overall(records):
               "content": [
                 {
                   "type": "text",
-                  "text": replace_na(record[' P50 Implant Fee'])
+                  "text": "Not Available" if record[' P50 Implant Fee'] in invalid else "$" + record[' P50 Implant Fee']
                 }
               ]
             }
@@ -933,7 +933,7 @@ def get_hospital_bill_overall(records):
               "content": [
                 {
                   "type": "text",
-                  "text": replace_na(record[' P50 Other Fee'])
+                  "text": "Not Available" if record[' P50 Other Fee'] in invalid else "$" + record[' P50 Other Fee']
                 }
               ]
             }
@@ -1041,7 +1041,7 @@ def get_hospital_bill_overall(records):
               "content": [
                 {
                   "type": "text",
-                  "text": replace_na(record[' P50 Operation Fee'])
+                  "text": "Not Available" if record[' P50 Operation Fee'] in invalid else "$" + record[' P50 Operation Fee']
                 }
               ]
             }
@@ -1059,7 +1059,7 @@ def get_hospital_bill_overall(records):
               "content": [
                 {
                   "type": "text",
-                  "text": replace_na(record[' P50 Implant Fee'])
+                  "text": "Not Available" if record[' P50 Implant Fee'] in invalid else "$" + record[' P50 Implant Fee']
                 }
               ]
             }
@@ -1077,7 +1077,7 @@ def get_hospital_bill_overall(records):
               "content": [
                 {
                   "type": "text",
-                  "text": replace_na(record[' P50 Other Fee'])
+                  "text": "Not Available" if record[' P50 Other Fee'] in invalid else "$" + record[' P50 Other Fee']
                 }
               ]
             }

@@ -17,6 +17,16 @@ TOSP_FEE_BENCHMARKS_HOSPITAL_CSV = "fee-benchmarks-hospital.csv"
 # This is the output directory for the generated JSON files
 OUTPUT_DIRECTORY = "output-tosp"
 
+blacklistTOSP = [
+    "SA828B", "SA830B", "SA852S", "SA902S",
+    "SB700U", "SB701L", "SB701P", "SB702L", "SB702P",
+    "SB703L", "SB728F", "SB729F", "SB730F", "SB731F",
+    "SB803P", "SB804P", "SB805L", "SB809S",
+    "SD707H", "SD708H", "SD734H", "SD832H",
+    "SI707F", "SI802O", "SI803O", "SI804F", "SI804U",
+    "SI805U", "SI812U"
+]
+
 ######## Do not touch below this line unless you know what you are doing #######
 # Function for creating a page for a specific TOSP code
 def create_tosp_page(tosp_code, tosp_records, tosp_by_hospital, surg_ann_records, hosp_records):
@@ -448,7 +458,11 @@ def main():
     hosp_records = [record for record in hosp_fees if record['TOSP'] == tosp_code]
 
     # Create the TOSP page
-    create_tosp_page(tosp_code, tosp_records, tosp_by_hospital, surg_ann_records, hosp_records)
+    if tosp_code not in blacklistTOSP:
+      create_tosp_page(tosp_code, tosp_records, tosp_by_hospital, surg_ann_records, hosp_records)
+    else:
+      print("Blacklisted:", tosp_code)
+      continue
 
 if __name__ == "__main__":
     main()
