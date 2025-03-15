@@ -577,29 +577,53 @@ const getCleanedSchema = (schema) => {
 
             if (isFileLink(mark.attrs.href)) {
               const fileName = mark.attrs.href.split("?")[0].split("/").pop();
-              const newHref = `${FILES_PATH_PREFIX}/${PERMALINK.replaceAll("'", "-")}/${fileName.replaceAll("'", "-")}`;
+              var fileType = fileName.split(".")[fileName.split(".").length - 1] .replaceAll("pdf", "PDF")
+              .replaceAll("doc", "DOC")
+              .replaceAll("docx", "DOCX")
+              .replaceAll("xlsx", "XLSX")
+              .replaceAll("xls", "XLS")
+              .replaceAll("csv", "CSV")
+              .replaceAll("tsv", "TSV");
 
-              if (
-                Object.keys(global.FILE_DOWNLOADS).includes(mark.attrs.href)
-              ) {
-                // console.log("File already downloaded:", mark.attrs.href);
+              if (fileType != "DOC" && fileType != "DOCX") {
+                const newHref = `${FILES_PATH_PREFIX}/${PERMALINK.replaceAll("'", "-")}/${fileName.replaceAll("'", "-")}`;
+                if (
+                  Object.keys(global.FILE_DOWNLOADS).includes(mark.attrs.href)
+                ) {
+                  // console.log("File already downloaded:", mark.attrs.href);
+                }
+
+                global.FILE_DOWNLOADS[mark.attrs.href] = newHref;
+                console.log(JSON.stringify(global.FILE_DOWNLOADS));
+                downloadFile(
+                  `${SITE_BASE_URL}${mark.attrs.href.replace(SITE_BASE_URL, "")}`,
+                  "files",
+                  fileName
+                );
+                newAttrs.href = newHref;
+                
+                var stats = fs.statSync(`./downloads/files/${PERMALINK.replaceAll("'", "-")}/${fileName.replaceAll("'", "-")}`);
+                var bytes = Math.round(stats.size/1024);
+                if ((stats.size/1000).toString().length >= 1 || (stats.size/1000).toString().length <= 3) {
+                  bytes += " KB"
+                }
+                else if ((stats.size/1000).toString().length >= 4 || (stats.size/1000).toString().length < 7) {
+                    bytes += " MB"
+                } else {
+                  bytes += " B"
+                }
+
+                component.text += ` [${fileType}, ${bytes}]`;
+              } else {
+                console.log("Blacklisted file type detected. Skip downloading")
               }
 
-              global.FILE_DOWNLOADS[mark.attrs.href] = newHref;
-              console.log(JSON.stringify(global.FILE_DOWNLOADS));
-              downloadFile(
-                `${SITE_BASE_URL}${mark.attrs.href.replace(SITE_BASE_URL, "")}`,
-                "files",
-                fileName
-              );
-              newAttrs.href = newHref;
-            }
-
-            if (
-              mark.attrs.target === "_blank" &&
-              !mark.attrs.href.startsWith("/")
-            ) {
-              newAttrs.target = "_blank";
+              if (
+                mark.attrs.target === "_blank" &&
+                !mark.attrs.href.startsWith("/")
+              ) {
+                newAttrs.target = "_blank";
+              }
             }
 
             return {
