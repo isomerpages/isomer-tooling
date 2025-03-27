@@ -34,18 +34,23 @@ const path = require("path");
 // CONFIGURATION SETTINGS
 // This is the base URL for the actual live site, used for downloading images
 // and files directly from them
-const SITE_BASE_URL = "https://www.hack.gov.sg";
+const SITE_BASE_URL = "https://www.cccs.gov.sg";
 // This is the path prefix for the folder that will host the downloaded images
 // inside the GitHub repository relative to the `public` folder
-const IMAGES_PATH_PREFIX = "/images/2021";
+const IMAGES_PATH_PREFIX = "/images/cccs";
 // This is the path prefix for the folder that will host the downloaded files
 // inside the GitHub repository relative to the `public` folder
-const FILES_PATH_PREFIX = "/files/2021";
+const FILES_PATH_PREFIX = "/files/cccs";
 
 // This is the logic used to determine if a particular link is to a file that
 // should be downloaded and hosted on the new site
 const isFileLink = (link) => {
-  return link.startsWith("/docs");
+  return (
+    link.startsWith("/docs") ||
+    link.startsWith("~/") ||
+    link.startsWith("/~/") ||
+    link.startsWith("/-/")
+  );
 };
 
 // DO NOT TOUCH BELOW THIS LINE
@@ -64,12 +69,31 @@ global.IMAGE_DOWNLOADS = {};
 global.FILE_DOWNLOADS = {};
 let PERMALINK = "";
 
+const getFilenameFromContentDisposition = (contentDisposition) => {
+  if (!contentDisposition) {
+    return null;
+  }
+
+  const regex = /filename="(.+)"/;
+  const match = contentDisposition.match(regex);
+
+  if (match) {
+    return match[1];
+  }
+
+  return null;
+};
+
 const fetchWithRetry = async (url) => {
   while (true) {
     const res = await fetch(url);
     if (res.status === 403) {
       console.error("We are getting rate limited!");
       await new Promise((resolve) => setTimeout(resolve, 5000));
+    } else if (res.status >= 400) {
+      console.error("We are getting errors:", res.status);
+      throw new Error();
+      // await new Promise((resolve) => setTimeout(resolve, 5000));
     } else {
       return res;
     }
@@ -78,13 +102,27 @@ const fetchWithRetry = async (url) => {
 
 const downloadFile = async (url, type, fileName) => {
   // console.log("Downloading file:", url);
-  const res = await fetchWithRetry(url);
-  const destination = path.resolve("./downloads", type, PERMALINK, fileName);
+  // Jank from CCCS website
+  const updatedUrl = url.startsWith(`${SITE_BASE_URL}~/`)
+    ? url.replace("~/", "/media-and-consultation/newsroom/media-releases/~/")
+    : url;
+  const res = await fetchWithRetry(updatedUrl);
+  const finalFileName =
+    getFilenameFromContentDisposition(res.headers.get("content-disposition")) ||
+    fileName;
+  const destination = path.resolve(
+    "./downloads",
+    type,
+    PERMALINK,
+    finalFileName
+  );
   const folder = path.dirname(destination);
+
   if (!fs.existsSync(folder)) await mkdir(folder, { recursive: true });
   try {
     const fileStream = fs.createWriteStream(destination, { flags: "wx" });
     await finished(Readable.fromWeb(res.body).pipe(fileStream));
+    return finalFileName;
   } catch (err) {
     if (err.code === "EEXIST") {
       // console.log("File already exists:", destination);
@@ -133,7 +171,7 @@ const getIsHtmlContainingRedundantDivs = (html) => {
 // Converts a Tiptap-based schema to an Isomer Next schema
 // tiptapSchema: The schema object from Tiptap
 // headerBlock: A block to add to the beginning of the schema
-const convertFromTiptap = (schema, headerBlock) => {
+const convertFromTiptap = async (schema, headerBlock) => {
   // Iterate through all the items in the content key of the schema and group
   // them into a prose block. If a "type": "iframe" is found, do not add to the
   // current prose block, keep it separate and continue the process for the
@@ -149,7 +187,7 @@ const convertFromTiptap = (schema, headerBlock) => {
     content: [],
   };
 
-  schema.forEach((component) => {
+  for (const component of schema) {
     if (component.type === "iframe") {
       outputContent.push(proseBlock);
 
@@ -223,14 +261,24 @@ const convertFromTiptap = (schema, headerBlock) => {
 
       const fileName = src.split("?")[0].split("/").pop();
       const newSrc = `${IMAGES_PATH_PREFIX}/${PERMALINK}/${fileName}`;
-      if (Object.keys(global.IMAGE_DOWNLOADS).includes(src)) {
-        console.log("Image already downloaded:", src);
+
+      const newFilename = await downloadFile(
+        `${SITE_BASE_URL}${src.replace(SITE_BASE_URL, "")}`,
+        "images",
+        fileName
+      );
+
+      const updatedSrc =
+        newSrc.split("/").slice(0, -1).join("/") + "/" + newFilename;
+
+      if (Object.keys(global.IMAGE_DOWNLOADS).includes(updatedSrc)) {
+        console.log("Image already downloaded:", updatedSrc);
       }
 
-      global.IMAGE_DOWNLOADS[src] = newSrc;
+      global.IMAGE_DOWNLOADS[src] = updatedSrc;
 
       outputContent.push({
-        src: newSrc,
+        src: updatedSrc,
         alt,
         ...rest,
       });
@@ -372,7 +420,7 @@ const convertFromTiptap = (schema, headerBlock) => {
     } else {
       proseBlock.content.push(component);
     }
-  });
+  }
 
   if (proseBlock.content.length > 0) {
     outputContent.push(proseBlock);
@@ -428,7 +476,7 @@ const convertFromTiptap = (schema, headerBlock) => {
 };
 
 // Performs some cleaning up of the Tiptap schema due to poor usage of HTML
-const getCleanedSchema = (schema) => {
+const getCleanedSchema = async (schema) => {
   // Recursively find components with "type": "table" and add a new key "caption"
   // then return the schema
   const findTable = (schema) => {
@@ -561,66 +609,74 @@ const getCleanedSchema = (schema) => {
 
   // Recursively find for "type": "link" and keep only the relevant attributes
   // among all the existing attributes stored in the attrs key
-  const findLink = (schema) => {
-    schema.forEach((component) => {
+  const findLink = async (schema) => {
+    for (const component of schema) {
       if (
         component.type === "text" &&
         component.marks &&
         component.marks.some((mark) => mark.type === "link")
       ) {
-        const newMarks = component.marks.map((mark) => {
-          if (mark.type === "link" && mark.attrs) {
-            const newAttrs = {
-              href: mark.attrs.href,
-            };
+        const newMarks = await Promise.all(
+          component.marks.map(async (mark) => {
+            if (mark.type === "link" && mark.attrs) {
+              const newAttrs = {
+                href: mark.attrs.href,
+              };
 
-            if (isFileLink(mark.attrs.href)) {
-              const fileName = mark.attrs.href.split("?")[0].split("/").pop();
-              const newHref = `${FILES_PATH_PREFIX}/${PERMALINK}/${fileName}`;
+              if (isFileLink(mark.attrs.href)) {
+                const fileName = mark.attrs.href.split("?")[0].split("/").pop();
+                const newHref = `${FILES_PATH_PREFIX}/${PERMALINK}/${fileName}`;
 
-              if (
-                Object.keys(global.FILE_DOWNLOADS).includes(mark.attrs.href)
-              ) {
-                // console.log("File already downloaded:", mark.attrs.href);
+                if (
+                  Object.keys(global.FILE_DOWNLOADS).includes(mark.attrs.href)
+                ) {
+                  // console.log("File already downloaded:", mark.attrs.href);
+                }
+                const newFilename = await downloadFile(
+                  `${SITE_BASE_URL}${mark.attrs.href.replace(
+                    SITE_BASE_URL,
+                    ""
+                  )}`,
+                  "files",
+                  fileName
+                );
+
+                const updatedHref =
+                  newHref.split("/").slice(0, -1).join("/") + "/" + newFilename;
+
+                global.FILE_DOWNLOADS[mark.attrs.href] = updatedHref;
+                console.log(JSON.stringify(global.FILE_DOWNLOADS));
+                newAttrs.href = updatedHref;
               }
 
-              global.FILE_DOWNLOADS[mark.attrs.href] = newHref;
-              console.log(JSON.stringify(global.FILE_DOWNLOADS));
-              downloadFile(
-                `${SITE_BASE_URL}${mark.attrs.href.replace(SITE_BASE_URL, "")}`,
-                "files",
-                fileName
-              );
-              newAttrs.href = newHref;
-            }
+              if (
+                mark.attrs.target === "_blank" &&
+                !mark.attrs.href.startsWith("/")
+              ) {
+                newAttrs.target = "_blank";
+              }
 
-            if (
-              mark.attrs.target === "_blank" &&
-              !mark.attrs.href.startsWith("/")
-            ) {
-              newAttrs.target = "_blank";
+              return {
+                ...mark,
+                attrs: newAttrs,
+              };
+            } else {
+              return mark;
             }
-
-            return {
-              ...mark,
-              attrs: newAttrs,
-            };
-          } else {
-            return mark;
-          }
-        });
+          })
+        );
 
         component.marks = [...newMarks];
       } else if (component.content) {
-        findLink(component.content);
+        await findLink(component.content);
       }
-    });
+    }
 
     return schema;
   };
 
   return findIframe(
-    findLink(
+    await findLink(
       removeEmptyParagraphs(
         findTableHeader(
           findHardBreak(findParagraphHardBreak(findTable(schema)))
@@ -1098,40 +1154,40 @@ const convertHtmlToSchema = async (html, permalink) => {
   //   content: getCleanedSchema(output.content),
   // };
 
-  const schema = getCleanedSchema(output.content);
-  const result = convertFromTiptap(schema);
+  const schema = await getCleanedSchema(output.content);
+  const result = await convertFromTiptap(schema);
 
   // Download all images
-  await Promise.all(
-    Object.keys(global.IMAGE_DOWNLOADS).map((url) => {
-      const fileName = global.IMAGE_DOWNLOADS[url].split("/").pop();
-      const path = url.replace(SITE_BASE_URL, "");
+  // await Promise.all(
+  //   Object.keys(global.IMAGE_DOWNLOADS).map((url) => {
+  //     const fileName = global.IMAGE_DOWNLOADS[url].split("/").pop();
+  //     const path = url.replace(SITE_BASE_URL, "");
 
-      if (!path.startsWith("/")) {
-        // console.log("Invalid image path:", path);
-        return;
-      }
+  //     if (!path.startsWith("/")) {
+  //       // console.log("Invalid image path:", path);
+  //       return;
+  //     }
 
-      return downloadFile(`${SITE_BASE_URL}${path}`, "images", fileName);
-    })
-  );
+  //     return downloadFile(`${SITE_BASE_URL}${path}`, "images", fileName);
+  //   })
+  // );
 
   console.log(JSON.stringify(global.FILE_DOWNLOADS));
 
   // Download all files
-  await Promise.all(
-    Object.keys(global.FILE_DOWNLOADS).map((url) => {
-      const fileName = global.FILE_DOWNLOADS[url].split("/").pop();
-      const path = url.replace(SITE_BASE_URL, "");
+  // await Promise.all(
+  //   Object.keys(global.FILE_DOWNLOADS).map((url) => {
+  //     const fileName = global.FILE_DOWNLOADS[url].split("/").pop();
+  //     const path = url.replace(SITE_BASE_URL, "");
 
-      if (!path.startsWith("/")) {
-        console.log("Invalid file path:", path);
-        return;
-      }
+  //     if (!path.startsWith("/")) {
+  //       console.log("Invalid file path:", path);
+  //       return;
+  //     }
 
-      return downloadFile(`${SITE_BASE_URL}${path}`, "files", fileName);
-    })
-  );
+  //     return downloadFile(`${SITE_BASE_URL}${path}`, "files", fileName);
+  //   })
+  // );
 
   const filesMapping = {
     ...global.IMAGE_DOWNLOADS,
