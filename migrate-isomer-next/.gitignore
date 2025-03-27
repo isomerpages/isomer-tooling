@@ -1,3 +1,4 @@
 *.csv
 *.xml
 *.txt
+node_modules
