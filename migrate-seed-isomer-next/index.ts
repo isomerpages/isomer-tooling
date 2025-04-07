@@ -210,7 +210,7 @@ async function seedDatabase(client: Client, siteId: number, siteName: string) {
         : path.basename(page.name, ".json").toLowerCase(); // Only use the file name without extension
       const isCollectionLink =
         content.layout === "link" || content.layout === "file";
-      const isPageOrder = page.name === "_pages.json";
+      const isPageOrder = page.name === "_meta.json";
 
       if (content.layout === "file") {
         content.layout = "link";
@@ -246,7 +246,7 @@ async function seedDatabase(client: Client, siteId: number, siteName: string) {
 
 async function createBlob(client: Client, content: any): Promise<number> {
   if (!content.page) {
-    // For _pages.json
+    // For _meta.json
     const result = await client.query(
       `INSERT INTO public."Blob" (content) VALUES ($1) RETURNING id`,
       [JSON.stringify(content)]
