@@ -136,7 +136,7 @@ async function seedDatabase(client: Client, siteId: number, siteName: string) {
         console.log(`Found index page for folder ${folder.name}`);
         const indexPagePath = path.join(dirPath, `${folder.name}.json`);
         const content = JSON.parse(fs.readFileSync(indexPagePath, "utf-8"));
-        const title = content.page?.title || folder.name;
+        const title = content.page?.title || getProperTitle(folder.name);
         const permalink = "_index"; // Special permalink for index pages
 
         const isCollection = content.layout === "collection";
@@ -144,7 +144,7 @@ async function seedDatabase(client: Client, siteId: number, siteName: string) {
         if (isCollection) {
           // Create the collection resource
           const folderResourceId = await createResource(client, {
-            title: folder.name,
+            title,
             permalink: folder.name.toLowerCase(), // Use folder name as permalink
             parentId,
             type: "Collection",
@@ -165,7 +165,7 @@ async function seedDatabase(client: Client, siteId: number, siteName: string) {
         } else {
           // Create the folder resource
           const folderResourceId = await createResource(client, {
-            title: folder.name,
+            title,
             permalink: folder.name.toLowerCase(), // Use folder name as permalink
             parentId,
             type: "Folder",
@@ -187,7 +187,7 @@ async function seedDatabase(client: Client, siteId: number, siteName: string) {
       } else {
         // Create the folder resource
         const folderResourceId = await createResource(client, {
-          title: folder.name,
+          title: getProperTitle(folder.name),
           permalink: folder.name.toLowerCase(), // Use folder name as permalink
           parentId,
           type: "Folder",
@@ -656,6 +656,10 @@ function studioifyContent(
   }
 
   return newContent;
+}
+
+function getProperTitle(slug: string) {
+  return slug[0].toUpperCase() + slug.slice(1).replace(/-/g, " ");
 }
 
 main().catch((err) => console.error(err));
