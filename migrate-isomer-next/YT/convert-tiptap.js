@@ -34,18 +34,18 @@ const path = require("path");
 // CONFIGURATION SETTINGS
 // This is the base URL for the actual live site, used for downloading images
 // and files directly from them. No backslash at the end.
-const SITE_BASE_URL = "https://www.nna.gov.sg";
+const SITE_BASE_URL = "https://www.cccs.gov.sg";
 // This is the path prefix for the folder that will host the downloaded images
 // inside the GitHub repository relative to the `public` folder
-const IMAGES_PATH_PREFIX = "/images/events/upcoming-events";
+const IMAGES_PATH_PREFIX = "/images/";
 // This is the path prefix for the folder that will host the downloaded files
 // inside the GitHub repository relative to the `public` folder
-const FILES_PATH_PREFIX = "/files/events/upcoming-events";
+const FILES_PATH_PREFIX = "/files/";
 
 // This is the logic used to determine if a particular link is to a file that
 // should be downloaded and hosted on the new site
 const isFileLink = (link) => {
-  return link.startsWith("/docs") || link.startsWith("https://www.nna.gov.sg/docs/default-source/");
+  return link.startsWith("/docs"); // || link.startsWith("https://www.nna.gov.sg/docs/default-source/");
 };
 
 // DO NOT TOUCH BELOW THIS LINE

@@ -7,7 +7,7 @@ const moment = require("moment");
 
 // CONFIGURATION SETTINGS
 // This is the CSV file that contains the HTML content of the pages, one page per row
-const CSV_FILE = "./csv/nna-upcoming.csv";
+const CSV_FILE = "./csv/cccs.csv";
 // This is the list of pages that should be excluded from migration
 // This should match the identifier that you are using for each page, usually
 // the permalink (or termed as "fileName" in this script)
@@ -34,11 +34,11 @@ const main = async () => {
   for (const row of csvParse.data) {
     // const originalUrl = row["URL"];
     const title = row["Title"];
-    const publishDate = moment(row["Date"], "D MMM YYYY").format("DD/MM/YYYY");
+    const publishDate = row["Article date"] // moment(row["Date"], "D MMM YYYY").format("DD/MM/YYYY");
     const fileName = row["JSON File name"];
       // .replaceAll("https://www.ace-hta.gov.sg/healthcare-professionals/ace-clinical-guidances-(acgs)/details", "")
       // .replaceAll("/", "");
-    const category = row["Category"];
+    const category = row["Article category"];
     // const tag = row["Status - Tag"];
     const html = row["HTML"];
 
@@ -94,7 +94,7 @@ const main = async () => {
       version: "0.1.0",
       layout: "article",
       page: {
-        title: title.toString(),
+        title: title,
         category,
         // tags: [
         //   {
@@ -131,10 +131,20 @@ const main = async () => {
     };
 
     // Save schema to file
-    await fs.writeFile(
-      `output/${fileName}.json`,
-      JSON.stringify(schema, null, 2)
-    );
+    try {
+      // Try to access the file. If it exists, this call succeeds.
+      await fs.access(`output/${fileName}.json`);
+      await fs.writeFile(
+        `output/${fileName}-1.json`,
+        JSON.stringify(schema, null, 2)
+      );
+    } catch (error) {
+      // If the file does not exist, fs.access will throw an error.
+      await fs.writeFile(
+        `output/${fileName}.json`,
+        JSON.stringify(schema, null, 2)
+      );
+    }
   } 
 };
 
