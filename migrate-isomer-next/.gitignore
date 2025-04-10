@@ -1,8 +1,5 @@
 *.csv
 *.xml
 *.txt
-docs
-json
-output
-downloads
+node_modules
 csv
