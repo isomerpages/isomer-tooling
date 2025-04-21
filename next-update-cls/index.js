@@ -141,12 +141,15 @@ const main = async () => {
       for (const item of itemsToCreateCsv) {
         // Step 4a: Create the new CLS article resources and collection links
         // Find the corresponding row in the CSV file
-        const itemPermalink = item["Shortlink"].replace("https://www.csa.gov.sg/", "");
+        const itemPermalink = item["Shortlink"].replace(
+          "https://www.csa.gov.sg/",
+          ""
+        );
 
         const csvRow = activeItems.data.find(
           (row) =>
             row["Shortlink"].replace("https://www.csa.gov.sg/", "") ===
-          itemPermalink
+            itemPermalink
         );
         const category = csvRow["Product Category"];
         const brand = csvRow["Brand"];
@@ -323,7 +326,7 @@ const main = async () => {
           [newLinkVersion.rows[0].id, newLinkResource.rows[0].id]
         );
 
-        console.log("Created new CLS item: ", itemPermalink);
+        console.log("Created new CLS item:", itemPermalink);
       }
     }
 
