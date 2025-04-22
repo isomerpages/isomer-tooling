@@ -34,13 +34,13 @@ const path = require("path");
 // CONFIGURATION SETTINGS
 // This is the base URL for the actual live site, used for downloading images
 // and files directly from them. No backslash at the end.
-const SITE_BASE_URL = "https://www.cccs.gov.sg";
+const SITE_BASE_URL = "https://www.mccy.gov.sg";
 // This is the path prefix for the folder that will host the downloaded images
 // inside the GitHub repository relative to the `public` folder
-const IMAGES_PATH_PREFIX = "/images/";
+const IMAGES_PATH_PREFIX = "/images";
 // This is the path prefix for the folder that will host the downloaded files
 // inside the GitHub repository relative to the `public` folder
-const FILES_PATH_PREFIX = "/files/";
+const FILES_PATH_PREFIX = "/files";
 
 // This is the logic used to determine if a particular link is to a file that
 // should be downloaded and hosted on the new site
@@ -577,7 +577,7 @@ const getCleanedSchema = (schema) => {
 
             if (isFileLink(mark.attrs.href)) {
               const fileName = mark.attrs.href.split("?")[0].split("/").pop();
-              var fileType = fileName.split(".")[fileName.split(".").length - 1] .replaceAll("pdf", "PDF")
+              var fileType = fileName.split(".")[fileName.split(".").length - 1].replaceAll("pdf", "PDF")
               .replaceAll("doc", "DOC")
               .replaceAll("docx", "DOCX")
               .replaceAll("xlsx", "XLSX")
@@ -592,7 +592,7 @@ const getCleanedSchema = (schema) => {
                 ) {
                   // console.log("File already downloaded:", mark.attrs.href);
                 }
-
+                
                 global.FILE_DOWNLOADS[mark.attrs.href] = newHref;
                 console.log(JSON.stringify(global.FILE_DOWNLOADS));
                 downloadFile(
@@ -602,18 +602,19 @@ const getCleanedSchema = (schema) => {
                 );
                 newAttrs.href = newHref;
                 
-                var stats = fs.statSync(`./downloads/files/${PERMALINK.replaceAll("'", "-")}/${fileName.replaceAll("'", "-")}`);
-                var bytes = Math.round(stats.size/1024);
-                if ((stats.size/1000).toString().length >= 1 || (stats.size/1000).toString().length <= 3) {
-                  bytes += " KB"
-                }
-                else if ((stats.size/1000).toString().length >= 4 || (stats.size/1000).toString().length < 7) {
-                    bytes += " MB"
-                } else {
-                  bytes += " B"
-                }
+                // var stats = fs.statSync(`./downloads/files/${PERMALINK.replaceAll("'", "-")}/${fileName.replaceAll("'", "-")}`);
+                // var bytes = Math.round(stats.size/1024);
 
-                component.text += ` [${fileType}, ${bytes}]`;
+                // if ((stats.size/1000).toString().length >= 1 || (stats.size/1000).toString().length <= 3) {
+                //   bytes += " KB"
+                // }
+                // else if ((stats.size/1000).toString().length >= 4 || (stats.size/1000).toString().length < 7) {
+                //     bytes += " MB"
+                // } else {
+                //   bytes += " B"
+                // }
+
+                // component.text += ` [${fileType}, ${bytes}]`;
               } else {
                 console.log("Blacklisted file type detected. Skip downloading")
               }

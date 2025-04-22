@@ -7,7 +7,7 @@ const moment = require("moment");
 
 // CONFIGURATION SETTINGS
 // This is the CSV file that contains the HTML content of the pages, one page per row
-const CSV_FILE = "./csv/cccs.csv";
+const CSV_FILE = "./csv/mccy-news-1.csv";
 // This is the list of pages that should be excluded from migration
 // This should match the identifier that you are using for each page, usually
 // the permalink (or termed as "fileName" in this script)
@@ -34,12 +34,12 @@ const main = async () => {
   for (const row of csvParse.data) {
     // const originalUrl = row["URL"];
     const title = row["Title"];
-    const publishDate = row["Article date"] // moment(row["Date"], "D MMM YYYY").format("DD/MM/YYYY");
+    const publishDate = row["Date"] // moment(row["Date"], "D MMM YYYY").format("DD/MM/YYYY");
     const fileName = row["JSON File name"];
       // .replaceAll("https://www.ace-hta.gov.sg/healthcare-professionals/ace-clinical-guidances-(acgs)/details", "")
       // .replaceAll("/", "");
-    const category = row["Article category"];
-    // const tag = row["Status - Tag"];
+    const category = row["Category"];
+    // const tag = row["Label"];
     const html = row["HTML"];
 
     // const fileExt = row["Link"].split(".").pop();
