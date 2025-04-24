@@ -12,10 +12,7 @@ import { GET_ALL_RESOURCES_WITH_FULL_PERMALINKS } from "./constants";
 // These are the sites to migrate and their corresponding site IDs inside the
 // Studio database.
 export const MIGRATING_SITES_MAPPING: Record<string, number> = {
-  "moh-dsab-next": 88,
-  "moh-fpab-next": 89,
-  "moh-psab-next": 90,
-  "moh-sab-next": 91,
+  "mof-spor-next": 10,
 };
 
 // Do not touch below this line
@@ -446,7 +443,7 @@ async function studioifySite(client: Client, siteId: number, siteName: string) {
     .map(([original, newAsset]) => `${original},${newAsset}`)
     .join("\n");
   fs.writeFileSync(
-    path.join(__dirname, `asset-mappings-${siteId}.csv`),
+    path.join(__dirname, `asset-mappings-${siteName}.csv`),
     assetsCsvHeaders + assetsCsv,
     "utf-8"
   );
