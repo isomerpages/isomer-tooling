@@ -12,7 +12,10 @@ import { GET_ALL_RESOURCES_WITH_FULL_PERMALINKS } from "./constants";
 // These are the sites to migrate and their corresponding site IDs inside the
 // Studio database.
 export const MIGRATING_SITES_MAPPING: Record<string, number> = {
-  "mof-spor-next": 10,
+  "moh-dsab-next": 88,
+  "moh-fpab-next": 89,
+  "moh-psab-next": 90,
+  "moh-sab-next": 91,
 };
 
 // Do not touch below this line
@@ -45,6 +48,8 @@ async function main() {
     console.log("Successfully connected to the database");
 
     for (const [siteName, siteId] of Object.entries(MIGRATING_SITES_MAPPING)) {
+      console.log("Migrating site:", siteName);
+
       const siteExists = await ensureSiteExists(client, siteId, siteName);
 
       if (!siteExists) {
@@ -55,16 +60,16 @@ async function main() {
 
       await studioifySite(client, siteId, siteName);
 
-      console.log("All done! Remember to upload the assets to S3.");
+      console.log(`Successfully migrated site ${siteName} with ID ${siteId}`);
     }
+
+    console.log(`All done! Remember to upload the assets to S3.`);
   } catch (err) {
     console.error(err);
   } finally {
     await client.end();
     const end = performance.now(); // End profiling
-    console.log(
-      `Database seeding completed in ${(end - start) / 1000} seconds`
-    );
+    console.log(`Script completed in ${(end - start) / 1000} seconds`);
   }
 }
 
