@@ -187,14 +187,25 @@ async function seedDatabase(client: Client, siteId: number, siteName: string) {
           await processDirectory(fullPath, folderResourceId);
         }
       } else {
+        const title = getProperTitle(folder.name);
         // Create the folder resource
         const folderResourceId = await createResource(client, {
-          title: getProperTitle(folder.name),
+          title,
           permalink: folder.name.toLowerCase(), // Use folder name as permalink
           parentId,
           type: "Folder",
           siteId,
         });
+
+        const blobId = await createBlob(client, getIndexPageContent(title));
+        const resourceId = await createResource(client, {
+          title,
+          permalink: "_index", // Special permalink for index pages
+          parentId: folderResourceId,
+          type: "IndexPage",
+          siteId,
+        });
+        await createVersion(client, resourceId, blobId);
 
         await processDirectory(fullPath, folderResourceId);
       }
@@ -664,6 +675,27 @@ function studioifyContent(
 
 function getProperTitle(slug: string) {
   return slug[0].toUpperCase() + slug.slice(1).replace(/-/g, " ");
+}
+
+function getIndexPageContent(title: string) {
+  return {
+    page: {
+      title,
+      contentPageHeader: {
+        summary: `Pages in ${title}`,
+      },
+    },
+    layout: "index",
+    content: [
+      {
+        type: "childrenpages",
+        variant: "rows",
+        showSummary: true,
+        showThumbnail: false,
+      },
+    ],
+    version: "0.1.0",
+  };
 }
 
 main().catch((err) => console.error(err));
