@@ -34,7 +34,7 @@ const path = require("path");
 // CONFIGURATION SETTINGS
 // This is the base URL for the actual live site, used for downloading images
 // and files directly from them. No backslash at the end.
-const SITE_BASE_URL = "https://www.mccy.gov.sg";
+const SITE_BASE_URL = "https://www.ycs.gov.sg";
 // This is the path prefix for the folder that will host the downloaded images
 // inside the GitHub repository relative to the `public` folder
 const IMAGES_PATH_PREFIX = "/images";
@@ -149,6 +149,11 @@ const convertFromTiptap = (schema, headerBlock) => {
     content: [],
   };
 
+  // let galleryBlock = {
+  //   type: "imagegallery",
+  //   images: [],
+  // };
+
   schema.forEach((component) => {
     if (component.type === "iframe") {
       outputContent.push(proseBlock);
@@ -214,11 +219,14 @@ const convertFromTiptap = (schema, headerBlock) => {
     } else if (component.type === "image") {
       outputContent.push(proseBlock);
       const { attrs, ...rest } = component;
-      const { alt, src } = attrs;
+      let { alt, src } = attrs;
 
       if (!!alt && alt.length > 120) {
         console.log("Image alt text is too long:", alt);
         console.log("Image source:", src);
+      }
+      else {
+        alt = "This is a alt text";
       }
 
       const fileName = src.split("?")[0].split("/").pop();
@@ -234,6 +242,14 @@ const convertFromTiptap = (schema, headerBlock) => {
         alt,
         ...rest,
       });
+
+      // galleryBlock.images.push({
+      //   src: newSrc,
+      //   alt: "Placeholder",
+      //   ...rest,
+      // });
+
+      // console.log(galleryBlock);
       proseBlock = {
         type: "prose",
         content: [],
@@ -374,6 +390,13 @@ const convertFromTiptap = (schema, headerBlock) => {
     }
   });
 
+  // For MINDEF image gallery
+  // if (galleryBlock.images.length > 0) {
+  //   outputContent.push(
+  //     galleryBlock
+  //   );
+  // }
+
   if (proseBlock.content.length > 0) {
     outputContent.push(proseBlock);
   }
@@ -408,7 +431,8 @@ const convertFromTiptap = (schema, headerBlock) => {
               level: 2,
             },
           });
-        } else {
+        }
+        else {
           newProseContent.push(component);
         }
       });
@@ -563,7 +587,23 @@ const getCleanedSchema = (schema) => {
   // among all the existing attributes stored in the attrs key
   const findLink = (schema) => {
     schema.forEach((component) => {
+      // YT - check if > 1 paragraph block exist
       if (
+        component.type === "orderedList" ||
+        component.type === "unorderedList"
+      ) {
+        component.content.map(prev => {
+          if (prev.content.length > 1) {
+            for (let i = 1; i < prev.content.length; i++) {
+              prev.content[0].content.push(...prev.content[i].content);
+              prev.content.splice(1, prev.content.length - 1);
+            }
+            console.log(prev.content[0]);
+            // console.log(...prev.content[2].content)
+          }
+        });
+        // console.log(component.content)
+      } else if (
         component.type === "text" &&
         component.marks &&
         component.marks.some((mark) => mark.type === "link")

@@ -7,7 +7,7 @@ const moment = require("moment");
 
 // CONFIGURATION SETTINGS
 // This is the CSV file that contains the HTML content of the pages, one page per row
-const CSV_FILE = "./csv/mccy-news-1.csv";
+const CSV_FILE = "./csv/updated-ycs-internships.csv";
 // This is the list of pages that should be excluded from migration
 // This should match the identifier that you are using for each page, usually
 // the permalink (or termed as "fileName" in this script)
@@ -39,7 +39,9 @@ const main = async () => {
       // .replaceAll("https://www.ace-hta.gov.sg/healthcare-professionals/ace-clinical-guidances-(acgs)/details", "")
       // .replaceAll("/", "");
     const category = row["Category"];
-    // const tag = row["Label"];
+    // const tag1 = row["Duration"];
+    // const tag2 = row["Qualifications"].split(",");
+    // const vacancies = row["Vacancies"]
     const html = row["HTML"];
 
     // const fileExt = row["Link"].split(".").pop();
@@ -98,13 +100,18 @@ const main = async () => {
         category,
         // tags: [
         //   {
-        //     category: "Status",
-        //     selected: [tag],
+        //     category: "Duration of Internship",
+        //     selected: [tag1],
         //   },
+        //   {
+        //     category: "Minimum Qualification",
+        //     selected: tag2,
+        //   }
         // ],
         date: publishDate,
         articlePageHeader: {
-          summary: "",
+          // summary: `No. of Vacancies: ${vacancies}`,
+          summary: ""
         },
       },
       content: [
