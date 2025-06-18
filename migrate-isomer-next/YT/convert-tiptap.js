@@ -592,18 +592,14 @@ const getCleanedSchema = (schema) => {
         component.type === "orderedList" ||
         component.type === "unorderedList"
       ) {
-        component.content.map(prev => {
-          if (prev.content.length > 1) {
-            for (let i = 1; i < prev.content.length; i++) {
-              prev.content[0].content.push(...prev.content[i].content);
-              prev.content.splice(1, prev.content.length - 1);
-            }
-            console.log(prev.content[0]);
-            // console.log(...prev.content[2].content)
+          component.content.forEach(prev => {
+            if (prev.content.length > 1) {
+              // Create a new array of a object that retains all key-pair value of
+              // the first paragraph, and overwrite first paragraph "content" with all paragraph blocks in the old copy
+              prev.content =  [{...prev.content[0], "content": prev.content.flatMap(item => item.content)}]
           }
-        });
-        // console.log(component.content)
-      } else if (
+        }
+      )} else if (
         component.type === "text" &&
         component.marks &&
         component.marks.some((mark) => mark.type === "link")
