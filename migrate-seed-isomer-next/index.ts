@@ -645,27 +645,27 @@ function studioifyContent(
   for (const asset of Object.keys(assetsMap)) {
     newContent = newContent
       .replaceAll(`"${asset}"`, `"${assetsMap[asset]}"`)
-      .replaceAll(`"${asset}"`, `"${assetsMap[asset.replaceAll("%20", " ")]}"`)
+      .replaceAll(`"${asset.replaceAll(" ", "%20")}"`, `"${assetsMap[asset]}"`)
       .replaceAll(`'${asset}'`, `'${assetsMap[asset]}'`)
-      .replaceAll(`'${asset}'`, `'${assetsMap[asset.replaceAll("%20", " ")]}'`);
+      .replaceAll(`'${asset.replaceAll(" ", "%20")}'`, `'${assetsMap[asset]}'`);
   }
 
   for (const page of Object.keys(resourcesMap)) {
     newContent = newContent
       .replaceAll(
-        `"${page}"`,
-        `"[resource:${String(siteId)}:${String(resourcesMap[page].id)}]"`
-      )
-      .replaceAll(
         `"${page}/"`,
         `"[resource:${String(siteId)}:${String(resourcesMap[page].id)}]"`
       )
       .replaceAll(
-        `'${page}'`,
-        `'[resource:${String(siteId)}:${String(resourcesMap[page].id)}]'`
+        `"${page}"`,
+        `"[resource:${String(siteId)}:${String(resourcesMap[page].id)}]"`
       )
       .replaceAll(
         `'${page}/'`,
+        `'[resource:${String(siteId)}:${String(resourcesMap[page].id)}]'`
+      )
+      .replaceAll(
+        `'${page}'`,
         `'[resource:${String(siteId)}:${String(resourcesMap[page].id)}]'`
       );
   }
