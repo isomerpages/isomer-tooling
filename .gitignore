@@ -1,5 +1,5 @@
 .env
-*/node_modules/
+**/node_modules/
 setup-hosting/
 .DS_Store
 */.ssh/
@@ -13,4 +13,3 @@ metadata*/
 egazettes*/
 errors*/
 2023-gazettes*/
-
