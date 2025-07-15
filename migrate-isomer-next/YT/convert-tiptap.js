@@ -224,8 +224,7 @@ const convertFromTiptap = (schema, headerBlock) => {
       if (!!alt && alt.length > 120) {
         console.log("Image alt text is too long:", alt);
         console.log("Image source:", src);
-      }
-      else {
+      } else {
         alt = "This is a alt text";
       }
 
@@ -385,6 +384,81 @@ const convertFromTiptap = (schema, headerBlock) => {
       } else {
         proseBlock.content.push(newComponent);
       }
+    } else if (
+      component.type === "orderedList" ||
+      component.type === "unorderedList"
+    ) {
+      // Extract out all images in list items, and put different paragraphs in
+      // the same list item to become two hard breaks
+      let newListItems = [];
+
+      component.content.forEach((listItem) => {
+        let newListItemParagraphContent = [];
+        listItem.content.forEach((listItemContent) => {
+          if (listItemContent.type === "image") {
+            if (newListItems.length > 0) {
+              proseBlock.content.push({
+                ...component,
+                content: newListItems,
+              });
+              newListItems = [];
+            }
+
+            if (proseBlock.content.length > 0) {
+              outputContent.push(proseBlock);
+              proseBlock = {
+                type: "prose",
+                content: [],
+              };
+            }
+
+            const { attrs, ...rest } = listItemContent;
+
+            outputContent.push({
+              ...rest,
+              ...listItemContent.attrs,
+              alt: listItemContent.attrs.alt || PLACEHOLDER_ALT_TEXT,
+            });
+          } else if (listItemContent.type === "paragraph") {
+            if (newListItemParagraphContent.length > 0) {
+              // Add two hard breaks to separate paragraphs
+              newListItemParagraphContent.push({
+                type: "hardBreak",
+              });
+              newListItemParagraphContent.push({
+                type: "hardBreak",
+              });
+            }
+
+            newListItemParagraphContent = newListItemParagraphContent.concat(
+              listItemContent.content
+            );
+          }
+        });
+
+        if (newListItemParagraphContent.length > 0) {
+          newListItems.push({
+            type: "listItem",
+            content: [
+              {
+                type: "paragraph",
+                content: newListItemParagraphContent,
+              },
+            ],
+          });
+
+          newListItemParagraphContent = [];
+        }
+      });
+
+      if (newListItems.length > 0) {
+        proseBlock.content.push({
+          ...component,
+          content: newListItems,
+        });
+
+        newListItems = [];
+      }
     } else {
       proseBlock.content.push(component);
     }
@@ -431,8 +505,7 @@ const convertFromTiptap = (schema, headerBlock) => {
               level: 2,
             },
           });
-        }
-        else {
+        } else {
           newProseContent.push(component);
         }
       });
@@ -459,6 +532,11 @@ const getCleanedSchema = (schema) => {
     schema.forEach((component) => {
       if (component.type === "table") {
         component.caption = "";
+
+        // Remove any empty tableRow
+        component.content = component.content.filter(
+          (row) => row.content && row.content.length > 0
+        );
       } else if (component.content) {
         findTable(component.content);
       }
@@ -592,14 +670,19 @@ const getCleanedSchema = (schema) => {
         component.type === "orderedList" ||
         component.type === "unorderedList"
       ) {
-          component.content.forEach(prev => {
-            if (prev.content.length > 1) {
-              // Create a new array of a object that retains all key-pair value of
-              // the first paragraph, and overwrite first paragraph "content" with all paragraph blocks in the old copy
-              prev.content =  [{...prev.content[0], "content": prev.content.flatMap(item => item.content)}]
+        component.content.forEach((prev) => {
+          if (prev.content.length > 1) {
+            // Create a new array of a object that retains all key-pair value of
+            // the first paragraph, and overwrite first paragraph "content" with all paragraph blocks in the old copy
+            prev.content = [
+              {
+                ...prev.content[0],
+                content: prev.content.flatMap((item) => item.content),
+              },
+            ];
           }
-        }
-      )} else if (
+        });
+      } else if (
         component.type === "text" &&
         component.marks &&
         component.marks.some((mark) => mark.type === "link")
@@ -613,31 +696,39 @@ const getCleanedSchema = (schema) => {
 
             if (isFileLink(mark.attrs.href)) {
               const fileName = mark.attrs.href.split("?")[0].split("/").pop();
-              var fileType = fileName.split(".")[fileName.split(".").length - 1].replaceAll("pdf", "PDF")
-              .replaceAll("doc", "DOC")
-              .replaceAll("docx", "DOCX")
-              .replaceAll("xlsx", "XLSX")
-              .replaceAll("xls", "XLS")
-              .replaceAll("csv", "CSV")
-              .replaceAll("tsv", "TSV");
+              var fileType = fileName
+                .split(".")
+                [fileName.split(".").length - 1].replaceAll("pdf", "PDF")
+                .replaceAll("doc", "DOC")
+                .replaceAll("docx", "DOCX")
+                .replaceAll("xlsx", "XLSX")
+                .replaceAll("xls", "XLS")
+                .replaceAll("csv", "CSV")
+                .replaceAll("tsv", "TSV");
 
               if (fileType != "DOC" && fileType != "DOCX") {
-                const newHref = `${FILES_PATH_PREFIX}/${PERMALINK.replaceAll("'", "-")}/${fileName.replaceAll("'", "-")}`;
+                const newHref = `${FILES_PATH_PREFIX}/${PERMALINK.replaceAll(
+                  "'",
+                  "-"
+                )}/${fileName.replaceAll("'", "-")}`;
                 if (
                   Object.keys(global.FILE_DOWNLOADS).includes(mark.attrs.href)
                 ) {
                   // console.log("File already downloaded:", mark.attrs.href);
                 }
-                
+
                 global.FILE_DOWNLOADS[mark.attrs.href] = newHref;
                 console.log(JSON.stringify(global.FILE_DOWNLOADS));
                 downloadFile(
-                  `${SITE_BASE_URL}${mark.attrs.href.replace(SITE_BASE_URL, "")}`,
+                  `${SITE_BASE_URL}${mark.attrs.href.replace(
+                    SITE_BASE_URL,
+                    ""
+                  )}`,
                   "files",
                   fileName
                 );
                 newAttrs.href = newHref;
-                
+
                 // var stats = fs.statSync(`./downloads/files/${PERMALINK.replaceAll("'", "-")}/${fileName.replaceAll("'", "-")}`);
                 // var bytes = Math.round(stats.size/1024);
 
@@ -652,7 +743,7 @@ const getCleanedSchema = (schema) => {
 
                 // component.text += ` [${fileType}, ${bytes}]`;
               } else {
-                console.log("Blacklisted file type detected. Skip downloading")
+                console.log("Blacklisted file type detected. Skip downloading");
               }
 
               if (
