@@ -1,5 +1,4 @@
 import algoliasearch from "algoliasearch";
-import type { SearchIndex } from "algoliasearch";
 
 import * as fs from "fs";
 
@@ -69,14 +68,6 @@ const chunkContent = (
   }));
 };
 
-const addToIndex = async (searchIndex: SearchIndex, record: SearchRecord) => {
-  try {
-    await searchIndex.saveObject(record);
-  } catch (e) {
-    console.error(`Error while adding to index: ${JSON.stringify(e)}`);
-  }
-};
-
 interface AddSearchToIndexProps {
   algoliaAppId: string;
   algoliaApiKey: string;
@@ -131,7 +122,12 @@ export const addToSearchIndex = async ({
 	try {
 		for (const record of records) {
 			fs.appendFileSync("fileData.txt", `${JSON.stringify(record)},\n`);
-			await addToIndex(searchIndex, record);
+  
+      try {
+        await searchIndex.saveObject(record);
+      } catch (e) {
+        console.error(`Error while adding to index: ${JSON.stringify(e)}`);
+      }
 		}
 	} catch (e) {
 		console.error({ message: `Adding to search index failed`, error: e });
