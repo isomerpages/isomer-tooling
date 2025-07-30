@@ -5,7 +5,7 @@ import { parsePdfAsImageAndExtractText } from "./utils/parsePdfAsImageAndExtract
 const { PdfReader } = require("pdfreader");
 import * as fs from "fs";
 import path from "path";
-import { addToSearchIndex } from "./utils/algolia";
+import { addToSearchIndex, initSearchIndex } from "./utils/algolia";
 
 const METADATA_PATH = "./metadata.csv";
 
@@ -69,6 +69,13 @@ const main = async () => {
   if (args.includes("noUpload")) {
     shouldUpload = false;
   }
+
+  const searchIndex = initSearchIndex({
+    algoliaAppId: ALGOLIA_APP_ID,
+    algoliaApiKey: ALGOLIA_API_KEY,
+    algoliaIndexName: ALGOLIA_INDEX_NAME,
+  });
+
   const fileData = await parseMetadataCsv(METADATA_PATH);
   const publishDate = new Date();
   const year = publishDate.getFullYear();
@@ -94,9 +101,7 @@ const main = async () => {
     // upload to algolia
     if (shouldUpload)
       await addToSearchIndex({
-        algoliaAppId: ALGOLIA_APP_ID,
-        algoliaApiKey: ALGOLIA_API_KEY,
-        algoliaIndexName: ALGOLIA_INDEX_NAME,
+        searchIndex,
         baseStorageUrl: baseStorageUrl,
         gazetteCategory: file.category,
         gazetteSubCategory: file.subCategory,

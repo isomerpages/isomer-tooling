@@ -1,4 +1,4 @@
-import algoliasearch from "algoliasearch";
+import algoliasearch, { SearchIndex } from "algoliasearch";
 
 import * as fs from "fs";
 
@@ -69,9 +69,7 @@ const chunkContent = (
 };
 
 interface AddSearchToIndexProps {
-  algoliaAppId: string;
-  algoliaApiKey: string;
-  algoliaIndexName: string;
+  searchIndex: SearchIndex;
   baseStorageUrl: string;
   gazetteCategory: string;
   gazetteSubCategory: string;
@@ -83,9 +81,7 @@ interface AddSearchToIndexProps {
 }
 
 export const addToSearchIndex = async ({
-  algoliaAppId,
-  algoliaApiKey,
-  algoliaIndexName,
+  searchIndex,
   baseStorageUrl,
 	gazetteCategory,
 	gazetteSubCategory,
@@ -95,9 +91,6 @@ export const addToSearchIndex = async ({
 	objectKey,
 	content,
 }: AddSearchToIndexProps) => {
-  const searchClient = algoliasearch(algoliaAppId, algoliaApiKey);
-  const searchIndex = searchClient.initIndex(algoliaIndexName);
-
 	const publishDateSG = publishDate.toLocaleDateString("en-SG");
 	const publishTimes = publishDateSG.split("/");
 
@@ -133,4 +126,18 @@ export const addToSearchIndex = async ({
 		console.error({ message: `Adding to search index failed`, error: e });
 		throw e;
 	}
+};
+
+interface InitSearchIndexProps {
+  algoliaAppId: string;
+  algoliaApiKey: string;
+  algoliaIndexName: string;
+}
+export const initSearchIndex = ({
+  algoliaAppId,
+  algoliaApiKey,
+  algoliaIndexName,
+}: InitSearchIndexProps) => {
+  const searchClient = algoliasearch(algoliaAppId, algoliaApiKey);
+  return searchClient.initIndex(algoliaIndexName);
 };

@@ -4,7 +4,7 @@
 
 import * as fs from "fs";
 import path from "path";
-import { addToSearchIndex } from "../utils/algolia";
+import { addToSearchIndex, initSearchIndex } from "../utils/algolia";
 import { uploadBlob } from "../utils/uploadBlob";
 import { parseFileMetadata } from "./parseFileMetadata";
 import { getObjectKey } from "../utils/getObjectKey";
@@ -55,7 +55,13 @@ const BASE_STORAGE_URL = "https://assets.egazette.gov.sg";
 // -------------------------------------------------------------------------
 
 
-const main = async () => {      
+const main = async () => {
+  const searchIndex = initSearchIndex({
+    algoliaAppId: ALGOLIA_APP_ID,
+    algoliaApiKey: ALGOLIA_API_KEY,
+    algoliaIndexName: ALGOLIA_INDEX_NAME,
+  });
+
   const fileMetadata = await parseFileMetadata({
 		csvFileName: CSV_FILE_PATH,
 		metadataRootFolder: METADATA_ROOT_FOLDER,
@@ -97,9 +103,7 @@ const main = async () => {
 
       // upload to algolia
       await addToSearchIndex({
-				algoliaAppId: ALGOLIA_APP_ID,
-				algoliaApiKey: ALGOLIA_API_KEY,
-				algoliaIndexName: ALGOLIA_INDEX_NAME,
+				searchIndex,
         baseStorageUrl: BASE_STORAGE_URL,
         gazetteCategory: file.category,
         gazetteSubCategory: file.subCategory,
