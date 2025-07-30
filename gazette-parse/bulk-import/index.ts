@@ -8,6 +8,7 @@ import { parsePdfAsImageAndExtractText } from "./parsePdfAsImageAndExtractText";
 import { addToSearchIndex } from "./addToSearchIndex";
 import { uploadBlob } from "../utils/uploadBlob";
 import { parseFileMetadata } from "./parseFileMetadata";
+import { getObjectKey } from "../utils/getObjectKey";
 
 // ------------------------------------------------------------------------------------
 // ---------------- UPDATE THIS VARIABLES AND CONSTANTS BEFORE RUNNING ----------------
@@ -71,15 +72,13 @@ const main = async () => {
     );
 
     try {
-      const fileNumber = file.notificationNumber
-        ? file.notificationNumber
-        : `${file.fileName.replace(".pdf", "").replace(".htm", "")}`;
-
-      const isPdfFile = file.fileName.includes(".pdf");
-
-      const objectKey = `${file.year}/${file.category}/${
-        file.subCategory
-      }/${fileNumber}.${isPdfFile ? "pdf" : "htm"}`;
+      const objectKey = getObjectKey({
+        notificationNumber: file.notificationNumber ?? "",
+        fileName: file.fileName,
+        year: Number(file.year),
+        category: file.category,
+        subCategory: file.subCategory,
+      });
 
       const data = await fs.promises.readFile(filePath.trim());
 
@@ -90,7 +89,7 @@ const main = async () => {
         bucketName: EXTERNAL_S3_BUCKET,
         key: objectKey,
         fileBuffer: data,
-        isPdf: isPdfFile,
+        isPdf: file.fileName.includes(".pdf"),
       });
 
       const parsedFileContent = await parsePdfAsImageAndExtractText(filePath);

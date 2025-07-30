@@ -1,8 +1,9 @@
 import * as fs from "fs";
 
 import path from "path";
-import { getObjectKey, parseMetadataCsv } from "./utils";
+import { parseMetadataCsv } from "./utils";
 import { uploadBlob } from "./utils/uploadBlob";
+import { getObjectKey } from "./utils/getObjectKey";
 
 const METADATA_PATH = "./metadata.csv";
 
