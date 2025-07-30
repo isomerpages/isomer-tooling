@@ -4,11 +4,11 @@
 
 import * as fs from "fs";
 import path from "path";
-import { parsePdfAsImageAndExtractText } from "./parsePdfAsImageAndExtractText";
 import { addToSearchIndex } from "./addToSearchIndex";
 import { uploadBlob } from "../utils/uploadBlob";
 import { parseFileMetadata } from "./parseFileMetadata";
 import { getObjectKey } from "../utils/getObjectKey";
+import { parsePdfAsImageAndExtractText } from "../utils/parsePdfAsImageAndExtractText";
 
 // ------------------------------------------------------------------------------------
 // ---------------- UPDATE THIS VARIABLES AND CONSTANTS BEFORE RUNNING ----------------

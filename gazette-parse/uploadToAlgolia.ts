@@ -1,6 +1,4 @@
 import { Parser } from "htmlparser2";
-const { PDFImage } = require("pdf-image");
-const Tesseract = require("tesseract.js");
 import algoliasearch from "algoliasearch";
 import { parseMetadataCsv } from "./utils";
 import { getObjectKey } from "./utils/getObjectKey";
@@ -56,34 +54,6 @@ export type SearchRecord = Omit<
 function toTimestamp(strDate: string) {
   const datum = new Date(strDate);
   return datum.getTime();
-}
-
-// Function to convert PDF to high-resolution images
-async function parsePdfAsImage(pdfPath: string) {
-  const pdfImage = new PDFImage(pdfPath, {
-    convertOptions: {
-      "-density": "300", // Set the DPI to 300 for better quality
-      "-quality": "100",
-    },
-  });
-  const pages = await pdfImage.numberOfPages();
-  const imagePaths: any[] = [];
-
-  for (let i = 0; i < pages; i++) {
-    const imagePath = await pdfImage.convertPage(i);
-    imagePaths.push(imagePath);
-  }
-
-  const texts: any[] = [];
-
-  for (const imagePath of imagePaths) {
-    const result = await Tesseract.recognize(imagePath, "eng", {
-      // logger: (m: string) => console.log(m), // optional logger to see the OCR process
-    });
-    texts.push(result.data.text);
-  }
-
-  return texts.join(" ");
 }
 
 const parseFullTextFromHtm = async (htmBuffer: Buffer) => {
@@ -246,7 +216,7 @@ const main = async () => {
     const isPdfFile = fileName.includes(".pdf");
     // parse text
     const parsedFile = shouldUseImageParse
-      ? await parsePdfAsImage(filePath)
+      ? await parsePdfAsImageAndExtractText(filePath)
       : isPdfFile
       ? await parseFullTextFromPDF(data)
       : await parseFullTextFromHtm(data);
