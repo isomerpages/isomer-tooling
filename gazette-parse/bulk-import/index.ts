@@ -6,7 +6,7 @@ import * as fs from "fs";
 import path from "path";
 import { parsePdfAsImageAndExtractText } from "./parsePdfAsImageAndExtractText";
 import { addToSearchIndex } from "./addToSearchIndex";
-import { uploadBlob } from "./uploadBlob";
+import { uploadBlob } from "../utils/uploadBlob";
 import { parseFileMetadata } from "./parseFileMetadata";
 
 // ------------------------------------------------------------------------------------
