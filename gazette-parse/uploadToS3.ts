@@ -40,8 +40,6 @@ const main = async () => {
 
     const data = await fs.promises.readFile(path.resolve(filePath.trim()));
 
-    const isPdfFile = fileName.includes(".pdf");
-
     await uploadBlob({
       awsAccessKeyId: AWS_ACCESS_KEY_ID,
       awsSecretAccessKey: AWS_SECRET_ACCESS_KEY,
@@ -49,7 +47,7 @@ const main = async () => {
       bucketName: EXTERNAL_S3_BUCKET,
       key: objectKey,
       fileBuffer: data,
-      isPdf: isPdfFile,
+      isPdf: fileName.includes(".pdf"),
     });
   }
 };
