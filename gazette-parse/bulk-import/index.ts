@@ -4,7 +4,7 @@
 
 import * as fs from "fs";
 import path from "path";
-import { addToSearchIndex } from "./addToSearchIndex";
+import { addToSearchIndex } from "../utils/algolia";
 import { uploadBlob } from "../utils/uploadBlob";
 import { parseFileMetadata } from "./parseFileMetadata";
 import { getObjectKey } from "../utils/getObjectKey";
@@ -105,7 +105,7 @@ const main = async () => {
         gazetteSubCategory: file.subCategory,
         gazetteNotificationNum: file.notificationNumber,
         gazetteTitle: file.title,
-        publishTime: file.publishDate,
+        publishDate: file.publishDate,
         objectKey: objectKey,
         content: parsedFileContent,
       });

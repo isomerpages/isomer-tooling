@@ -1,8 +1,29 @@
-import algoliasearch, { SearchIndex } from "algoliasearch";
+import algoliasearch from "algoliasearch";
+import type { SearchIndex } from "algoliasearch";
 
 import * as fs from "fs";
 
-import type { SearchRecord } from "./types";
+type GazetteMetadata = {
+	title: string;
+	category: string;
+	subCategory: string;
+	notificationNum?: string;
+	publishDate: string;
+	publishTime: string;
+};
+
+type SearchRecord = Omit<
+	GazetteMetadata & {
+		objectID: string;
+		objectGroup: string;
+		publishTimestamp: number;
+		fileUrl: string;
+		publishYear: number;
+		publishMonth: number;
+		publishDay: number;
+	},
+	"publishTime"
+>;
 
 const chunkContent = (
   parsedText: string,
@@ -65,7 +86,7 @@ interface AddSearchToIndexProps {
   gazetteSubCategory: string;
   gazetteNotificationNum?: string;
   gazetteTitle: string;
-  publishTime: Date;
+  publishDate: Date;
   objectKey: string;
   content: string;
 }
@@ -79,26 +100,26 @@ export const addToSearchIndex = async ({
 	gazetteSubCategory,
 	gazetteNotificationNum,
 	gazetteTitle,
-	publishTime,
+	publishDate,
 	objectKey,
 	content,
 }: AddSearchToIndexProps) => {
   const searchClient = algoliasearch(algoliaAppId, algoliaApiKey);
   const searchIndex = searchClient.initIndex(algoliaIndexName);
 
-	const publishDateStr = publishTime.toLocaleDateString("en-SG");
-	const publishTimes = publishDateStr.split("/");
+	const publishDateSG = publishDate.toLocaleDateString("en-SG");
+	const publishTimes = publishDateSG.split("/");
 
 	const newSearchRecord = {
 		category: gazetteCategory!,
 		subCategory: gazetteSubCategory || "",
 		notificationNum: gazetteNotificationNum!,
 		title: gazetteTitle!,
-		publishDate: publishDateStr,
+		publishDate: publishDateSG,
 		publishYear: parseInt(publishTimes[2]!),
 		publishMonth: parseInt(publishTimes[1]!),
 		publishDay: parseInt(publishTimes[0]!),
-		publishTimestamp: publishTime.getTime(),
+		publishTimestamp: publishDate.getTime(),
 		fileUrl: new URL(objectKey, baseStorageUrl).href,
 		objectGroup: objectKey,
 	};

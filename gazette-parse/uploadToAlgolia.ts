@@ -1,12 +1,11 @@
 import { Parser } from "htmlparser2";
-import algoliasearch from "algoliasearch";
 import { parseMetadataCsv } from "./utils";
 import { getObjectKey } from "./utils/getObjectKey";
 import { parsePdfAsImageAndExtractText } from "./utils/parsePdfAsImageAndExtractText";
 const { PdfReader } = require("pdfreader");
 import * as fs from "fs";
 import path from "path";
-
+import { addToSearchIndex } from "./utils/algolia";
 
 const METADATA_PATH = "./metadata.csv";
 
@@ -16,47 +15,7 @@ if (!ALGOLIA_APP_ID || !ALGOLIA_INDEX_NAME || !ALGOLIA_API_KEY) {
   throw new Error("Missing env vars");
 }
 
-const searchClient = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_API_KEY);
-const searchIndex = searchClient.initIndex(ALGOLIA_INDEX_NAME);
-
 export const baseStorageUrl = "https://assets.egazette.gov.sg";
-
-interface AddSearchToIndexProps {
-  gazetteCategory: string;
-  gazetteSubCategory: string;
-  gazetteNotificationNum?: string;
-  gazetteTitle: string;
-  publishTime: string;
-  objectKey: string;
-  content: string;
-}
-
-export type GazetteMetadata = {
-  title: string;
-  category: string;
-  subCategory: string;
-  notificationNum?: string;
-  publishDate: string;
-  publishTime: string;
-};
-
-export type SearchRecord = Omit<
-  GazetteMetadata & {
-    objectID: string;
-    objectGroup: string;
-    publishTimestamp: number;
-    fileUrl: string;
-    publishYear: number;
-    publishMonth: number;
-    publishDay: number;
-  },
-  "publishTime"
->;
-
-function toTimestamp(strDate: string) {
-  const datum = new Date(strDate);
-  return datum.getTime();
-}
 
 const parseFullTextFromHtm = async (htmBuffer: Buffer) => {
   // Read the HTML file
@@ -99,97 +58,6 @@ const parseFullTextFromPDF = async (pdfBuffer: Buffer) => {
   return parsedText;
 };
 
-const chunkContent = (
-  parsedText: string,
-  objectMetadata: Omit<SearchRecord, "objectID" | "publishTime">
-) => {
-  const {
-    objectGroup,
-    title,
-    category,
-    subCategory,
-    notificationNum,
-    publishDate,
-    publishTimestamp,
-    fileUrl,
-    publishDay,
-    publishMonth,
-    publishYear,
-  } = objectMetadata;
-
-  const maxSizeInBytes = 7000; // 10kb limit, with buffer
-  const regexPattern = new RegExp(`.{1,${maxSizeInBytes}}(?:\\s|$)`, "g");
-
-  const textChunks: any[] = [];
-  let match;
-  while ((match = regexPattern.exec(parsedText)) !== null) {
-    textChunks.push(match[0]);
-  }
-  // Create JSON object with text property
-  return textChunks.map((chunk, idx) => ({
-    title,
-    category,
-    subCategory,
-    notificationNum,
-    publishDate,
-    publishTimestamp,
-    fileUrl,
-    text: chunk,
-    objectGroup: objectGroup,
-    objectID: `${objectGroup}-text-${idx}`,
-    publishDay,
-    publishMonth,
-    publishYear,
-  }));
-};
-
-const addToIndex = async (record: SearchRecord) => {
-  try {
-    await searchIndex.saveObject(record);
-  } catch (e) {
-    console.error(`Error while adding to index: ${JSON.stringify(e)}`);
-  }
-};
-
-const addToSearchIndex = async ({
-  gazetteCategory,
-  gazetteSubCategory,
-  gazetteNotificationNum,
-  gazetteTitle,
-  publishTime,
-  objectKey,
-  content,
-}: AddSearchToIndexProps) => {
-  const publishTimes = publishTime.split("/");
-
-  const newSearchRecord = {
-    category: gazetteCategory!,
-    subCategory: gazetteSubCategory || "",
-    notificationNum: gazetteNotificationNum!,
-    title: gazetteTitle!,
-    publishDate: publishTime,
-    publishYear: parseInt(publishTimes[2]!),
-    publishMonth: parseInt(publishTimes[1]!),
-    publishDay: parseInt(publishTimes[0]!),
-    publishTimestamp: toTimestamp(publishTime),
-    fileUrl: new URL(objectKey, baseStorageUrl).href,
-    objectGroup: objectKey,
-  };
-
-  console.log(`Adding record ${newSearchRecord} to search index`);
-
-  // publish to index
-  const records = await chunkContent(content, newSearchRecord);
-  try {
-    for (const record of records) {
-      fs.appendFileSync("fileData.txt", `${JSON.stringify(record)},\n`);
-      await addToIndex(record);
-    }
-  } catch (e) {
-    console.error({ message: `Adding to search index failed`, error: e });
-    throw e;
-  }
-};
 
 const main = async () => {
   const args = process.argv.slice(2);
@@ -226,11 +94,15 @@ const main = async () => {
     // upload to algolia
     if (shouldUpload)
       await addToSearchIndex({
+        algoliaAppId: ALGOLIA_APP_ID,
+        algoliaApiKey: ALGOLIA_API_KEY,
+        algoliaIndexName: ALGOLIA_INDEX_NAME,
+        baseStorageUrl: baseStorageUrl,
         gazetteCategory: file.category,
         gazetteSubCategory: file.subCategory,
         gazetteNotificationNum: file.notificationNumber,
         gazetteTitle: file.title,
-        publishTime: publishDate.toLocaleDateString("en-SG"),
+        publishDate: publishDate,
         objectKey: objectKey,
         content: parsedFile,
       });
