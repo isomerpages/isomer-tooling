@@ -2,9 +2,11 @@ import { Parser } from "htmlparser2";
 import algoliasearch from "algoliasearch";
 import { parseMetadataCsv } from "./utils";
 import { getObjectKey } from "./utils/getObjectKey";
+import { parsePdfAsImageAndExtractText } from "./utils/parsePdfAsImageAndExtractText";
 const { PdfReader } = require("pdfreader");
 import * as fs from "fs";
 import path from "path";
+
 
 const METADATA_PATH = "./metadata.csv";
 
