@@ -58,6 +58,15 @@ export const csvFileMapping: CsvFileMapping = {
 		category: Category.GovernmentGazette,
 		folderName: "gg",
 	},
+	"2025-07-recovered-gazettes-gg.csv": {
+		category: Category.GovernmentGazette,
+		folderName: "gg",
+	},
+	"2025-07-recovered-gazettes-os-irs.csv": {
+		category: Category.OtherSupplements,
+		subCategory: "Industrial Relations Supplement",
+		folderName: "os-irs",
+	},
 };
 
 type SubCategoryMapping = {
@@ -73,6 +82,10 @@ export const subCategoryMapping: SubCategoryMapping = {
   Death: "Death",
   Dismissals: "Dismissals",
   Leave: "Leave",
+	"Notices (Bankruptcy Act)": "Notices (Bankruptcy Act)",
+	"Notices (Companies Act)": "Notices (Companies Act)",
+	"Notices (Constitution)": "Notices (Constitution)",
+	"Notices (other Acts)": "Notices (other Acts)",
   "Notices under the Bankruptcy Act": "Bankruptcy Act Notice",
   "Notices under the Companies Act": "Companies Act Notice",
   "Notices under the Constitution": "Notices under the Constitution",
