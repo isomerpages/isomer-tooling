@@ -108,7 +108,8 @@ export const addToSearchIndex = async ({
 		objectGroup: objectKey,
 	};
 
-	console.log(`Adding record ${newSearchRecord} to search index`);
+	console.log(`Adding record to search index`, newSearchRecord);
+  fs.appendFileSync("fileData.txt", `${JSON.stringify(newSearchRecord)},\n`);
 
 	// publish to index
 	const records = chunkContent(content, newSearchRecord);
