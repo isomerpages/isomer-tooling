@@ -58,14 +58,18 @@ export const csvFileMapping: CsvFileMapping = {
 		category: Category.GovernmentGazette,
 		folderName: "gg",
 	},
-	"2025-07-recovered-gazettes-gg.csv": {
+	"2025-07-recovered-gazettes-gg-gg.csv": {
 		category: Category.GovernmentGazette,
-		folderName: "gg",
+		folderName: "Government Gazettes",
+	},
+	"2025-07-recovered-gazettes-gg-ads.csv": {
+		category: Category.GovernmentGazette,
+		folderName: "Advertisements",
 	},
 	"2025-07-recovered-gazettes-os-irs.csv": {
 		category: Category.OtherSupplements,
 		subCategory: "Industrial Relations Supplement",
-		folderName: "os-irs",
+		folderName: "Industrial Relations Supplement",
 	},
 };
 
@@ -104,8 +108,9 @@ type MetadataColumnMapping = {
 export const metadataColumnMapping: MetadataColumnMapping = {
   Year: 0,
   NotificationNumber: 1,
-  FileName: 3,
-  Title: 4,
+  FileName: 11,
+  Title: 3,
   PublishDate: 8,
   SubCategory: 7,
+	FolderName: 9
 };
