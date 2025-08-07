@@ -417,6 +417,81 @@ const convertFromTiptap = async (schema, headerBlock) => {
       } else {
         proseBlock.content.push(newComponent);
       }
+    } else if (
+      component.type === "orderedList" ||
+      component.type === "unorderedList"
+    ) {
+      // Extract out all images in list items, and put different paragraphs in
+      // the same list item to become two hard breaks
+      let newListItems = [];
+
+      component.content.forEach((listItem) => {
+        let newListItemParagraphContent = [];
+        listItem.content.forEach((listItemContent) => {
+          if (listItemContent.type === "image") {
+            if (newListItems.length > 0) {
+              proseBlock.content.push({
+                ...component,
+                content: newListItems,
+              });
+              newListItems = [];
+            }
+
+            if (proseBlock.content.length > 0) {
+              outputContent.push(proseBlock);
+              proseBlock = {
+                type: "prose",
+                content: [],
+              };
+            }
+
+            const { attrs, ...rest } = listItemContent;
+
+            outputContent.push({
+              ...rest,
+              ...listItemContent.attrs,
+              alt: listItemContent.attrs.alt || PLACEHOLDER_ALT_TEXT,
+            });
+          } else if (listItemContent.type === "paragraph") {
+            if (newListItemParagraphContent.length > 0) {
+              // Add two hard breaks to separate paragraphs
+              newListItemParagraphContent.push({
+                type: "hardBreak",
+              });
+              newListItemParagraphContent.push({
+                type: "hardBreak",
+              });
+            }
+
+            newListItemParagraphContent = newListItemParagraphContent.concat(
+              listItemContent.content
+            );
+          }
+        });
+
+        if (newListItemParagraphContent.length > 0) {
+          newListItems.push({
+            type: "listItem",
+            content: [
+              {
+                type: "paragraph",
+                content: newListItemParagraphContent,
+              },
+            ],
+          });
+
+          newListItemParagraphContent = [];
+        }
+      });
+
+      if (newListItems.length > 0) {
+        proseBlock.content.push({
+          ...component,
+          content: newListItems,
+        });
+
+        newListItems = [];
+      }
     } else {
       proseBlock.content.push(component);
     }
@@ -483,6 +558,11 @@ const getCleanedSchema = async (schema) => {
     schema.forEach((component) => {
       if (component.type === "table") {
         component.caption = "";
+
+        // Remove any empty tableRow
+        component.content = component.content.filter(
+          (row) => row.content && row.content.length > 0
+        );
       } else if (component.content) {
         findTable(component.content);
       }
