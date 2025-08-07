@@ -7,7 +7,7 @@ const moment = require("moment");
 
 // CONFIGURATION SETTINGS
 // This is the CSV file that contains the HTML content of the pages, one page per row
-const CSV_FILE = "./csv/updated-ycs-internships.csv";
+const CSV_FILE = "./csv/cleaned-courses-html.csv";
 // This is the list of pages that should be excluded from migration
 // This should match the identifier that you are using for each page, usually
 // the permalink (or termed as "fileName" in this script)
@@ -34,14 +34,11 @@ const main = async () => {
   for (const row of csvParse.data) {
     // const originalUrl = row["URL"];
     const title = row["Title"];
-    const publishDate = row["Date"] // moment(row["Date"], "D MMM YYYY").format("DD/MM/YYYY");
-    const fileName = row["JSON File name"];
+    // const publishDate = moment(row["Date"], "D MMM YYYY").format("DD/MM/YYYY");
+    const fileName = row["JSON File name"] //.split("/")[row["Link"].split("/").length - 1];
       // .replaceAll("https://www.ace-hta.gov.sg/healthcare-professionals/ace-clinical-guidances-(acgs)/details", "")
       // .replaceAll("/", "");
     const category = row["Category"];
-    // const tag1 = row["Duration"];
-    // const tag2 = row["Qualifications"].split(",");
-    // const vacancies = row["Vacancies"]
     const html = row["HTML"];
 
     // const fileExt = row["Link"].split(".").pop();
@@ -80,7 +77,7 @@ const main = async () => {
     // const contentItems = await convertHtmlToSchema(html, fileName).then(
     //   (res) => [res]
     // );
-
+    console.log(fileName);
     const contentItems = await convertHtmlToSchema(html, fileName);
 
     // const collaboratorsHtml = `<h2>Collaborators</h2><ol>${collaborators
@@ -97,21 +94,45 @@ const main = async () => {
       layout: "article",
       page: {
         title: title,
-        category,
+        category: category,
         // tags: [
         //   {
-        //     category: "Duration of Internship",
-        //     selected: [tag1],
-        //   },
-        //   {
-        //     category: "Minimum Qualification",
-        //     selected: tag2,
+        //     category: "Tags",
+        //     selected: row["tags"].split(",")
         //   }
         // ],
-        date: publishDate,
+        // tags: [
+        //   {
+        //     category: "Campus",
+        //     selected: row["CampusLocations"] ? row["CampusLocations"].split(",") : ["Not applicable"]
+        //   },
+        //   {
+        //     category: "Industry",
+        //     selected: row["Industries"] ? row["Industries"].split(",") : ["Not applicable"]
+        //   },
+        //   {
+        //     category: "Course type",
+        //     selected: row["CourseTypes"].split(",")
+        //   },
+        //   {
+        //     category: "Certifications",
+        //     selected: row["Certifications"] ? [row["Certifications"]] : ["Not applicable"]
+        //   },
+        //   {
+        //     category: "Course duration",
+        //     selected: row["DurationHours"] 
+        //                 ? [row["DurationHours"] + " Hours" ]
+        //                 : row["DurationHoursDecimal"] 
+        //                 ? [row["DurationHoursDecimal"] + " Hours"]
+        //                 : row["Duration"] 
+        //                 ? [row["Duration"] + " Months"]
+        //                 : ["Not applicable"]
+        //   }
+        // ],
+        // date: publishDate,
         articlePageHeader: {
           // summary: `No. of Vacancies: ${vacancies}`,
-          summary: ""
+          summary: row["Description"]
         },
       },
       content: [
@@ -137,10 +158,17 @@ const main = async () => {
       ],
     };
 
+    // MINDEF
+    // if (fileName.length > 246) {
+    //   row.Comments = fileName.length > 246 ? "File name truncated" : "";
+    //   console.log(`${fileName} exceeded 246 chars`)
+    //   console.log(`Renamed to ${fileName.slice(0, 247)}`);
+    // }
+    
     // Save schema to file
     try {
       // Try to access the file. If it exists, this call succeeds.
-      await fs.access(`output/${fileName}.json`);
+      await fs.access(`output/${fileName.slice(0, 246)}.json`);
       await fs.writeFile(
         `output/${fileName}-1.json`,
         JSON.stringify(schema, null, 2)
@@ -153,6 +181,9 @@ const main = async () => {
       );
     }
   } 
+  // MINDEF
+  // const updatedCsv = Papa.unparse(csvParse.data);
+  // await fs.writeFile("updated-mindef.csv", updatedCsv, 'utf8');
 };
 
 main();

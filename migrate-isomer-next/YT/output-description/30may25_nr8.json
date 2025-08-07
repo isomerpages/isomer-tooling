@@ -1,0 +1,55 @@
+{
+  "version": "0.1.0",
+  "layout": "article",
+  "page": {
+    "title": "Malaysia Minister of Defence Meets Minister for Defence",
+    "category": "Articles",
+    "date": "30 May 2025",
+    "articlePageHeader": {
+      "summary": "Malaysian Minister of Defence Dato\u2019 Seri Mohamed Khaled Nordin is in Singapore to attend the 22nd Shangri-La Dialogue (SLD). Dato\u2019 Seri Khaled met with Minister for Defence Mr Chan Chun Sing, on the sidelines of the SLD this evening."
+    }
+  },
+  "content": [
+    {
+      "type": "prose",
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Malaysian Minister of Defence Dato\u2019 Seri Mohamed Khaled Nordin is in Singapore to attend the 22nd Shangri-La Dialogue (SLD). Dato\u2019 Seri Khaled met with Minister for Defence Mr Chan Chun Sing, on the sidelines of the SLD this evening."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "During the meeting, both Ministers reaffirmed the warm and longstanding bilateral relationship between Singapore and Malaysia. Both Defence Ministers discussed regional security issues and cooperation between Singapore and Malaysia in regional multilateral platforms such as the ASEAN Defence Ministers' Meeting (ADMM), ADMM-Plus and the Five Power Defence Arrangements."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Singapore and Malaysia\u2019s defence establishments interact regularly across a wide range of activities, including bilateral and multilateral exercises, visits, professional exchanges, and cross-attendance of courses. These interactions strengthen mutual understanding and professional ties."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Dato\u2019 Seri Khaled is in Singapore as part of Malaysian Prime Minister and Minister of Finance Dato\u2019 Seri Anwar Ibrahim\u2019s delegation. Prime Minister Anwar will deliver a Special Address at the SLD tomorrow."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

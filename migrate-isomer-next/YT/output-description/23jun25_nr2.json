@@ -1,0 +1,112 @@
+{
+  "version": "0.1.0",
+  "layout": "article",
+  "page": {
+    "title": "Update on Incident Involving Unauthorised Person Injured Within Restricted Area",
+    "category": "Articles",
+    "date": "23 Jun 2025",
+    "articlePageHeader": {
+      "summary": "Public Reminded to Keep Out of Restricted Areas Gazetted as SAF Live-Firing Ground"
+    }
+  },
+  "content": [
+    {
+      "type": "prose",
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "marks": [
+                {
+                  "type": "italic"
+                }
+              ],
+              "text": "Public Reminded to Keep Out of Restricted Areas Gazetted as SAF Live-Firing Ground"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "This is an update to MINDEF\u2019s news release on 16 June 2025 regarding an incident involving a member of public injured within a restricted area, gazetted as Singapore Armed Forces (SAF) live-firing ground in the Central Catchment Nature Reserve. At the time of the incident on 15 June 2025, an authorised live-firing activity was being conducted by the SAF at its Nee Soon 500m Range, about 2.3 km away."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "The Nee Soon 500m Range was designed and built in accordance to international range safety standards"
+            },
+            {
+              "type": "text",
+              "marks": [
+                {
+                  "type": "superscript"
+                }
+              ],
+              "text": "[1]"
+            },
+            {
+              "type": "text",
+              "text": ", and certified for the firing of weapons such as general-purpose machine guns and sniper rifles. Targets can be placed up to a maximum distance of 500m from the firing point during such training. Based on the SAF\u2019s investigations, all relevant training directives, safety protocols and control measures were adhered to during the live-firing activity. The weapons, ammunition, shooting positions and target placements were in compliance with the SAF\u2019s stipulated guidelines."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "The Nee Soon 500m Range has been maintained and recertified regularly to be safe for operations. Beyond the stop butt of the range, the restricted area provides a needed safety buffer catering to scenarios such as ammunition ricochet. This safety buffer was determined through trials and trajectory simulations matching the live-firing activities at the range. Spaces outside of the restricted area, such as the public parks, designated recreational trails and park connectors in the vicinity of the range, are safe for public use. Other ranges have restricted areas of different sizes and shapes, depending on the layout, weapon, ammunition and training for the range."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Clear and visible signs warning the public to keep clear of the restricted area for live-firing were in place at various entry points leading to the restricted area around the Nee Soon 500m Range. The Police has confirmed that the cyclist involved in the incident is under investigation for the offence of wilful trespass and that investigations are ongoing."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "The SAF maintains a robust safety framework to ensure the safe conduct of live-firing activities, and will continue to work with NParks to ensure safety measures and public warnings regarding restricted areas remain in place. The SAF seeks the public\u2019s cooperation in staying out of restricted areas for live-firing for their own safety. Trespassing into such areas is also a violation under the Military Manoeuvres Act."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "The Nee Soon 500m range will resume operation with immediate effect. The next scheduled live firing activity at the range will take place on 26 June 2025."
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "attrs": {
+            "level": 5
+          },
+          "content": [
+            {
+              "type": "text",
+              "text": "[1]UK range safety standards.\u00a0"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

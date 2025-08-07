@@ -1,0 +1,72 @@
+{
+  "version": "0.1.0",
+  "layout": "article",
+  "page": {
+    "title": "Singapore and France Strengthen Bilateral Defence Partnership",
+    "category": "Articles",
+    "date": "30 May 2025",
+    "articlePageHeader": {
+      "summary": "French Minister for the Armed Forces Mr S\u00e9bastien Lecornu is in Singapore to attend the 22nd Shangri-La Dialogue (SLD). Mr Lecornu called on Minister for Defence Mr Chan Chun Sing at the Shangri-La Hotel this afternoon."
+    }
+  },
+  "content": [
+    {
+      "type": "prose",
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "French Minister for the Armed Forces Mr S\u00e9bastien Lecornu is in Singapore to attend the 22nd Shangri-La Dialogue (SLD). Mr Lecornu called on Minister for Defence Mr Chan Chun Sing at the Shangri-La Hotel this afternoon."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "During the meeting, Mr Chan and Mr Lecornu reaffirmed the strong and broad-based bilateral defence relations, and the shared commitment to strengthen bilateral defence cooperation in areas of mutual interest, such as defence technology, cybersecurity, artificial intelligence and supply chain resilience. Mr Chan expressed appreciation for France\u2019s support for the Republic of Singapore Air Force's training at Cazaux Air Base since 1998. Both Ministers also exchanged views on security priorities and geopolitical developments."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Earlier this morning, Mr Chan and Mr Lecornu exchanged a Declaration of Intent on Enhanced Defence Cooperation, Letter of Intent on Defence Artificial Intelligence Cooperation, and the Amendment to the Administrative Arrangement on Defence Technology Cooperation. The exchanges were witnessed by Prime Minister (PM) Lawrence Wong and President Emmanuel Macron as part of President Macron\u2019s State Visit. During the State Visit, both PM Wong and President Macron also upgraded bilateral relations to a Comprehensive Strategic Partnership (CSP). The launch of the CSP coincides with the 60th anniversary of the establishment of diplomatic relations between Singapore and France."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": " More Resources"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "marks": [
+                {
+                  "type": "link",
+                  "attrs": {
+                    "href": "https://www.mindef.gov.sg/news-and-events/latest-releases/30may25_fs"
+                  }
+                }
+              ],
+              "text": "Fact Sheet: Defence Deliverables Signed During President Emmanuel Macron\u2019s State Visit to Singapore"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

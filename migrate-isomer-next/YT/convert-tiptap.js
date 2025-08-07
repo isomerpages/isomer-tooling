@@ -30,11 +30,12 @@ const { mkdir } = require("fs/promises");
 const { Readable } = require("stream");
 const { finished } = require("stream/promises");
 const path = require("path");
+const { error } = require("console");
 
 // CONFIGURATION SETTINGS
 // This is the base URL for the actual live site, used for downloading images
 // and files directly from them. No backslash at the end.
-const SITE_BASE_URL = "https://www.ycs.gov.sg";
+const SITE_BASE_URL = "https://www.ite.edu.sg";
 // This is the path prefix for the folder that will host the downloaded images
 // inside the GitHub repository relative to the `public` folder
 const IMAGES_PATH_PREFIX = "/images";
@@ -63,15 +64,21 @@ global.window = window;
 global.IMAGE_DOWNLOADS = {};
 global.FILE_DOWNLOADS = {};
 let PERMALINK = "";
+let errorPages = []
 
 const fetchWithRetry = async (url) => {
   while (true) {
-    const res = await fetch(url);
-    if (res.status === 403) {
-      console.error("We are getting rate limited!");
-      await new Promise((resolve) => setTimeout(resolve, 5000));
-    } else {
-      return res;
+    try{
+      const res = await fetch(url);
+      if (res.status === 403) {
+        console.error("We are getting rate limited!");
+        await new Promise((resolve) => setTimeout(resolve, 5000));
+      } else {
+        return res;
+      }
+    } catch (err) {
+      console.error(err);
+      errorPages.push(url);
     }
   }
 };
@@ -153,11 +160,9 @@ const convertFromTiptap = (schema, headerBlock) => {
   //   type: "imagegallery",
   //   images: [],
   // };
-
   schema.forEach((component) => {
     if (component.type === "iframe") {
       outputContent.push(proseBlock);
-
       if (component.content) {
         const elem = document.createElement("div");
         elem.innerHTML = component.content;
@@ -221,13 +226,13 @@ const convertFromTiptap = (schema, headerBlock) => {
       const { attrs, ...rest } = component;
       let { alt, src } = attrs;
 
-      if (!!alt && alt.length > 120) {
-        console.log("Image alt text is too long:", alt);
-        console.log("Image source:", src);
-      }
-      else {
-        alt = "This is a alt text";
-      }
+      // if (!!alt && alt.length > 120) {
+      //   console.log("Image alt text is too long:", alt);
+      //   console.log("Image source:", src);
+      // }
+      // else {
+      //   alt = "This is a alt text";
+      // }
 
       const fileName = src.split("?")[0].split("/").pop();
       const newSrc = `${IMAGES_PATH_PREFIX}/${PERMALINK}/${fileName}`;
@@ -245,11 +250,13 @@ const convertFromTiptap = (schema, headerBlock) => {
 
       // galleryBlock.images.push({
       //   src: newSrc,
-      //   alt: "Placeholder",
+      //   alt: alt,
+      //   caption: alt,
       //   ...rest,
       // });
 
       // console.log(galleryBlock);
+      
       proseBlock = {
         type: "prose",
         content: [],

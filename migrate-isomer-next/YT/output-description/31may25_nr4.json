@@ -1,0 +1,37 @@
+{
+  "version": "0.1.0",
+  "layout": "article",
+  "page": {
+    "title": "Ministers Agree on the Need to Maintain Stability and Prevent Conflict in Asia Amidst Changing World Order",
+    "category": "Articles",
+    "date": "31 May 2025",
+    "articlePageHeader": {
+      "summary": "Minister for Defence Mr Chan Chun Sing hosted 28 visiting Ministers and their representatives to a Roundtable-discussion today, in conjunction with the 22nd Shangri-La Dialogue (SLD). The Ministerial Roundtable is a regular feature of the SLD."
+    }
+  },
+  "content": [
+    {
+      "type": "prose",
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Minister for Defence Mr Chan Chun Sing hosted 28 visiting Ministers and their representatives to a Roundtable-discussion today, in conjunction with the 22nd Shangri-La Dialogue (SLD). The Ministerial Roundtable is a regular feature of the SLD."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "The Ministers appreciated the frank and candid exchanges that took place over the luncheon, which provided an open and inclusive platform for dialogue. They discussed a wide range of issues, including the importance for the international community to work together and build capacity in order to tackle the changing nature of warfare, and transboundary challenges, like digital and information threats. The Ministers also emphasised the importance of fostering trust to enable cooperation amidst the intensifying security environment."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
