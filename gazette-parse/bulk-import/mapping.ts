@@ -106,6 +106,6 @@ export const metadataColumnMapping: MetadataColumnMapping = {
   NotificationNumber: 1,
   FileName: 3,
   Title: 4,
-  PublishDate: 9,
-  SubCategory: 8,
+  PublishDate: 8,
+  SubCategory: 7,
 };
