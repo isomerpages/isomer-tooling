@@ -3,12 +3,13 @@
 // Metadata parsing may need to change depending on format of the csv metadata file provided
 
 import * as fs from "fs";
-import path from "path";
 import { addToSearchIndex, initSearchIndex } from "../utils/algolia";
 import { uploadBlob } from "../utils/uploadBlob";
 import { parseFileMetadata } from "./parseFileMetadata";
 import { getObjectKey } from "../utils/getObjectKey";
 import { parsePdfAsImageAndExtractText } from "../utils/parsePdfAsImageAndExtractText";
+import { checkIfFilePresent } from "./checkIfFilePresent";
+import { getGazetteFilepath } from "./getGazetteFilepath";
 
 // ------------------------------------------------------------------------------------
 // ---------------- UPDATE THIS VARIABLES AND CONSTANTS BEFORE RUNNING ----------------
@@ -21,7 +22,6 @@ const {
 	ALGOLIA_APP_ID,
   ALGOLIA_API_KEY,
   ALGOLIA_INDEX_NAME,
-	PATH_TO_FILES,
 } = process.env;
 
 if (
@@ -31,17 +31,20 @@ if (
 	!EXTERNAL_S3_BUCKET ||
 	!ALGOLIA_APP_ID ||
 	!ALGOLIA_API_KEY ||
-	!ALGOLIA_INDEX_NAME ||
-	!PATH_TO_FILES
+	!ALGOLIA_INDEX_NAME
 ) {
 	throw new Error("Missing env vars");
 }
 
 // file of CSV file we want to parse
-const CSV_FILE_PATH = "egazette-sls.2024.csv";
+const CSV_FILE_PATH = "2025-07-recovered-gazettes-os-irs.csv";
 
-// folder where the metadata files are stored
-const METADATA_ROOT_FOLDER = "./metadata-new";
+// folder where the csv files are stored
+// Relative to the root of where the npm script is run
+const CSV_FILE_ROOT_FOLDER = "./bulk-import/csv-files";
+
+// folder where the gazettes are stored
+const GAZETTE_ROOT_FOLDER = "./bulk-import/gazettes";
 
 // note: change to staging if needed
 const BASE_STORAGE_URL = "https://assets.egazette.gov.sg";
@@ -64,18 +67,30 @@ const main = async () => {
 
   const fileMetadata = await parseFileMetadata({
 		csvFileName: CSV_FILE_PATH,
-		metadataRootFolder: METADATA_ROOT_FOLDER,
+		csvFileRootFolder: CSV_FILE_ROOT_FOLDER,
+    skipFirstRowHeaders: true,
 	});
 
   console.log(`Found ${fileMetadata.length} files to process`);
 
+  // Ensure all files are present before processing
   for (const file of fileMetadata) {
-    const filePath = path.join(
-      PATH_TO_FILES,
-      file.folderName,
-      file.year,
-      file.fileName
-    );
+    console.log(file);
+    const filePath = getGazetteFilepath({
+      folderName: GAZETTE_ROOT_FOLDER,
+      file,
+    });
+    const isFilePresent = await checkIfFilePresent(filePath);
+    if (!isFilePresent) {
+      throw new Error(`File ${filePath} not found`);
+    }
+  }
+
+  for (const file of fileMetadata) {
+    const filePath = getGazetteFilepath({
+      folderName: GAZETTE_ROOT_FOLDER,
+      file,
+    });
 
     try {
       const objectKey = getObjectKey({
