@@ -112,5 +112,5 @@ export const metadataColumnMapping: MetadataColumnMapping = {
   Title: 3,
   PublishDate: 8,
   SubCategory: 7,
-	FolderName: 9
+	FolderName: 12
 };
