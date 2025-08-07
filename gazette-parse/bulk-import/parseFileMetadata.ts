@@ -1,9 +1,11 @@
 import * as fs from "fs";
+import csv from "csv-parser";
+import { fixMojibake } from "./fixMojibake";
 
 import { csvFileMapping, metadataColumnMapping, subCategoryMapping } from "./mapping";
 import { Category } from "./constants";
 
-type CsvFileMetadata = {
+export type CsvFileMetadata = {
   fileName: string;
   year: string;
   category: string;
@@ -29,36 +31,39 @@ export const parseFileMetadata = async ({
 	if (!csvFileData) throw new Error(`File ${csvFileName} not found in csvFileMapping`);
 
 	const isGovernmentGazette = csvFileData.category === Category.GovernmentGazette;
+
 	const results: CsvFileMetadata[] = [];
 
-	const data = fs.readFileSync(`${csvFileRootFolder}/${csvFileName}`, {
-		encoding: "utf8",
+	// Parse CSV file
+	const rows = await parseCsvFile({
+		filePath: `${csvFileRootFolder}/${csvFileName}`,
+		skipFirstRowHeaders,
 	});
+	
+	// Process each row
+	// Using column indices as defined in metadataColumnMapping
+	for (const row of rows) {
+		const year = row[metadataColumnMapping.Year];
 
-	const rows: string[] = data.split("\n").map(
-		(value) => value.replace(/^\uFEFF/, "") // remove BOM included in the files
-	);
+		const notificationNumber = row[metadataColumnMapping.NotificationNumber];
 
-	for (const row of rows.slice(skipFirstRowHeaders ? 1 : 0)) {
-		const rowData = row.split(",");
+		const fileName = `${row[metadataColumnMapping.FileName]}.pdf`;
 
-		// Note, we are assuming the CSV file has the following columns in a certain order
-		// Do double confirm with the CSV file before running this script
-		const year = rowData[metadataColumnMapping.Year];
-		const notificationNumber = rowData[metadataColumnMapping.NotificationNumber];
-		const fileName = rowData[metadataColumnMapping.FileName];
-		const title = rowData[metadataColumnMapping.Title];
-		const publishDate = new Date(
-			rowData[metadataColumnMapping.PublishDate]
-		);
+		const titleWithPossiblyBrokenEncoding = row[metadataColumnMapping.Title];
+		const title = fixMojibake(titleWithPossiblyBrokenEncoding);
+
+		const folderName = row[metadataColumnMapping.FolderName];
+
+		const publishDate = new Date(row[metadataColumnMapping.PublishDate]);
+		
 		if (!year || !fileName) throw new Error("invalid csv");
 	
 		if (isGovernmentGazette) {
 			const subCategory = subCategoryMapping[
-				rowData[metadataColumnMapping.SubCategory]
+				row[metadataColumnMapping.SubCategory]
 			];
 			if (!subCategory) {
-				console.log(rowData);
+				console.log(row);
 				throw new Error("invalid csv, subCategory not retrieved correctly");
 			}
 
@@ -69,7 +74,7 @@ export const parseFileMetadata = async ({
 				category: csvFileData.category,
 				subCategory,
 				title,
-				folderName: csvFileData.folderName,
+				folderName: csvFileData.folderName + "/" + folderName,
 				publishDate,
 			});
 		} else {
@@ -80,11 +85,35 @@ export const parseFileMetadata = async ({
 				category: csvFileData.category,
 				subCategory: csvFileData.subCategory!,
 				title,
-				folderName: csvFileData.folderName,
+				folderName: csvFileData.folderName + "/" + folderName,
 				publishDate,
 			});
 		}
 	}
 
 	return results;
+};
+
+// Helper function to parse CSV using streams
+interface ParseCsvFileProps {
+	filePath: string;
+	skipFirstRowHeaders: boolean;
+}
+const parseCsvFile = ({ filePath, skipFirstRowHeaders }: ParseCsvFileProps): Promise<any[]> => {
+	return new Promise((resolve, reject) => {
+		const rows: any[] = [];
+		
+		fs.createReadStream(filePath)
+			.pipe(csv({ headers: false }))
+			.on('data', (row: any) => {
+				rows.push(row);
+			})
+			.on('end', () => {
+				const dataRows = skipFirstRowHeaders ? rows.slice(1) : rows;
+				resolve(dataRows);
+			})
+			.on('error', (error) => {
+				reject(error);
+			});
+	});
 };
