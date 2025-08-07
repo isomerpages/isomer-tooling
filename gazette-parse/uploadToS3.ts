@@ -7,20 +7,10 @@ import { getObjectKey } from "./utils/getObjectKey";
 
 const METADATA_PATH = "./metadata.csv";
 
-const {
-  AWS_ACCESS_KEY_ID,
-  AWS_SECRET_ACCESS_KEY,
-  AWS_SESSION_TOKEN,
-  EXTERNAL_S3_BUCKET,
-} = process.env;
+const { EXTERNAL_S3_BUCKET, AWS_PROFILE } = process.env;
 
-if (
-  !AWS_ACCESS_KEY_ID ||
-  !AWS_SECRET_ACCESS_KEY ||
-  !AWS_SESSION_TOKEN ||
-  !EXTERNAL_S3_BUCKET
-) {
-  throw new Error("Missing env vars");
+if (!EXTERNAL_S3_BUCKET || !AWS_PROFILE) {
+  throw new Error("Missing env var");
 }
 
 const main = async () => {
@@ -41,9 +31,7 @@ const main = async () => {
     const data = await fs.promises.readFile(path.resolve(filePath.trim()));
 
     await uploadBlob({
-      awsAccessKeyId: AWS_ACCESS_KEY_ID,
-      awsSecretAccessKey: AWS_SECRET_ACCESS_KEY,
-      awsSessionToken: AWS_SESSION_TOKEN,
+      awsProfile: AWS_PROFILE,
       bucketName: EXTERNAL_S3_BUCKET,
       key: objectKey,
       fileBuffer: data,

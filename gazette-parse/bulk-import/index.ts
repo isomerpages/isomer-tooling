@@ -15,9 +15,7 @@ import { getGazetteFilepath } from "./getGazetteFilepath";
 // ---------------- UPDATE THIS VARIABLES AND CONSTANTS BEFORE RUNNING ----------------
 // ------------------------------------------------------------------------------------
 const {
-	AWS_ACCESS_KEY_ID,
-	AWS_SECRET_ACCESS_KEY,
-	AWS_SESSION_TOKEN,
+  AWS_PROFILE,
 	EXTERNAL_S3_BUCKET,
 	ALGOLIA_APP_ID,
   ALGOLIA_API_KEY,
@@ -25,9 +23,7 @@ const {
 } = process.env;
 
 if (
-	!AWS_ACCESS_KEY_ID ||
-	!AWS_SECRET_ACCESS_KEY ||
-	!AWS_SESSION_TOKEN ||
+  !AWS_PROFILE ||
 	!EXTERNAL_S3_BUCKET ||
 	!ALGOLIA_APP_ID ||
 	!ALGOLIA_API_KEY ||
@@ -37,7 +33,7 @@ if (
 }
 
 // file of CSV file we want to parse
-const CSV_FILE_PATH = "2025-07-recovered-gazettes-os-irs.csv";
+const CSV_FILE_PATH = "2025-07-recovered-gazettes-gg-gg.csv";
 
 // folder where the csv files are stored
 // Relative to the root of where the npm script is run
@@ -47,7 +43,7 @@ const CSV_FILE_ROOT_FOLDER = "./bulk-import/csv-files";
 const GAZETTE_ROOT_FOLDER = "./bulk-import/gazettes";
 
 // note: change to staging if needed
-const BASE_STORAGE_URL = "https://assets.egazette.gov.sg";
+const BASE_STORAGE_URL = "https://storage.egazette-staging.isomer.gov.sg";
 
 // Others:
 // 1. To also update csvFileMapping (see mapping.ts)
@@ -75,7 +71,6 @@ const main = async () => {
 
   // Ensure all files are present before processing
   for (const file of fileMetadata) {
-    console.log(file);
     const filePath = getGazetteFilepath({
       folderName: GAZETTE_ROOT_FOLDER,
       file,
@@ -103,20 +98,21 @@ const main = async () => {
 
       const data = await fs.promises.readFile(filePath.trim());
 
+      console.log("Uploading blob", objectKey);
       await uploadBlob({
-				awsAccessKeyId: AWS_ACCESS_KEY_ID,
-				awsSecretAccessKey: AWS_SECRET_ACCESS_KEY,
-				awsSessionToken: AWS_SESSION_TOKEN,
+        awsProfile: AWS_PROFILE,
         bucketName: EXTERNAL_S3_BUCKET,
         key: objectKey,
         fileBuffer: data,
         isPdf: file.fileName.includes(".pdf"),
       });
 
+      console.log("Parsing file content", filePath);
       const parsedFileContent = await parsePdfAsImageAndExtractText(filePath);
       if (!parsedFileContent) throw new Error("Could not parse file content");
 
       // upload to algolia
+      console.log("Adding to algolia search index", objectKey);
       await addToSearchIndex({
 				searchIndex,
         baseStorageUrl: BASE_STORAGE_URL,
@@ -128,6 +124,8 @@ const main = async () => {
         objectKey: objectKey,
         content: parsedFileContent,
       });
+
+      console.log("Done processing file", filePath);
     } catch (err) {
       const errMessage = `Error for file ${filePath}: ${JSON.stringify(err.message)}\n`;
       fs.appendFileSync("errors.txt", errMessage);

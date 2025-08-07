@@ -1,10 +1,9 @@
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { fromSSO } from "@aws-sdk/credential-providers";
 import md5 from "md5";
 
 interface UploadBlobsProps {
-	awsAccessKeyId: string;
-	awsSecretAccessKey: string;
-	awsSessionToken: string;
+  awsProfile: string;
 	bucketName: string;
 	key: string;
 	fileBuffer: Buffer;
@@ -12,9 +11,7 @@ interface UploadBlobsProps {
 }
 
 export const uploadBlob = async ({
-  awsAccessKeyId,
-  awsSecretAccessKey,
-  awsSessionToken,
+  awsProfile,
   bucketName,
   key,
   fileBuffer,
@@ -23,11 +20,7 @@ export const uploadBlob = async ({
   try {
     const s3Client = new S3Client({
       region: "ap-southeast-1",
-      credentials: {
-        accessKeyId: awsAccessKeyId,
-        secretAccessKey: awsSecretAccessKey,
-        sessionToken: awsSessionToken,
-      },
+      credentials: fromSSO({ profile: awsProfile }),
     });
 
     // Set the parameters
