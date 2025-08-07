@@ -96,3 +96,16 @@ export const subCategoryMapping: SubCategoryMapping = {
   "Termination of Service": "Termination of Service",
   "Vacation of Service": "Vacation of Service",
 };
+
+type MetadataColumnMapping = {
+  [string: string]: number;
+};
+
+export const metadataColumnMapping: MetadataColumnMapping = {
+  Year: 0,
+  NotificationNumber: 1,
+  FileName: 3,
+  Title: 4,
+  PublishDate: 9,
+  SubCategory: 8,
+};

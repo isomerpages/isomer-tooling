@@ -1,6 +1,6 @@
 import * as fs from "fs";
 
-import { csvFileMapping, subCategoryMapping } from "./mapping";
+import { csvFileMapping, metadataColumnMapping, subCategoryMapping } from "./mapping";
 import { Category } from "./constants";
 
 type CsvFileMetadata = {
@@ -44,19 +44,19 @@ export const parseFileMetadata = async ({
 
 		// Note, we are assuming the CSV file has the following columns in a certain order
 		// Do double confirm with the CSV file before running this script
-		const year = rowData[0]; // verified (column A)
-		const notificationNumber = rowData[1]; // verified (column B), but some don't have this column -> to clarify
-		const fileName = rowData[2];
-		const publishDate = new Date(rowData[8]); // verified (column I)
+		const year = rowData[metadataColumnMapping.Year];
+		const notificationNumber = rowData[metadataColumnMapping.NotificationNumber];
+		const fileName = rowData[metadataColumnMapping.FileName];
+		const title = rowData[metadataColumnMapping.Title];
+		const publishDate = new Date(
+			rowData[metadataColumnMapping.PublishDate]
+		);
 		if (!year || !fileName) throw new Error("invalid csv");
 	
 		if (isGovernmentGazette) {
-			const subCategory = subCategoryMapping[rowData[7]]; // verified (column H)
-
-			// Joining all columns from index 3 up to (but not including) the third-to-last column,
-			// handling cases where the title may contain commas.
-			const title = rowData[3]; // verified (column D)
-
+			const subCategory = subCategoryMapping[
+				rowData[metadataColumnMapping.SubCategory]
+			];
 			if (!subCategory) {
 				console.log(rowData);
 				throw new Error("invalid csv, subCategory not retrieved correctly");
@@ -73,10 +73,6 @@ export const parseFileMetadata = async ({
 				publishDate,
 			});
 		} else {
-			// Joining all columns from index 4 up to (but not including) the last column,
-			// handling cases where the title may contain commas.
-			const title = rowData[3]; // verified (column D)
-
 			results.push({
 				fileName,
 				year,
