@@ -37,7 +37,7 @@ export const uploadBlob = async ({
     // Upload the file to the bucket
     const data = await s3Client.send(new PutObjectCommand(uploadParams));
 
-    console.info(`Successfully uploaded blob: ${data}`);
+    console.info("Successfully uploaded blob", data);
     return data; // For example, return the data or promise here if needed
   } catch (err) {
     console.error(`Error when uploading blob: ${JSON.stringify(err)}`);
