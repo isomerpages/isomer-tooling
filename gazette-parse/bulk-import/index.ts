@@ -42,8 +42,8 @@ const CSV_FILE_ROOT_FOLDER = "./bulk-import/csv-files";
 // folder where the gazettes are stored
 const GAZETTE_ROOT_FOLDER = "./bulk-import/gazettes";
 
-// note: change to staging if needed
-const BASE_STORAGE_URL = "https://storage.egazette-staging.isomer.gov.sg";
+// note: change to staging if needed (https://storage.egazette-staging.isomer.gov.sg)
+const BASE_STORAGE_URL = "https://assets.egazette.gov.sg";
 
 // Others:
 // 1. To also update csvFileMapping (see mapping.ts)
