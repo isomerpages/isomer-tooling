@@ -50,11 +50,38 @@ In `mapping.ts`, ensure:
 2. Filename is added to `csvFileMapping`
 3. `metadataColumnMapping` is updated based on the received CSV structure
 
+### AWS SSO Authentication
+
+Before running the import, authenticate with AWS SSO:
+
+1. Set your AWS profile (e.g., for egazette):
+   ```bash
+   export AWS_PROFILE=egazette
+   ```
+2. Log in via SSO:
+   ```bash
+   aws sso login
+   ```
+## Running the Import Script
+
+1. Navigate to the root directory of `gazette-parse`:
+   ```bash
+   cd gazette-parse
+   ```
+2. Start the bulk import process:
+   ```bash
+   npm run bulkImport
+   ```
+
 ## Testing Strategy
 
 ### Staging Environment
 
 **Always test on staging first** to ensure the script works as intended.
+
+### Limiting Records in the CSV for Test Runs
+
+To perform a quick test run, create a copy of your CSV file and retain only 1 or 2 rows. Run the import script using this trimmed file to verify that the process completes successfully before proceeding with the full dataset.
 
 ### Incremental Testing
 
@@ -68,14 +95,22 @@ Recommended approach for debugging:
    - CSV encoding issues (mojibake)
    - Other unexpected data inconsistencies
 
-## Performance Considerations
+## Considerations
 
-### Processing Time
+### Performance
 
 - **Slow processing**: OCR is performed locally
 - **Estimated time**: 100 records can take over 1 hour
 - **No downtime impact**: Import process doesn't affect live services
 - **Scheduling flexibility**: Can be run during business hours if needed
+
+### AWS SSO Session Expiry
+
+Be aware that **AWS SSO sessions can expire or time out** during long-running imports. Therefore, you are not encouraged to process excessively large CSV files in a single run.
+
+If your session expires:
+- The script will error out and skip the affected records.
+- You can always restart the import from where it left off by re-authenticating and re-running the script. This ensures that no data is lost, and you can safely resume the process after addressing any session timeouts.
 
 ## Verification
 
