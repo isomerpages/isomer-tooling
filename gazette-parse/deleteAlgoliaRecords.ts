@@ -1,4 +1,4 @@
-import algoliasearch from "algoliasearch";
+import { deleteAlgoliaRecords } from "./utils/deleteAlgoliaRecords";
 
 const { ALGOLIA_APP_ID, ALGOLIA_API_KEY, ALGOLIA_INDEX_NAME } = process.env;
 
@@ -18,15 +18,17 @@ const main = async () => {
 
   const [objectGroup, numEntries] = args;
 
-  const searchClient = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_API_KEY);
-  const searchIndex = searchClient.initIndex(ALGOLIA_INDEX_NAME);
-
   const toDelete: string[] = [];
   for (let i = 0; i < Number(numEntries); i++) {
     toDelete.push(`${objectGroup}-text-${i}`);
   }
 
   console.log(`Deleting entries from ${ALGOLIA_INDEX_NAME}`);
-  await searchIndex.deleteObjects(toDelete);
+  await deleteAlgoliaRecords({
+    algoliaAppId: ALGOLIA_APP_ID,
+    algoliaApiKey: ALGOLIA_API_KEY,
+    algoliaIndexName: ALGOLIA_INDEX_NAME,
+    objectIds: toDelete,
+  });
 };
 main();

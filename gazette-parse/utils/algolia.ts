@@ -129,7 +129,7 @@ export const addToSearchIndex = async ({
 	}
 };
 
-interface InitSearchIndexProps {
+export interface InitSearchIndexProps {
   algoliaAppId: string;
   algoliaApiKey: string;
   algoliaIndexName: string;
