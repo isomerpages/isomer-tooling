@@ -86,10 +86,13 @@ export const subCategoryMapping: SubCategoryMapping = {
   Death: "Death",
   Dismissals: "Dismissals",
   Leave: "Leave",
-	"Notices (Bankruptcy Act)": "Notices (Bankruptcy Act)",
-	"Notices (Companies Act)": "Notices (Companies Act)",
-	"Notices (Constitution)": "Notices (Constitution)",
-	"Notices (other Acts)": "Notices (other Acts)",
+	// for notices, while they are ultimately tagged as "Bankruptcy Act Notice" etc.,
+	// it will show up as "Notices (Bankruptcy Act)" in the Algolia search filter UI
+	// when adding new mapping, make sure to map to the correct value as well
+	"Notices (Bankruptcy Act)": "Bankruptcy Act Notice",
+	"Notices (Companies Act)": "Companies Act Notice",
+	"Notices (Constitution)": "Notices under the Constitution",
+	"Notices (other Acts)": "Notices under other Acts",
   "Notices under the Bankruptcy Act": "Bankruptcy Act Notice",
   "Notices under the Companies Act": "Companies Act Notice",
   "Notices under the Constitution": "Notices under the Constitution",
