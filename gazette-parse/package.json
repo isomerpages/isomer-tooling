@@ -15,7 +15,8 @@
     "uploadS3": "source .env && ts-node uploadToS3.ts",
     "uploadAlgolia": "source .env && ts-node uploadToAlgolia.ts",
     "deleteAlgoliaRecords": "source .env && ts-node deleteAlgoliaRecords.ts",
-    "bulkImport": "source .env && ts-node bulk-import/index.ts"
+    "bulkImport": "source .env && ts-node bulk-import/index.ts",
+    "bulkImport:massDelete": "source .env && ts-node bulk-import/massDeleteAlgoliaRecords.ts"
   },
   "devDependencies": {
     "@types/md5": "^2.3.5",
