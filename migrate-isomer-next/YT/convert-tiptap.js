@@ -35,7 +35,7 @@ const { error } = require("console");
 // CONFIGURATION SETTINGS
 // This is the base URL for the actual live site, used for downloading images
 // and files directly from them. No backslash at the end.
-const SITE_BASE_URL = "https://www.ite.edu.sg";
+const SITE_BASE_URL = "https://www.mti.gov.sg";
 // This is the path prefix for the folder that will host the downloaded images
 // inside the GitHub repository relative to the `public` folder
 const IMAGES_PATH_PREFIX = "/images";
@@ -46,7 +46,7 @@ const FILES_PATH_PREFIX = "/files";
 // This is the logic used to determine if a particular link is to a file that
 // should be downloaded and hosted on the new site
 const isFileLink = (link) => {
-  return link.startsWith("/docs"); // || link.startsWith("https://www.nna.gov.sg/docs/default-source/");
+  return link.startsWith("/-/media"); // || link.startsWith("https://www.nna.gov.sg/docs/default-source/");
 };
 
 // DO NOT TOUCH BELOW THIS LINE
@@ -725,30 +725,29 @@ const getCleanedSchema = (schema) => {
                 }
 
                 global.FILE_DOWNLOADS[mark.attrs.href] = newHref;
-                console.log(JSON.stringify(global.FILE_DOWNLOADS));
-                downloadFile(
-                  `${SITE_BASE_URL}${mark.attrs.href.replace(
-                    SITE_BASE_URL,
-                    ""
-                  )}`,
-                  "files",
-                  fileName
-                );
+                // console.log(JSON.stringify(global.FILE_DOWNLOADS));
+                // downloadFile(
+                //   `${SITE_BASE_URL}${mark.attrs.href.replace(
+                //     SITE_BASE_URL,
+                //     ""
+                //   )}`,
+                //   "files",
+                //   fileName
+                // );
                 newAttrs.href = newHref;
 
-                // var stats = fs.statSync(`./downloads/files/${PERMALINK.replaceAll("'", "-")}/${fileName.replaceAll("'", "-")}`);
-                // var bytes = Math.round(stats.size/1024);
+                var stats = fs.statSync(`./downloads/files/${PERMALINK.replaceAll("'", "-")}/${fileName.replaceAll("'", "-")}`);
+                var bytes = Math.round(stats.size/1024);
 
-                // if ((stats.size/1000).toString().length >= 1 || (stats.size/1000).toString().length <= 3) {
-                //   bytes += " KB"
-                // }
-                // else if ((stats.size/1000).toString().length >= 4 || (stats.size/1000).toString().length < 7) {
-                //     bytes += " MB"
-                // } else {
-                //   bytes += " B"
-                // }
-
-                // component.text += ` [${fileType}, ${bytes}]`;
+                if ((stats.size/1000).toString().length >= 1 || (stats.size/1000).toString().length <= 3) {
+                  bytes += " KB"
+                }
+                else if ((stats.size/1000).toString().length >= 4 || (stats.size/1000).toString().length < 7) {
+                    bytes += " MB"
+                } else {
+                  bytes += " B"
+                }
+                component.text += ` [${fileType}, ${bytes}]`;
               } else {
                 console.log("Blacklisted file type detected. Skip downloading");
               }
