@@ -7,7 +7,7 @@ const moment = require("moment");
 
 // CONFIGURATION SETTINGS
 // This is the CSV file that contains the HTML content of the pages, one page per row
-const CSV_FILE = "./csv/mti-press-releases-html.csv";
+const CSV_FILE = "./csv/test-list.csv";
 // This is the list of pages that should be excluded from migration
 // This should match the identifier that you are using for each page, usually
 // the permalink (or termed as "fileName" in this script)
@@ -35,8 +35,9 @@ const main = async () => {
     try {
       // const originalUrl = row["URL"];
       const title = row["Title"];
-      const publishDate = moment(row["Published Date"], "D MMM YYYY").format("DD/MM/YYYY");
-      const fileName = row["JSON File name"] //.split("/")[row["Link"].split("/").length - 1];
+      const publishDate = moment(row["Date"], "D MMM YYYY").format("DD/MM/YYYY");
+      const fileName = row["JSON File name"].replace("_", "-") // row["Link"].split("/")[row["Link"].split("/").length - 1].toLowerCase().replaceAll("'", "-"); 
+      // row["JSON File name"] = fileName;
         // .replaceAll("https://www.ace-hta.gov.sg/healthcare-professionals/ace-clinical-guidances-(acgs)/details", "")
         // .replaceAll("/", "");
       const category = row["Category"];
@@ -78,9 +79,8 @@ const main = async () => {
       // const contentItems = await convertHtmlToSchema(html, fileName).then(
       //   (res) => [res]
       // );
-      // console.log(fileName);
+      console.log(fileName);
       const contentItems = await convertHtmlToSchema(html, fileName);
-
       // const collaboratorsHtml = `<h2>Collaborators</h2><ol>${collaborators
       //   .split(";")
       //   .map((item) => `<li>${item}</li>`)
@@ -95,11 +95,11 @@ const main = async () => {
         layout: "article",
         page: {
           title: title,
-          category: "Economic Survey of Singapore",
+          category: category,
           // tags: [
           //   {
-          //     category: "Tags",
-          //     selected: row["tags"].split(",")
+          //     category: "Country",
+          //     selected: row["Country"]
           //   }
           // ],
           // tags: [
@@ -130,7 +130,7 @@ const main = async () => {
           //                 : ["Not applicable"]
           //   }
           // ],
-          date: "",
+          date: publishDate,
           articlePageHeader: {
             // summary: `No. of Vacancies: ${vacancies}`,
             summary: ""
@@ -169,7 +169,7 @@ const main = async () => {
       // Save schema to file
       try {
         // Try to access the file. If it exists, this call succeeds.
-        await fs.access(`output/${fileName.slice(0, 246)}.json`);
+        await fs.access(`output/${fileName}.json`);
         await fs.writeFile(
           `output/${fileName}-1.json`,
           JSON.stringify(schema, null, 2)
@@ -180,6 +180,7 @@ const main = async () => {
           `output/${fileName}.json`,
           JSON.stringify(schema, null, 2)
         );
+        row["Comments"] = "Manual migration required";
       }
       row["Comments"] = "";
     } catch (error) {
@@ -191,7 +192,7 @@ const main = async () => {
   }
   // MINDEF
   const updatedCsv = Papa.unparse(csvParse.data);
-  await fs.writeFile("economic-survey-comments.csv", updatedCsv, 'utf8');
+  await fs.writeFile("mti-speeches-manual-comments.csv", updatedCsv, 'utf8');
 };
 
 main();
