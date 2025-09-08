@@ -755,11 +755,63 @@ const getCleanedSchema = async (schema) => {
     return schema;
   };
 
-  return findIframe(
-    await findLink(
-      removeEmptyParagraphs(
-        findTableHeader(
-          findHardBreak(findParagraphHardBreak(findTable(schema)))
+  // Recursively find for "type": "orderedList" or "unorderedList" and ensure
+  // that the nested list items are wrapped with the respective list type
+  const findNestedList = (schema) => {
+    schema.forEach((component) => {
+      if (
+        (component.type === "orderedList" ||
+          component.type === "unorderedList") &&
+        component.content
+      ) {
+        component.content = component.content.flatMap((listItem) => {
+          const newContent = [];
+
+          listItem.content.forEach((listItemContent) => {
+            if (
+              listItemContent.type === "paragraph" &&
+              listItemContent.content &&
+              listItemContent.some((c) => c.type === "listItem")
+            ) {
+              const subListItems = listItemContent.content.filter(
+                (c) => c.type === "listItem"
+              );
+
+              if (subListItems.length > 0) {
+                newContent.push({
+                  type: "listItem",
+                  content: listItemContent.content.filter(
+                    (c) => c.type !== "listItem"
+                  ),
+                });
+
+                newContent.push({
+                  type: component.type,
+                  content: subListItems,
+                });
+              }
+            }
+          });
+
+          if (newContent.length === 0) {
+            return [listItem];
+          } else {
+            return newContent;
+          }
+        });
+      } else if (component.content) {
+        findNestedList(component.content);
+      }
+    });
+  };
+
+  return findNestedList(
+    findIframe(
+      await findLink(
+        removeEmptyParagraphs(
+          findTableHeader(
+            findHardBreak(findParagraphHardBreak(findTable(schema)))
+          )
         )
       )
     )
