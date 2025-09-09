@@ -453,18 +453,66 @@ const convertFromTiptap = async (schema, headerBlock) => {
               alt: listItemContent.attrs.alt || PLACEHOLDER_ALT_TEXT,
             });
           } else if (listItemContent.type === "paragraph") {
-            if (newListItemParagraphContent.length > 0) {
-              // Add two hard breaks to separate paragraphs
-              newListItemParagraphContent.push({
-                type: "hardBreak",
+            // Within a paragraph, there can be content of type text, orderedList or unorderedList
+            // Recursively check the orderedList and unorderedList such that the hierarchy
+            // is (orderedList | unorderedList) -> listItem -> (paragraph | orderedList | unorderedList)
+            // Ensure nested orderedList and unorderedList are not a child of paragraph
+            const organizeListItems = (paragraphItems) => {
+              const newListItemContent = [];
+              let newParagraphItems = [];
+
+              paragraphItems.forEach((pItem) => {
+                if (
+                  pItem.type === "orderedList" ||
+                  pItem.type === "unorderedList"
+                ) {
+                  if (newParagraphItems.length > 0) {
+                    newListItemContent.push({
+                      type: "paragraph",
+                      content: newParagraphItems,
+                    });
+
+                    newParagraphItems = [];
+                  }
+
+                  const recurseList = {
+                    ...pItem,
+                    content: pItem.content.map((li) => ({
+                      ...li,
+                      content: li.content.map((lic) =>
+                        organizeListItems(lic.content)
+                      ),
+                    })),
+                  };
+
+                  newListItemContent.push(recurseList);
+                } else {
+                  newParagraphItems.push(pItem);
+                }
               });
-              newListItemParagraphContent.push({
-                type: "hardBreak",
-              });
-            }
+
+              if (newParagraphItems.length > 0) {
+                newListItemContent.push({
+                  type: "paragraph",
+                  content: newParagraphItems,
+                });
+              }
+
+              return newListItemContent;
+            };
+
+            // if (newListItemParagraphContent.length > 0) {
+            //   // Add two hard breaks to separate paragraphs
+            //   newListItemParagraphContent.push({
+            //     type: "hardBreak",
+            //   });
+            //   newListItemParagraphContent.push({
+            //     type: "hardBreak",
+            //   });
+            // }
 
             newListItemParagraphContent = newListItemParagraphContent.concat(
-              listItemContent.content
+              organizeListItems(listItemContent.content)
             );
           } else {
             newListItemParagraphContent.push(listItemContent);
@@ -474,12 +522,7 @@ const convertFromTiptap = async (schema, headerBlock) => {
         if (newListItemParagraphContent.length > 0) {
           newListItems.push({
             type: "listItem",
-            content: [
-              {
-                type: "paragraph",
-                content: newListItemParagraphContent,
-              },
-            ],
+            content: newListItemParagraphContent,
           });
 
           newListItemParagraphContent = [];
