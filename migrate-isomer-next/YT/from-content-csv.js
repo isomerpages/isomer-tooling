@@ -7,7 +7,7 @@ const moment = require("moment");
 
 // CONFIGURATION SETTINGS
 // This is the CSV file that contains the HTML content of the pages, one page per row
-const CSV_FILE = "./csv/test-list.csv";
+const CSV_FILE = "./csv/mfa-newsroom-manual.csv";
 // This is the list of pages that should be excluded from migration
 // This should match the identifier that you are using for each page, usually
 // the permalink (or termed as "fileName" in this script)
@@ -36,7 +36,7 @@ const main = async () => {
       // const originalUrl = row["URL"];
       const title = row["Title"];
       const publishDate = moment(row["Date"], "D MMM YYYY").format("DD/MM/YYYY");
-      const fileName = row["JSON File name"].replace("_", "-") // row["Link"].split("/")[row["Link"].split("/").length - 1].toLowerCase().replaceAll("'", "-"); 
+      const fileName = row["JSON File name"].replaceAll("_", "-") // row["Link"].split("/")[row["Link"].split("/").length - 1].toLowerCase().replaceAll("'", "-"); 
       // row["JSON File name"] = fileName;
         // .replaceAll("https://www.ace-hta.gov.sg/healthcare-professionals/ace-clinical-guidances-(acgs)/details", "")
         // .replaceAll("/", "");
@@ -96,12 +96,12 @@ const main = async () => {
         page: {
           title: title,
           category: category,
-          // tags: [
-          //   {
-          //     category: "Country",
-          //     selected: row["Country"]
-          //   }
-          // ],
+          tags: [
+            {
+              category: "Type",
+              selected: [row["Country"]]
+            }
+          ],
           // tags: [
           //   {
           //     category: "Campus",
@@ -133,27 +133,27 @@ const main = async () => {
           date: publishDate,
           articlePageHeader: {
             // summary: `No. of Vacancies: ${vacancies}`,
-            summary: ""
+            summary: row["Description"]
           },
         },
         content: [
-          // {
-          //   type: "callout",
-          //   content: {
-          //     type: "prose",
-          //     content: [
-          //       {
-          //         type: "paragraph",
-          //         content: [
-          //           {
-          //             type: "text",
-          //             text: "This article has been migrated from an earlier version of the site and may display formatting inconsistencies.",
-          //           },
-          //         ],
-          //       },
-          //     ],
-          //   },
-          // },
+          {
+            type: "callout",
+            content: {
+              type: "prose",
+              content: [
+                {
+                  type: "paragraph",
+                  content: [
+                    {
+                      type: "text",
+                      text: "This article has been migrated from an earlier version of the site and may display formatting inconsistencies.",
+                    },
+                  ],
+                },
+              ],
+            },
+          },
           ...contentItems,
           // ...collaboratorItems,
         ],
@@ -192,7 +192,7 @@ const main = async () => {
   }
   // MINDEF
   const updatedCsv = Papa.unparse(csvParse.data);
-  await fs.writeFile("mti-speeches-manual-comments.csv", updatedCsv, 'utf8');
+  await fs.writeFile("mfa-newsroom-comments.csv", updatedCsv, 'utf8');
 };
 
 main();

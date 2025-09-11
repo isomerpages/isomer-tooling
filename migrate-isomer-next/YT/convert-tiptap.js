@@ -34,13 +34,13 @@ const path = require("path");
 // CONFIGURATION SETTINGS
 // This is the base URL for the actual live site, used for downloading images
 // and files directly from them
-const SITE_BASE_URL = "https://www.cccs.gov.sg";
+const SITE_BASE_URL = "https://www.mfa.gov.sg/";
 // This is the path prefix for the folder that will host the downloaded images
 // inside the GitHub repository relative to the `public` folder
-const IMAGES_PATH_PREFIX = "/images/cccs";
+const IMAGES_PATH_PREFIX = "/images";
 // This is the path prefix for the folder that will host the downloaded files
 // inside the GitHub repository relative to the `public` folder
-const FILES_PATH_PREFIX = "/files/cccs";
+const FILES_PATH_PREFIX = "/files";
 
 // This is the logic used to determine if a particular link is to a file that
 // should be downloaded and hosted on the new site
@@ -49,7 +49,8 @@ const isFileLink = (link) => {
     link.startsWith("/docs") ||
     link.startsWith("~/") ||
     link.startsWith("/~/") ||
-    link.startsWith("/-/")
+    link.startsWith("/-/") ||
+    link.startsWith("-/")
   );
 };
 
@@ -103,10 +104,10 @@ const fetchWithRetry = async (url) => {
 const downloadFile = async (url, type, fileName) => {
   // console.log("Downloading file:", url);
   // Jank from CCCS website
-  const updatedUrl = url.startsWith(`${SITE_BASE_URL}~/`)
-    ? url.replace("~/", "/media-and-consultation/newsroom/media-releases/~/")
-    : url;
-  const res = await fetchWithRetry(updatedUrl);
+  // const updatedUrl = url.startsWith(`${SITE_BASE_URL}~/`)
+  //   ? url.replace("~/", "/media-and-consultation/newsroom/media-releases/~/")
+  //   : url;
+  const res = await fetchWithRetry(url);
   const finalFileName =
     getFilenameFromContentDisposition(res.headers.get("content-disposition")) ||
     fileName;
@@ -114,7 +115,7 @@ const downloadFile = async (url, type, fileName) => {
     "./downloads",
     type,
     PERMALINK,
-    finalFileName
+    finalFileName.toLowerCase().replaceAll(".jpeg", ".jpg")
   );
   const folder = path.dirname(destination);
 
@@ -122,7 +123,7 @@ const downloadFile = async (url, type, fileName) => {
   try {
     const fileStream = fs.createWriteStream(destination, { flags: "wx" });
     await finished(Readable.fromWeb(res.body).pipe(fileStream));
-    return finalFileName;
+    return finalFileName.toLowerCase().replaceAll(".jpeg", ".jpg");
   } catch (err) {
     if (err.code === "EEXIST") {
       // console.log("File already exists:", destination);
@@ -191,7 +192,6 @@ const convertFromTiptap = async (schema, headerBlock) => {
   //   type: "imagegallery",
   //   images: [],
   // };
-  
   for (const component of schema) {
     if (component.type === "iframe") {
       outputContent.push(proseBlock);
@@ -458,37 +458,82 @@ const convertFromTiptap = async (schema, headerBlock) => {
               alt: listItemContent.attrs.alt || PLACEHOLDER_ALT_TEXT,
             });
           } else if (listItemContent.type === "paragraph") {
-            if (newListItemParagraphContent.length > 0) {
-              // Add two hard breaks to separate paragraphs
-              newListItemParagraphContent.push({
-                type: "hardBreak",
+            // Within a paragraph, there can be content of type text, orderedList or unorderedList
+            // Recursively check the orderedList and unorderedList such that the hierarchy
+            // is (orderedList | unorderedList) -> listItem -> (paragraph | orderedList | unorderedList)
+            // Ensure nested orderedList and unorderedList are not a child of paragraph
+            const organizeListItems = (paragraphItems) => {
+              const newListItemContent = [];
+              let newParagraphItems = [];
+
+              paragraphItems.forEach((pItem) => {
+                if (
+                  pItem.type === "orderedList" ||
+                  pItem.type === "unorderedList"
+                ) {
+                  if (newParagraphItems.length > 0) {
+                    newListItemContent.push({
+                      type: "paragraph",
+                      content: newParagraphItems,
+                    });
+
+                    newParagraphItems = [];
+                  }
+
+                  const recurseList = {
+                    ...pItem,
+                    content: pItem.content.map((li) => ({
+                      ...li,
+                      content: li.content.map((lic) =>
+                        organizeListItems(lic.content)
+                      ),
+                    })),
+                  };
+
+                  newListItemContent.push(recurseList);
+                } else {
+                  newParagraphItems.push(pItem);
+                }
               });
-              newListItemParagraphContent.push({
-                type: "hardBreak",
-              });
-            }
+
+              if (newParagraphItems.length > 0) {
+                newListItemContent.push({
+                  type: "paragraph",
+                  content: newParagraphItems,
+                });
+              }
+
+              return newListItemContent;
+            };
+
+            // if (newListItemParagraphContent.length > 0) {
+            //   // Add two hard breaks to separate paragraphs
+            //   newListItemParagraphContent.push({
+            //     type: "hardBreak",
+            //   });
+            //   newListItemParagraphContent.push({
+            //     type: "hardBreak",
+            //   });
+            // }
 
             newListItemParagraphContent = newListItemParagraphContent.concat(
-              listItemContent.content
+              organizeListItems(listItemContent.content)
             );
+          } else {
+            newListItemParagraphContent.push(listItemContent);
           }
         });
 
         if (newListItemParagraphContent.length > 0) {
           newListItems.push({
             type: "listItem",
-            content: [
-              {
-                type: "paragraph",
-                content: newListItemParagraphContent,
-              },
-            ],
+            content: newListItemParagraphContent,
           });
 
           newListItemParagraphContent = [];
         }
       });
-
+      
       if (newListItems.length > 0) {
         proseBlock.content.push({
           ...component,
@@ -649,7 +694,7 @@ const getCleanedSchema = async (schema) => {
     return schema;
   };
 
-  // Recursively find for "type": "paragraph" with no content key, then remove
+  /// Recursively find for "type": "paragraph" with no content key, then remove
   // the component from the schema
   const removeEmptyParagraphs = (schema) => {
     return schema.filter((component) => {
@@ -734,6 +779,13 @@ const getCleanedSchema = async (schema) => {
 
               if (isFileLink(mark.attrs.href)) {
                 const fileName = mark.attrs.href.split("?")[0].split("/").pop();
+                var fileType = fileName.split(".")[fileName.split(".").length - 1] .replaceAll("pdf", "PDF")
+                  .replaceAll("doc", "DOC")
+                  .replaceAll("docx", "DOCX")
+                  .replaceAll("xlsx", "XLSX")
+                  .replaceAll("xls", "XLS")
+                  .replaceAll("csv", "CSV")
+                  .replaceAll("tsv", "TSV");
                 const newHref = `${FILES_PATH_PREFIX}/${PERMALINK}/${fileName}`;
 
                 if (
@@ -756,7 +808,8 @@ const getCleanedSchema = async (schema) => {
                 global.FILE_DOWNLOADS[mark.attrs.href] = updatedHref;
                 console.log(JSON.stringify(global.FILE_DOWNLOADS));
                 newAttrs.href = updatedHref;
-              
+                
+                
                 // var stats = fs.statSync(`./downloads/files/${PERMALINK.replaceAll("'", "-")}/${fileName.replaceAll("'", "-")}`);
                 // var bytes = Math.round(stats.size/1024);
 
@@ -798,15 +851,16 @@ const getCleanedSchema = async (schema) => {
 
     return schema;
   };
+  
 
   return findIframe(
-    await findLink(
-      removeEmptyParagraphs(
-        findTableHeader(
-          findHardBreak(findParagraphHardBreak(findTable(schema)))
+      await findLink(
+        removeEmptyParagraphs(
+          findTableHeader(
+            findHardBreak(findParagraphHardBreak(findTable(schema)))
+          )
         )
       )
-    )
   );
 };
 
