@@ -126,6 +126,7 @@ const downloadFile = async (url, type, fileName) => {
   } catch (err) {
     if (err.code === "EEXIST") {
       // console.log("File already exists:", destination);
+      return finalFileName;
     } else {
       console.error(err);
     }

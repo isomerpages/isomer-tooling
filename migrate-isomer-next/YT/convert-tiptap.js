@@ -127,6 +127,7 @@ const downloadFile = async (url, type, fileName) => {
   } catch (err) {
     if (err.code === "EEXIST") {
       // console.log("File already exists:", destination);
+      return finalFileName;
     } else {
       console.error(err);
     }
@@ -533,7 +534,7 @@ const convertFromTiptap = async (schema, headerBlock) => {
           newListItemParagraphContent = [];
         }
       });
-      
+
       if (newListItems.length > 0) {
         proseBlock.content.push({
           ...component,
@@ -779,7 +780,9 @@ const getCleanedSchema = async (schema) => {
 
               if (isFileLink(mark.attrs.href)) {
                 const fileName = mark.attrs.href.split("?")[0].split("/").pop();
-                var fileType = fileName.split(".")[fileName.split(".").length - 1] .replaceAll("pdf", "PDF")
+                var fileType = fileName
+                  .split(".")
+                  [fileName.split(".").length - 1].replaceAll("pdf", "PDF")
                   .replaceAll("doc", "DOC")
                   .replaceAll("docx", "DOCX")
                   .replaceAll("xlsx", "XLSX")
@@ -808,8 +811,7 @@ const getCleanedSchema = async (schema) => {
                 global.FILE_DOWNLOADS[mark.attrs.href] = updatedHref;
                 console.log(JSON.stringify(global.FILE_DOWNLOADS));
                 newAttrs.href = updatedHref;
-                
-                
+
                 // var stats = fs.statSync(`./downloads/files/${PERMALINK.replaceAll("'", "-")}/${fileName.replaceAll("'", "-")}`);
                 // var bytes = Math.round(stats.size/1024);
 
@@ -851,16 +853,15 @@ const getCleanedSchema = async (schema) => {
 
     return schema;
   };
-  
 
   return findIframe(
-      await findLink(
-        removeEmptyParagraphs(
-          findTableHeader(
-            findHardBreak(findParagraphHardBreak(findTable(schema)))
-          )
+    await findLink(
+      removeEmptyParagraphs(
+        findTableHeader(
+          findHardBreak(findParagraphHardBreak(findTable(schema)))
         )
       )
+    )
   );
 };
 
