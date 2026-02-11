@@ -1,0 +1,514 @@
+{
+  "comment": "Example FAIL: user attempted the task but did not complete all required steps",
+  "sandboxReference": "https://sandbox-studio.isomer.gov.sg/sites/118/pages/21866",
+  "page": {
+    "title": "Half complete example",
+    "permalink": "/my-ostin/my-page",
+    "lastModified": "2026-02-10T03:00:45.955Z",
+    "contentPageHeader": {
+      "summary": "This is a sample page, used for Isomer studio training",
+      "buttonUrl": "mailto:Blah",
+      "buttonLabel": "A CTA button can be added here ",
+      "showThumbnail": false
+    }
+  },
+  "layout": "content",
+  "content": [
+    {
+      "type": "prose",
+      "content": [
+        {
+          "type": "heading",
+          "attrs": {
+            "dir": "ltr",
+            "level": 2
+          },
+          "content": [
+            {
+              "text": "Section heading one",
+              "type": "text"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "attrs": {
+            "dir": "ltr"
+          },
+          "content": [
+            {
+              "text": "This is the content under this section heading one ",
+              "type": "text"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "attrs": {
+            "dir": "ltr"
+          },
+          "content": [
+            {
+              "text": "Next paragraph under this section with",
+              "type": "text"
+            }
+          ]
+        },
+        {
+          "type": "unorderedList",
+          "content": [
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "attrs": {
+                    "dir": "ltr"
+                  },
+                  "content": [
+                    {
+                      "text": "Bullet 1 to elaborate ",
+                      "type": "text"
+                    }
+                  ]
+                },
+                {
+                  "type": "unorderedList",
+                  "content": [
+                    {
+                      "type": "listItem",
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "attrs": {
+                            "dir": "ltr"
+                          },
+                          "content": [
+                            {
+                              "text": "And sub bullets to expand ",
+                              "type": "text"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "listItem",
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "attrs": {
+                            "dir": "ltr"
+                          },
+                          "content": [
+                            {
+                              "text": "And another sub bullet",
+                              "type": "text"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "attrs": {
+                    "dir": "ltr"
+                  },
+                  "content": [
+                    {
+                      "text": "bullet 2 ",
+                      "type": "text"
+                    }
+                  ]
+                },
+                {
+                  "type": "unorderedList",
+                  "content": [
+                    {
+                      "type": "listItem",
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "attrs": {
+                            "dir": "ltr"
+                          },
+                          "content": [
+                            {
+                              "text": "And so on",
+                              "type": "text"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "attrs": {
+            "dir": null
+          }
+        },
+        {
+          "type": "paragraph",
+          "attrs": {
+            "dir": null
+          }
+        },
+        {
+          "type": "table",
+          "attrs": {
+            "caption": "Table 1: Information on Header 1, 2 and 3"
+          },
+          "content": [
+            {
+              "type": "tableRow",
+              "content": [
+                {
+                  "type": "tableHeader",
+                  "attrs": {
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "colwidth": null
+                  },
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "attrs": {
+                        "dir": "ltr"
+                      },
+                      "content": [
+                        {
+                          "text": "Header 1",
+                          "type": "text"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableHeader",
+                  "attrs": {
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "colwidth": null
+                  },
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "attrs": {
+                        "dir": "ltr"
+                      },
+                      "content": [
+                        {
+                          "text": "Header 2",
+                          "type": "text"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableHeader",
+                  "attrs": {
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "colwidth": null
+                  },
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "attrs": {
+                        "dir": "ltr"
+                      },
+                      "content": [
+                        {
+                          "text": "Header 3",
+                          "type": "text"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableRow",
+              "content": [
+                {
+                  "type": "tableCell",
+                  "attrs": {
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "colwidth": null
+                  },
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "attrs": {
+                        "dir": "ltr"
+                      },
+                      "content": [
+                        {
+                          "text": "Item 1",
+                          "type": "text"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableCell",
+                  "attrs": {
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "colwidth": null
+                  },
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "attrs": {
+                        "dir": null
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "tableCell",
+                  "attrs": {
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "colwidth": null
+                  },
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "attrs": {
+                        "dir": null
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableRow",
+              "content": [
+                {
+                  "type": "tableCell",
+                  "attrs": {
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "colwidth": null
+                  },
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "attrs": {
+                        "dir": null
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "tableCell",
+                  "attrs": {
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "colwidth": null
+                  },
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "attrs": {
+                        "dir": null
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "tableCell",
+                  "attrs": {
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "colwidth": null
+                  },
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "attrs": {
+                        "dir": null
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "attrs": {
+            "dir": null
+          }
+        },
+        {
+          "type": "paragraph",
+          "attrs": {
+            "dir": null
+          }
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "details": {
+        "type": "prose",
+        "content": [
+          {
+            "type": "paragraph",
+            "attrs": {
+              "dir": "ltr"
+            },
+            "content": [
+              {
+                "text": "This is the content under Accordion 1",
+                "type": "text"
+              }
+            ]
+          }
+        ]
+      },
+      "summary": "Accordion 1"
+    },
+    {
+      "type": "accordion",
+      "details": {
+        "type": "prose",
+        "content": [
+          {
+            "type": "paragraph",
+            "attrs": {
+              "dir": "ltr"
+            },
+            "content": [
+              {
+                "text": "This appears under Accordion 2",
+                "type": "text"
+              }
+            ]
+          }
+        ]
+      },
+      "summary": "Accordion 2"
+    },
+    {
+      "alt": "This is a placeholder with no image ",
+      "src": "/placeholder_no_image.png",
+      "size": "default",
+      "type": "image",
+      "caption": "A brief description of this non-existent image for us to practice on"
+    },
+    {
+      "type": "prose",
+      "content": [
+        {
+          "type": "heading",
+          "attrs": {
+            "dir": "ltr",
+            "level": 2
+          },
+          "content": [
+            {
+              "text": "Section heading two",
+              "type": "text"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "attrs": {
+            "dir": "ltr"
+          },
+          "content": [
+            {
+              "text": "More text for this section",
+              "type": "text"
+            }
+          ]
+        },
+        {
+          "type": "orderedList",
+          "attrs": {
+            "type": null,
+            "start": 1
+          },
+          "content": [
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "attrs": {
+                    "dir": "ltr"
+                  },
+                  "content": [
+                    {
+                      "text": "Blah blah ",
+                      "type": "text"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "infocards",
+      "cards": [
+        {
+          "url": "https://www.google.com",
+          "title": "This is the first card",
+          "imageAlt": "This is the alt text",
+          "imageFit": "cover",
+          "imageUrl": "/placeholder_no_image.png",
+          "description": "1st pic "
+        },
+        {
+          "url": "https://www.google.com",
+          "title": "This is the second card",
+          "imageAlt": "This is the alt text",
+          "imageFit": "cover",
+          "imageUrl": "/placeholder_no_image.png",
+          "description": "Pic 2"
+        },
+        {
+          "url": "https://www.google.com",
+          "title": "This is the third card",
+          "imageAlt": "This is the alt text",
+          "imageFit": "cover",
+          "imageUrl": "/placeholder_no_image.png",
+          "description": "Pic 3"
+        }
+      ],
+      "title": "Infocards for 3 key events/CTA",
+      "variant": "cardsWithImages",
+      "subtitle": "These are our latest news",
+      "maxColumns": "3"
+    }
+  ],
+  "version": "0.1.0"
+}

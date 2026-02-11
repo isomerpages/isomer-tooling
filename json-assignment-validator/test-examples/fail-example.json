@@ -1,0 +1,773 @@
+{
+  "comment": "Example FAIL: user attempted the task but they were missing components",
+  "sandboxReference": "https://sandbox-studio.isomer.gov.sg/sites/117/pages/21640",
+  "page": {
+    "title": "Fail example",
+    "permalink": "/moh-upec/chang-wei-si/my-page",
+    "lastModified": "2026-01-20T03:06:25.279Z",
+    "contentPageHeader": {
+      "summary": "This is a sample page, used for Isomer studio training",
+      "buttonUrl": "https://google.com",
+      "buttonLabel": "A CTA button can be added here",
+      "showThumbnail": false
+    }
+  },
+  "layout": "content",
+  "content": [
+    {
+      "type": "prose",
+      "content": [
+        {
+          "type": "heading",
+          "attrs": {
+            "dir": "ltr",
+            "level": 2
+          },
+          "content": [
+            {
+              "text": "Section Heading One",
+              "type": "text"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "attrs": {
+            "dir": "ltr"
+          },
+          "content": [
+            {
+              "text": "Government services play a vital role in supporting citizens and enhancing community well-being. From healthcare and education to infrastructure and public safety, these services form the backbone of our society.",
+              "type": "text"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "attrs": {
+            "dir": "ltr"
+          },
+          "content": [
+            {
+              "text": "The government is committed to improving the lives of citizens through various services and initiatives. Key focus areas include:",
+              "type": "text"
+            }
+          ]
+        },
+        {
+          "type": "unorderedList",
+          "content": [
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "attrs": {
+                    "dir": "ltr"
+                  },
+                  "content": [
+                    {
+                      "text": "Ensuring access to quality healthcare",
+                      "type": "text"
+                    }
+                  ]
+                },
+                {
+                  "type": "unorderedList",
+                  "content": [
+                    {
+                      "type": "listItem",
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "attrs": {
+                            "dir": "ltr"
+                          },
+                          "content": [
+                            {
+                              "text": "Implementing safety measures in public spaces",
+                              "type": "text"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "listItem",
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "attrs": {
+                            "dir": "ltr"
+                          },
+                          "content": [
+                            {
+                              "text": "Promoting community wellness programmes",
+                              "type": "text"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "attrs": {
+                    "dir": "ltr"
+                  },
+                  "content": [
+                    {
+                      "text": "Enhancing the education system at all levels",
+                      "type": "text"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "attrs": {
+                    "dir": "ltr"
+                  },
+                  "content": [
+                    {
+                      "text": "Providing skills upgrading opportunities",
+                      "type": "text"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "attrs": {
+                    "dir": "ltr"
+                  },
+                  "content": [
+                    {
+                      "text": "Supporting research and innovation",
+                      "type": "text"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "attrs": {
+            "dir": null
+          }
+        },
+        {
+          "type": "table",
+          "attrs": {
+            "caption": "Table 1: Information on Header 1, 2, and 3"
+          },
+          "content": [
+            {
+              "type": "tableRow",
+              "content": [
+                {
+                  "type": "tableHeader",
+                  "attrs": {
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "colwidth": null
+                  },
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "attrs": {
+                        "dir": "ltr"
+                      },
+                      "content": [
+                        {
+                          "text": "Header 1",
+                          "type": "text"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableHeader",
+                  "attrs": {
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "colwidth": null
+                  },
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "attrs": {
+                        "dir": "ltr"
+                      },
+                      "content": [
+                        {
+                          "text": "Header 2",
+                          "type": "text"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableHeader",
+                  "attrs": {
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "colwidth": null
+                  },
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "attrs": {
+                        "dir": "ltr"
+                      },
+                      "content": [
+                        {
+                          "text": "Header 3",
+                          "type": "text"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableRow",
+              "content": [
+                {
+                  "type": "tableCell",
+                  "attrs": {
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "colwidth": null
+                  },
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "attrs": {
+                        "dir": "ltr"
+                      },
+                      "content": [
+                        {
+                          "text": "Item 1",
+                          "type": "text"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableCell",
+                  "attrs": {
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "colwidth": null
+                  },
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "attrs": {
+                        "dir": "ltr"
+                      },
+                      "content": [
+                        {
+                          "text": "Item 2",
+                          "type": "text"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableCell",
+                  "attrs": {
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "colwidth": null
+                  },
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "attrs": {
+                        "dir": "ltr"
+                      },
+                      "content": [
+                        {
+                          "text": "Item 3",
+                          "type": "text"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableRow",
+              "content": [
+                {
+                  "type": "tableCell",
+                  "attrs": {
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "colwidth": null
+                  },
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "attrs": {
+                        "dir": "ltr"
+                      },
+                      "content": [
+                        {
+                          "text": "Item 4",
+                          "type": "text"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableCell",
+                  "attrs": {
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "colwidth": null
+                  },
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "attrs": {
+                        "dir": "ltr"
+                      },
+                      "content": [
+                        {
+                          "text": "Item 5",
+                          "type": "text"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableCell",
+                  "attrs": {
+                    "colspan": 1,
+                    "rowspan": 1,
+                    "colwidth": null
+                  },
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "attrs": {
+                        "dir": "ltr"
+                      },
+                      "content": [
+                        {
+                          "text": "Item 6",
+                          "type": "text"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "details": {
+        "type": "prose",
+        "content": [
+          {
+            "type": "paragraph",
+            "attrs": {
+              "dir": "ltr"
+            },
+            "content": [
+              {
+                "text": "Government services play a vital role in supporting citizens and enhancing community well-being. From healthcare and education to infrastructure and public safety, these services form the backbone of our society.",
+                "type": "text"
+              }
+            ]
+          }
+        ]
+      },
+      "summary": "Accordion 1"
+    },
+    {
+      "type": "accordion",
+      "details": {
+        "type": "prose",
+        "content": [
+          {
+            "type": "paragraph",
+            "attrs": {
+              "dir": "ltr"
+            },
+            "content": [
+              {
+                "text": "Government services play a vital role in supporting citizens and enhancing community well-being. From healthcare and education to infrastructure and public safety, these services form the backbone of our society.",
+                "type": "text"
+              }
+            ]
+          }
+        ]
+      },
+      "summary": "Accordion 2"
+    },
+    {
+      "alt": "A sun image",
+      "src": "/117/d49560da-5430-4f2f-acb6-144c43125884/download.jpeg",
+      "size": "default",
+      "type": "image",
+      "caption": "A sun"
+    },
+    {
+      "type": "prose",
+      "content": [
+        {
+          "type": "heading",
+          "attrs": {
+            "dir": "ltr",
+            "level": 2
+          },
+          "content": [
+            {
+              "text": "Section heading two",
+              "type": "text"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "attrs": {
+            "dir": "ltr"
+          },
+          "content": [
+            {
+              "text": "The government is committed to improving the lives of citizens through various services and initiatives. Key focus areas include:",
+              "type": "text"
+            }
+          ]
+        },
+        {
+          "type": "orderedList",
+          "attrs": {
+            "type": null,
+            "start": 1
+          },
+          "content": [
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "attrs": {
+                    "dir": "ltr"
+                  },
+                  "content": [
+                    {
+                      "text": "Public Health and Safety",
+                      "type": "text"
+                    }
+                  ]
+                },
+                {
+                  "type": "orderedList",
+                  "attrs": {
+                    "type": null,
+                    "start": 1
+                  },
+                  "content": [
+                    {
+                      "type": "listItem",
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "attrs": {
+                            "dir": "ltr"
+                          },
+                          "content": [
+                            {
+                              "text": "Ensuring access to quality healthcare",
+                              "type": "text"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "listItem",
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "attrs": {
+                            "dir": "ltr"
+                          },
+                          "content": [
+                            {
+                              "text": "Implementing safety measures in public spaces",
+                              "type": "text"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "orderedList",
+                          "attrs": {
+                            "type": null,
+                            "start": 1
+                          },
+                          "content": [
+                            {
+                              "type": "listItem",
+                              "content": [
+                                {
+                                  "type": "paragraph",
+                                  "attrs": {
+                                    "dir": "ltr"
+                                  },
+                                  "content": [
+                                    {
+                                      "text": "Promoting community wellness programmes",
+                                      "type": "text"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "attrs": {
+                    "dir": "ltr"
+                  },
+                  "content": [
+                    {
+                      "text": "Education and Lifelong Learning",
+                      "type": "text"
+                    }
+                  ]
+                },
+                {
+                  "type": "orderedList",
+                  "attrs": {
+                    "type": null,
+                    "start": 1
+                  },
+                  "content": [
+                    {
+                      "type": "listItem",
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "attrs": {
+                            "dir": "ltr"
+                          },
+                          "content": [
+                            {
+                              "text": "Enhancing the education system at all levels",
+                              "type": "text"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "listItem",
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "attrs": {
+                            "dir": "ltr"
+                          },
+                          "content": [
+                            {
+                              "text": "Providing skills upgrading opportunities",
+                              "type": "text"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "listItem",
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "attrs": {
+                            "dir": "ltr"
+                          },
+                          "content": [
+                            {
+                              "text": "Supporting research and innovation",
+                              "type": "text"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "attrs": {
+                    "dir": "ltr"
+                  },
+                  "content": [
+                    {
+                      "text": "Infrastructure Development",
+                      "type": "text"
+                    }
+                  ]
+                },
+                {
+                  "type": "orderedList",
+                  "attrs": {
+                    "type": null,
+                    "start": 1
+                  },
+                  "content": [
+                    {
+                      "type": "listItem",
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "attrs": {
+                            "dir": "ltr"
+                          },
+                          "content": [
+                            {
+                              "text": "Improving public transportation networks",
+                              "type": "text"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "listItem",
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "attrs": {
+                            "dir": "ltr"
+                          },
+                          "content": [
+                            {
+                              "text": "Upgrading community facilities",
+                              "type": "text"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "orderedList",
+                          "attrs": {
+                            "type": null,
+                            "start": 1
+                          },
+                          "content": [
+                            {
+                              "type": "listItem",
+                              "content": [
+                                {
+                                  "type": "paragraph",
+                                  "attrs": {
+                                    "dir": "ltr"
+                                  },
+                                  "content": [
+                                    {
+                                      "text": "Enhancing digital infrastructure for better connectivity",
+                                      "type": "text"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "prose",
+      "content": [
+        {
+          "type": "heading",
+          "attrs": {
+            "dir": "ltr",
+            "level": 2
+          },
+          "content": [
+            {
+              "text": "This is a title of the Infocards component",
+              "type": "text"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "attrs": {
+            "dir": "ltr"
+          },
+          "content": [
+            {
+              "text": "This is an optional subtitle for the Infocards component",
+              "type": "text"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "attrs": {
+            "dir": null
+          }
+        }
+      ]
+    }
+  ],
+  "version": "0.1.0"
+}
