@@ -11,7 +11,7 @@ TOSP_BILL_DATA_CSV = "fee-publication-data-tosp.csv"
 # This is the TOSP hospital-level data CSV file
 TOSP_HOSPITAL_LEVEL_DATA_CSV = "fee-publication-data-tosp-hospital-level.csv"
 # This is the fee benchmarks data CSV file (surgeon fees)
-TOSP_FEE_BENCHMARKS_SURGEON_CSV = "fee-benchmarks-surgeon.csv"
+TOSP_FEE_BENCHMARKS_SURGEON_CSV = "test-fee-benchmarks-surgeon.csv"
 # This is the fee benchmarks data CSV file (hospital fees)
 TOSP_FEE_BENCHMARKS_HOSPITAL_CSV = "fee-benchmarks-hospital.csv"
 # This is the output directory for the generated JSON files
@@ -32,11 +32,11 @@ blacklistTOSP = [
 def create_tosp_page(tosp_code, tosp_records, tosp_by_hospital, surg_ann_records, hosp_records):
   # Step 1: Create the page description
   # Take the first record to extract the common information
+  # print(surg_ann_records)
   print(tosp_code)
-  print(surg_ann_records)
   first_record = surg_ann_records[0]
    
-  body_parts = [str(part).strip() for part in [first_record['Body Part 1'], first_record['Body Part 2']] if part != '']
+  body_parts = [str(part).strip() for part in [first_record['Updated Body Part 1'], first_record['Updated Body Part 2']] if part != '']
 
   if (len(body_parts) == 0):
     body_parts = ["Untagged"]
@@ -50,10 +50,10 @@ def create_tosp_page(tosp_code, tosp_records, tosp_by_hospital, surg_ann_records
   output = {
     "version": "0.1.0",
     "page": {
-      "title": first_record['TOSP'] + " - " + first_record['Description'],
+      "title": first_record['Current TOSP code'] + " - " + first_record['Updated Description'],
       "category": "TOSP",
       "articlePageHeader": {
-        "summary": f"{summary if summary != " " else surg_ann_records[0]['Description']}"
+        "summary": f"{summary if summary != " " else surg_ann_records[0]['Updated Description']}"
       },
       "tags": [
         {
@@ -76,7 +76,7 @@ def create_tosp_page(tosp_code, tosp_records, tosp_by_hospital, surg_ann_records
               {
                 "type": "text",
                 "marks": [],
-                "text": "TOSP Code: " + first_record['TOSP'] + " / TOSP Table: " + first_record['Table No.']
+                "text": "TOSP Code: " + first_record['Current TOSP code'] + " / TOSP Table: " + first_record['Updated TOSP table']
               }
             ]
           }
@@ -85,9 +85,12 @@ def create_tosp_page(tosp_code, tosp_records, tosp_by_hospital, surg_ann_records
     ]
   }
 
+  if tosp_code in surg_ann_records[0]["For OGP's Action (Remove/Retain Hospital Bill Size)"]:
+    print(tosp_code)
+
   # # Step 2: Create the "Hospital Bill (Overall)" section
   hospital_bill_overall_content = get_hospital_bill_overall(tosp_records)
-
+  
   if (len(hospital_bill_overall_content) > 0):
     output['content'].append({
       "type": "accordion",
@@ -146,18 +149,21 @@ def create_tosp_page(tosp_code, tosp_records, tosp_by_hospital, surg_ann_records
     })
 
   # Step 4: Create the "MOH Recommended Fees" section
-  surg_fees = None if len(surg_ann_records) == 0 else {
+  surg_fees = None if len(surg_ann_records) == 0 or surg_ann_records[0]['Surgeon Lower bound'] in ('-', '', 'Removed')else {
     "Lower bound": surg_ann_records[0]['Surgeon Lower bound'],
     "Upper bound": surg_ann_records[0]['Surgeon Upper bound']
   }
-  ann_fees = None if len(surg_ann_records) == 0 else {
+  ann_fees = None if len(surg_ann_records) == 0 or surg_ann_records[0]['Anaesthetist Lower bound'] in ('-', '', 'Removed') else {
     "Lower bound": surg_ann_records[0]['Anaesthetist Lower bound'],
     "Upper bound": surg_ann_records[0]['Anaesthetist Upper bound']
   }
-  hosp_fees = None if len(hosp_records) == 0 else {
+  hosp_fees = None if len(hosp_records) == 0 or hosp_records[0]['Lower bound'] in ('-', '', 'Removed') else {
     "Lower bound": hosp_records[0]['Lower bound'],
     "Upper bound": hosp_records[0]['Upper bound']
   }
+
+  print(surg_fees)
+
   moh_recommended_fees_content = get_moh_recommended_fees(first_record, surg_fees, ann_fees, hosp_fees)
   output['content'].append({
     "type": "accordion",
@@ -418,9 +424,9 @@ def create_tosp_page(tosp_code, tosp_records, tosp_by_hospital, surg_ann_records
   })
 
   # Step 6: Write the output to the JSON file
-  with open(output_file, 'w') as file:
+  # with open(output_file, 'w') as file:
     # print("Saving to file:", output_file)
-    json.dump(output, file, indent=2)
+    # json.dump(output, file, indent=2)
 
 # Main entry point of the script
 def main():
@@ -440,7 +446,7 @@ def main():
   # Replace "SH808P_(>6mth)" -> "SH808P>6M", "SH808P_(≤6mth)" -> "SH808P<=6M")
 
   for record in surg_ann_fees:
-    tosp_codes.add(record['TOSP'])
+    tosp_codes.add(record['Current TOSP code'])
 
   for record in records:
     tosp_codes.add(record['TOSP Code'])
@@ -454,7 +460,7 @@ def main():
     # print(tosp_code)
     tosp_records = [record for record in records if record['TOSP Code'] == tosp_code]
     tosp_by_hospital = [record for record in by_hospital if record['TOSP code'] == tosp_code]
-    surg_ann_records = [record for record in surg_ann_fees if record['TOSP'] == tosp_code]
+    surg_ann_records = [record for record in surg_ann_fees if record['Current TOSP code'] == tosp_code]
     hosp_records = [record for record in hosp_fees if record['TOSP'] == tosp_code]
 
     # Create the TOSP page

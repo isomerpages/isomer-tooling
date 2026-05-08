@@ -284,7 +284,7 @@ def get_moh_recommended_fees(records, surg_fees, ann_fees, hosp_fees):
                       "type": "italic"
                     }
                   ],
-                  "text": f' {records['Explanatory notes'] if len(records['Explanatory notes']) > 0 else " Higher end of surgeon fees may be associated with more complex cases."}'
+                  "text": " Higher end of surgeon fees may be associated with more complex cases." # f' {records['Explanatory notes'] if len(records['Explanatory notes']) > 0 else " Higher end of surgeon fees may be associated with more complex cases."}'
                 }
               ]
             },
