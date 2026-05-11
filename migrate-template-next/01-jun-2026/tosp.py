@@ -1,4 +1,5 @@
 import json
+import os
 import pandas as pd
 
 from tosp_hospital_bill_overall import get_hospital_bill_overall
@@ -28,15 +29,23 @@ blacklistTOSP = [
 ]
 
 ######## Do not touch below this line unless you know what you are doing #######
+NO_RECORD_PARAGRAPH = {
+  "type": "paragraph",
+  "content": [
+    {"type": "text", "marks": [{"type": "italic"}], "text": "No record found."},
+    {"type": "text", "marks": [], "text": " Contact your healthcare provider if you have questions on your hospital bill."}
+  ]
+}
+
 # Function for creating a page for a specific TOSP code
-def create_tosp_page(tosp_code, tosp_records, tosp_by_hospital, surg_ann_records, hosp_records):
+def create_tosp_page(tosp_code, tosp_records, tosp_by_hospital, surg_ann_records, hosp_records, ogp_action):
   # Step 1: Create the page description
   # Take the first record to extract the common information
   # print(surg_ann_records)
   print(tosp_code)
   first_record = surg_ann_records[0]
    
-  body_parts = [str(part).strip() for part in [first_record['Updated Body Part 1'], first_record['Updated Body Part 2']] if part != '']
+  body_parts = [p for p in (str(first_record['Updated Body Part 1']).strip(), str(first_record['Updated Body Part 2']).strip()) if p not in ('', '-')]
 
   if (len(body_parts) == 0):
     body_parts = ["Untagged"]
@@ -85,68 +94,88 @@ def create_tosp_page(tosp_code, tosp_records, tosp_by_hospital, surg_ann_records
     ]
   }
 
-  if tosp_code in surg_ann_records[0]["For OGP's Action (Remove/Retain Hospital Bill Size)"]:
-    print(tosp_code)
+  action = str(ogp_action).strip().upper()
+  is_remove = action == "REMOVE"
+  is_create_new = action == "CREATE NEW PAGE"
+  hide_hospital_bill = is_remove or is_create_new
 
-  # # Step 2: Create the "Hospital Bill (Overall)" section
-  hospital_bill_overall_content = get_hospital_bill_overall(tosp_records)
-  
-  if (len(hospital_bill_overall_content) > 0):
+  # Step 2: Create the "Hospital Bill (Overall)" section
+  if hide_hospital_bill:
     output['content'].append({
       "type": "accordion",
       "summary": "Hospital Bill (Overall)",
       "details": {
         "type": "prose",
-        "content": hospital_bill_overall_content
-      }
-    })
-
-  # Step 3: Create the "Hospital Bill (by Hospital)" section
-  hospital_bill_by_hospital_content = get_hospital_bill_by_hospital(tosp_by_hospital)
-
-  if (len(hospital_bill_by_hospital_content) > 0):
-    output['content'].append({
-      "type": "accordion",
-      "summary": "Hospital Bill (by Hospital)",
-      "details": {
-        "type": "prose",
-        "content": hospital_bill_by_hospital_content
+        "content": [NO_RECORD_PARAGRAPH]
       }
     })
   else:
+    hospital_bill_overall_content = get_hospital_bill_overall(tosp_records)
+    if (len(hospital_bill_overall_content) > 0):
+      output['content'].append({
+        "type": "accordion",
+        "summary": "Hospital Bill (Overall)",
+        "details": {
+          "type": "prose",
+          "content": hospital_bill_overall_content
+        }
+      })
+
+  # Step 3: Create the "Hospital Bill (by Hospital)" section
+  if hide_hospital_bill:
     output['content'].append({
       "type": "accordion",
       "summary": "Hospital Bill (by Hospital)",
       "details": {
         "type": "prose",
-        "content": [
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "marks": [
-                  {
-                    "type": "underline"
-                  }
-                ],
-                "text": "No records found. Only hospitals/ wards with sufficient cases are shown."
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "marks": [],
-                "text": "Contact your healthcare provider if you have questions on your hospital bill."
-              }
-            ]
-          }
-        ]
+        "content": [NO_RECORD_PARAGRAPH]
       }
     })
+  else:
+    hospital_bill_by_hospital_content = get_hospital_bill_by_hospital(tosp_by_hospital)
+    if (len(hospital_bill_by_hospital_content) > 0):
+      output['content'].append({
+        "type": "accordion",
+        "summary": "Hospital Bill (by Hospital)",
+        "details": {
+          "type": "prose",
+          "content": hospital_bill_by_hospital_content
+        }
+      })
+    else:
+      output['content'].append({
+        "type": "accordion",
+        "summary": "Hospital Bill (by Hospital)",
+        "details": {
+          "type": "prose",
+          "content": [
+            {
+              "type": "paragraph",
+              "content": [
+                {
+                  "type": "text",
+                  "marks": [
+                    {
+                      "type": "underline"
+                    }
+                  ],
+                  "text": "No records found. Only hospitals/ wards with sufficient cases are shown."
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "content": [
+                {
+                  "type": "text",
+                  "marks": [],
+                  "text": "Contact your healthcare provider if you have questions on your hospital bill."
+                }
+              ]
+            }
+          ]
+        }
+      })
 
   # Step 4: Create the "MOH Recommended Fees" section
   surg_fees = None if len(surg_ann_records) == 0 or surg_ann_records[0]['Surgeon Lower bound'] in ('-', '', 'Removed')else {
@@ -157,12 +186,10 @@ def create_tosp_page(tosp_code, tosp_records, tosp_by_hospital, surg_ann_records
     "Lower bound": surg_ann_records[0]['Anaesthetist Lower bound'],
     "Upper bound": surg_ann_records[0]['Anaesthetist Upper bound']
   }
-  hosp_fees = None if len(hosp_records) == 0 or hosp_records[0]['Lower bound'] in ('-', '', 'Removed') else {
+  hosp_fees = None if is_create_new or len(hosp_records) == 0 or hosp_records[0]['Lower bound'] in ('-', '', 'Removed') else {
     "Lower bound": hosp_records[0]['Lower bound'],
     "Upper bound": hosp_records[0]['Upper bound']
   }
-
-  print(surg_fees)
 
   moh_recommended_fees_content = get_moh_recommended_fees(first_record, surg_fees, ann_fees, hosp_fees)
   output['content'].append({
@@ -272,14 +299,14 @@ def create_tosp_page(tosp_code, tosp_records, tosp_by_hospital, surg_ann_records
               {
                 "type": "link",
                 "attrs": {
-                  "href": "https://isomer-user-content.by.gov.sg/3/a7305a12-e9c2-4d88-ad13-ed753d054416/MOH-Fee-Benchmarks-(wef-1-Jan-2025)-Publication.xlsx"
+                  "href": "https://go.gov.sg/feebenchmarks"
                 }
               },
               {
                 "type": "bold"
               }
             ],
-            "text": "Excel version [XLSX, 209 KB]" 
+            "text": "Excel version" 
           },
           {
             "type": "text",
@@ -424,9 +451,19 @@ def create_tosp_page(tosp_code, tosp_records, tosp_by_hospital, surg_ann_records
   })
 
   # Step 6: Write the output to the JSON file
-  # with open(output_file, 'w') as file:
-    # print("Saving to file:", output_file)
-    # json.dump(output, file, indent=2)
+  with open(output_file, 'w') as file:
+    json.dump(output, file, indent=2)
+
+  # Step 7: If the row carries a TOSP-code rename (Current != Updated),
+  # rename the file in place and overwrite its title with the updated code.
+  updated_code = str(first_record.get('Updated TOSP code', '')).strip()
+  if updated_code and updated_code != tosp_code:
+    new_output_file = f"{OUTPUT_DIRECTORY}/tosp-{updated_code.replace('>', 'more-than-').replace('≤', 'less-than-').replace('<=', 'less-than-').replace('>=', 'more-than-')}-bill-information.json".lower().replace("_", "-")
+    if new_output_file != output_file:
+      os.rename(output_file, new_output_file)
+    output["page"]["title"] = updated_code + " - " + first_record['Updated Description']
+    with open(new_output_file, 'w') as file:
+      json.dump(output, file, indent=2)
 
 # Main entry point of the script
 def main():
@@ -439,36 +476,30 @@ def main():
   hosp_df = pd.read_csv(TOSP_FEE_BENCHMARKS_HOSPITAL_CSV)
   hosp_fees = hosp_df.fillna('').to_dict(orient='records')
 
-  # Step 1: Find the universe of TOSP codes
-  # Get the set of all records under the TOSP column
-  tosp_codes = set()
-
-  # Replace "SH808P_(>6mth)" -> "SH808P>6M", "SH808P_(≤6mth)" -> "SH808P<=6M")
-
+  # Step 1: Build the universe of TOSP codes from the surgeon fee CSV only.
+  # That CSV is the sole authority for which pages get generated.
+  surg_lookup = {}
   for record in surg_ann_fees:
-    tosp_codes.add(record['Current TOSP code'])
-
-  for record in records:
-    tosp_codes.add(record['TOSP Code'])
+    code = record['Current TOSP code']
+    if code:
+      surg_lookup[code] = record
+  tosp_codes = set(surg_lookup.keys())
 
   print("Number of TOSP codes:", len(tosp_codes))
-  # print("Number of new TOSP codes:", len(new_tosp_codes))
 
   # Step 2: Create the page for each TOSP code
   for tosp_code in tosp_codes:
-    # Filter the records for the current TOSP code
-    # print(tosp_code)
-    tosp_records = [record for record in records if record['TOSP Code'] == tosp_code]
-    tosp_by_hospital = [record for record in by_hospital if record['TOSP code'] == tosp_code]
-    surg_ann_records = [record for record in surg_ann_fees if record['Current TOSP code'] == tosp_code]
-    hosp_records = [record for record in hosp_fees if record['TOSP'] == tosp_code]
-
-    # Create the TOSP page
-    if tosp_code not in blacklistTOSP:
-      create_tosp_page(tosp_code, tosp_records, tosp_by_hospital, surg_ann_records, hosp_records)
-    else:
+    if tosp_code in blacklistTOSP:
       print("Blacklisted:", tosp_code)
       continue
+
+    tosp_records = [record for record in records if record['TOSP Code'] == tosp_code]
+    tosp_by_hospital = [record for record in by_hospital if record['TOSP code'] == tosp_code]
+    surg_ann_records = [surg_lookup[tosp_code]]
+    hosp_records = [record for record in hosp_fees if record['TOSP'] == tosp_code]
+    ogp_action = surg_lookup[tosp_code]["For OGP's Action (Remove/Retain Hospital Bill Size)"]
+
+    create_tosp_page(tosp_code, tosp_records, tosp_by_hospital, surg_ann_records, hosp_records, ogp_action)
 
 if __name__ == "__main__":
     main()
