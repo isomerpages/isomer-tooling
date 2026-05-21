@@ -12,11 +12,15 @@ TOSP_BILL_DATA_CSV = "fee-publication-data-tosp.csv"
 # This is the TOSP hospital-level data CSV file
 TOSP_HOSPITAL_LEVEL_DATA_CSV = "fee-publication-data-tosp-hospital-level.csv"
 # This is the fee benchmarks data CSV file (surgeon fees)
-TOSP_FEE_BENCHMARKS_SURGEON_CSV = "test-fee-benchmarks-surgeon.csv"
+TOSP_FEE_BENCHMARKS_SURGEON_CSV = "fee-benchmarks-surgeon.csv"
 # This is the fee benchmarks data CSV file (hospital fees)
 TOSP_FEE_BENCHMARKS_HOSPITAL_CSV = "fee-benchmarks-hospital.csv"
 # This is the output directory for the generated JSON files
 OUTPUT_DIRECTORY = "output-tosp"
+
+modifiedFiles = 0
+deletedFiles = 0
+nameChange = 0
 
 blacklistTOSP = [
     "SA828B", "SA830B", "SA852S", "SA902S",
@@ -37,12 +41,17 @@ NO_RECORD_PARAGRAPH = {
   ]
 }
 
+def _output_path(code):
+  return f"{OUTPUT_DIRECTORY}/tosp-{code.replace('>', 'more-than-').replace('≤', 'less-than-').replace('<=', 'less-than-').replace('>=', 'more-than-')}-bill-information.json".lower().replace("_", "-")
+
 # Function for creating a page for a specific TOSP code
 def create_tosp_page(tosp_code, tosp_records, tosp_by_hospital, surg_ann_records, hosp_records, ogp_action):
+  global modifiedFiles
+  global nameChange
   # Step 1: Create the page description
   # Take the first record to extract the common information
   # print(surg_ann_records)
-  print(tosp_code)
+  # print(tosp_code)
   first_record = surg_ann_records[0]
    
   body_parts = [p for p in (str(first_record['Updated Body Part 1']).strip(), str(first_record['Updated Body Part 2']).strip()) if p not in ('', '-')]
@@ -55,14 +64,14 @@ def create_tosp_page(tosp_code, tosp_records, tosp_by_hospital, surg_ann_records
   except:
     summary = " "
 
-  output_file = f"{OUTPUT_DIRECTORY}/tosp-{tosp_code.replace(">", "more-than-").replace("≤", "less-than-").replace("<=", "less-than-").replace(">=", "more-than-")}-bill-information.json".lower().replace("_", "-")
+  output_file = _output_path(tosp_code)
   output = {
     "version": "0.1.0",
     "page": {
-      "title": first_record['Current TOSP code'] + " - " + first_record['Updated Description'],
-      "category": "TOSP",
+      "title": first_record['Updated TOSP code'] + " - " + first_record['Updated Description'],
+      "category": "Procedures - TOSP codes",
       "articlePageHeader": {
-        "summary": f"{summary if summary != " " else surg_ann_records[0]['Updated Description']}"
+        "summary": f"{first_record['Updated Description']}"
       },
       "tags": [
         {
@@ -85,7 +94,7 @@ def create_tosp_page(tosp_code, tosp_records, tosp_by_hospital, surg_ann_records
               {
                 "type": "text",
                 "marks": [],
-                "text": "TOSP Code: " + first_record['Current TOSP code'] + " / TOSP Table: " + first_record['Updated TOSP table']
+                "text": "TOSP Code: " + first_record['Updated TOSP code'] + " / TOSP Table: " + first_record['Updated TOSP table']
               }
             ]
           }
@@ -237,14 +246,14 @@ def create_tosp_page(tosp_code, tosp_records, tosp_by_hospital, surg_ann_records
               {
                 "type": "link",
                 "attrs": {
-                  "href": "https://isomer-user-content.by.gov.sg/3/f9cba44d-6757-4b0a-a374-e8574ee06d8e/fee-publication-data-jan22-dec22-(for-download).xlsx"
+                  "href": "https://go.gov.sg/hospitalbillsizes"
                 }
               },
               {
                 "type": "bold"
               }
             ],
-            "text": "all hospital bill amounts [XLSX, 1.2 MB]" 
+            "text": "all hospital bill amounts" 
           },
           {
             "type": "text",
@@ -275,14 +284,14 @@ def create_tosp_page(tosp_code, tosp_records, tosp_by_hospital, surg_ann_records
               {
                 "type": "link",
                 "attrs": {
-                  "href": "https://isomer-user-content.by.gov.sg/3/e668bb73-1c46-45b5-b644-8ac67df4a43d/MOH-Fee-Benchmarks-(wef-1-Jan-2025)-Publication.pdf"
+                  "href": "https://go.gov.sg/feebenchmarkspdf"
                 }
               },
               {
                 "type": "bold"
               }
             ],
-            "text": "PDF version [PDF, 2.5 MB]" 
+            "text": "PDF version" 
           },
           {
             "type": "text",
@@ -453,20 +462,26 @@ def create_tosp_page(tosp_code, tosp_records, tosp_by_hospital, surg_ann_records
   # Step 6: Write the output to the JSON file
   with open(output_file, 'w') as file:
     json.dump(output, file, indent=2)
-
+    modifiedFiles += 1
+  
   # Step 7: If the row carries a TOSP-code rename (Current != Updated),
   # rename the file in place and overwrite its title with the updated code.
   updated_code = str(first_record.get('Updated TOSP code', '')).strip()
   if updated_code and updated_code != tosp_code:
-    new_output_file = f"{OUTPUT_DIRECTORY}/tosp-{updated_code.replace('>', 'more-than-').replace('≤', 'less-than-').replace('<=', 'less-than-').replace('>=', 'more-than-')}-bill-information.json".lower().replace("_", "-")
+    new_output_file = _output_path(updated_code)
     if new_output_file != output_file:
       os.rename(output_file, new_output_file)
+    if output_file != new_output_file and os.path.exists(output_file):
+      os.remove(output_file)
+      print(f"{tosp_code} removed - Old file exist after rename")
     output["page"]["title"] = updated_code + " - " + first_record['Updated Description']
     with open(new_output_file, 'w') as file:
       json.dump(output, file, indent=2)
+    nameChange += 1
 
 # Main entry point of the script
 def main():
+  global deletedFiles
   df = pd.read_csv(TOSP_BILL_DATA_CSV)
   records = df.fillna('').to_dict(orient='records')
   by_hospital_df = pd.read_csv(TOSP_HOSPITAL_LEVEL_DATA_CSV)
@@ -493,13 +508,28 @@ def main():
       print("Blacklisted:", tosp_code)
       continue
 
+    row = surg_lookup[tosp_code]
+    ogp1 = str(row["For OGP's Action"])
+    if ogp1 == "Delete existing page":
+      path = _output_path(tosp_code)
+      if os.path.exists(path):
+        os.remove(path)
+        deletedFiles += 1
+        print(f"{tosp_code} removed - Marked for deletion")
+      continue
+
     tosp_records = [record for record in records if record['TOSP Code'] == tosp_code]
     tosp_by_hospital = [record for record in by_hospital if record['TOSP code'] == tosp_code]
     surg_ann_records = [surg_lookup[tosp_code]]
     hosp_records = [record for record in hosp_fees if record['TOSP'] == tosp_code]
     ogp_action = surg_lookup[tosp_code]["For OGP's Action (Remove/Retain Hospital Bill Size)"]
 
-    create_tosp_page(tosp_code, tosp_records, tosp_by_hospital, surg_ann_records, hosp_records, ogp_action)
+    if ogp1 != "No action needed":
+      create_tosp_page(tosp_code, tosp_records, tosp_by_hospital, surg_ann_records, hosp_records, ogp_action)
 
 if __name__ == "__main__":
     main()
+    print("Number of files modified: ", modifiedFiles)
+    print("Number of files renamed: ", nameChange)
+    print("Number of files deleted: ", deletedFiles)
+    # print("Number of files touched: ", modifiedFiles + deletedFiles)
