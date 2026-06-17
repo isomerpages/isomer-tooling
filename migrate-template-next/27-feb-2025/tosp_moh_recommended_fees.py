@@ -173,7 +173,7 @@ def get_moh_recommended_fees(records, surg_fees, ann_fees, hosp_fees):
               "content": [
                 {
                   "type": "text",
-                  "text": "Inpatient Doctors’ Attendance Fees"
+                  "text": "Doctors’ Inpatient Attendance Fees"
                 },
                 {
                   "type": "text",
