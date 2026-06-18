@@ -1,9 +1,0 @@
-*.md
-*.csv
-*.xlsx
-*.json
-*.txt
-output-tosp
-output-drg
-.venv
-__pycache__
