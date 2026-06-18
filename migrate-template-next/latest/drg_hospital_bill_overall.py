@@ -197,7 +197,7 @@ def get_hospital_bill_overall(records):
                       "type": "bold"
                     }
                   ],
-                  "text": "$" + record[' P50 Bill']
+                  "text": "$" + record['P50 Bill']
                 }
               ]
             }
@@ -215,7 +215,7 @@ def get_hospital_bill_overall(records):
               "content": [
                 {
                   "type": "text",
-                  "text": "$" + record[' P25 Bill'] + " - $" + record[' P75 Bill']
+                  "text": "$" + record['P25 Bill'] + " - $" + record['P75 Bill']
                 }
               ]
             }
@@ -287,7 +287,7 @@ def get_hospital_bill_overall(records):
                       "type": "bold"
                     }
                   ],
-                  "text": "$" + record[' P50 Bill']
+                  "text": "$" + record['P50 Bill']
                 }
               ]
             }
@@ -305,7 +305,7 @@ def get_hospital_bill_overall(records):
               "content": [
                 {
                   "type": "text",
-                  "text": "$" + record[' P25 Bill'] + " - $" + record[' P75 Bill']
+                  "text": "$" + record['P25 Bill'] + " - $" + record['P75 Bill']
                 }
               ]
             }
@@ -501,7 +501,7 @@ def get_hospital_bill_overall(records):
                       "type": "bold"
                     }
                   ],
-                  "text": "$" + record[' P50 Bill']
+                  "text": "$" + record['P50 Bill']
                 }
               ]
             }
@@ -519,7 +519,7 @@ def get_hospital_bill_overall(records):
               "content": [
                 {
                   "type": "text",
-                  "text": "$" + record[' P25 Bill'] + " - $" + record[' P75 Bill']
+                  "text": "$" + record['P25 Bill'] + " - $" + record['P75 Bill']
                 }
               ]
             }
@@ -591,7 +591,7 @@ def get_hospital_bill_overall(records):
                       "type": "bold"
                     }
                   ],
-                  "text": "$" + record[' P50 Bill']
+                  "text": "$" + record['P50 Bill']
                 }
               ]
             }
@@ -609,7 +609,7 @@ def get_hospital_bill_overall(records):
               "content": [
                 {
                   "type": "text",
-                  "text": "$" + record[' P25 Bill'] + " - $" + record[' P75 Bill']
+                  "text": "$" + record['P25 Bill'] + " - $" + record['P75 Bill']
                 }
               ]
             }

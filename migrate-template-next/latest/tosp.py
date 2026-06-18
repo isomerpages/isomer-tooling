@@ -33,9 +33,14 @@ def create_tosp_page(tosp_code, tosp_records, tosp_by_hospital, surg_ann_records
   # Step 1: Create the page description
   # Take the first record to extract the common information
   print(tosp_code)
-  print(surg_ann_records)
-  first_record = surg_ann_records[0]
-   
+  first_record = surg_ann_records[0] if surg_ann_records else {
+    'TOSP': tosp_code,
+    'Description': tosp_records[0].get('TOSP Description', '') if tosp_records else '',
+    'Table No.': '',
+    'Explanatory notes': ''
+  }
+  print(first_record)
+
   body_parts = [str(part).strip() for part in [tosp_records[0]['Body Part 1'], tosp_records[0]['Body Part 2']] if part != '']
 
   if (len(body_parts) == 0):
@@ -53,7 +58,7 @@ def create_tosp_page(tosp_code, tosp_records, tosp_by_hospital, surg_ann_records
       "title": first_record['TOSP'] + " - " + first_record['Description'],
       "category": "TOSP",
       "articlePageHeader": {
-        "summary": f"{summary if summary != " " else surg_ann_records[0]['Description']}"
+        "summary": f"{summary if summary != " " else first_record['Description']}"
       },
       "tags": [
         {
@@ -158,7 +163,7 @@ def create_tosp_page(tosp_code, tosp_records, tosp_by_hospital, surg_ann_records
     "Lower bound": hosp_records[0]['Lower bound'],
     "Upper bound": hosp_records[0]['Upper bound']
   }
-  moh_recommended_fees_content = get_moh_recommended_fees(first_record, surg_fees, ann_fees, hosp_fees)
+  moh_recommended_fees_content = get_moh_recommended_fees(first_record, surg_fees, ann_fees, hosp_fees, )
   output['content'].append({
     "type": "accordion",
     "summary": "MOH Recommended Fees",
