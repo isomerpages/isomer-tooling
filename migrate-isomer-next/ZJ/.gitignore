@@ -1,0 +1,6 @@
+*.csv
+*.xml
+*.txt
+docs
+json
+output

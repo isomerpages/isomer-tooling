@@ -1,0 +1,8 @@
+*.csv
+*.xml
+*.txt
+docs
+json
+output
+downloads
+csv
